@@ -1,0 +1,4 @@
+[package]
+name = "sdkms-client"
+version = "0.1.0"
+authors = ["Jeffrey Seyfried <jeffrey@fortanix.com>"]

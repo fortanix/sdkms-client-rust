@@ -6,6 +6,7 @@ license = "MPL-2.0"
 description = """
 API bindings for Fortanix SDKMS
 """
+readme = "README.md"
 repository = "https://github.com/fortanix/sdkms-client-rust"
 documentation = "https://docs.rs/sdkms"
 homepage = "https://fortanix.com/products/sdkms/"

@@ -75,6 +75,11 @@ impl SdkmsClientBuilder {
         self.auth = Some(Auth::from_api_key(api_key));
         self
     }
+    /// This can be used to restore an established session.
+    pub fn with_access_token(mut self, access_token: &str) -> Self {
+        self.auth = Some(Auth::Bearer(access_token.to_owned()));
+        self
+    }
     /// Build [`SdkmsClient`](./struct.SdkmsClient.html)
     pub fn build(self) -> Result<SdkmsClient> {
         let client = match self.client {

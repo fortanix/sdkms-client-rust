@@ -1,0 +1,20 @@
+branches:
+  only:
+    # This is where pull requests from "bors r+" are built.
+    - staging
+    # This is where pull requests from "bors try" are built.
+    - trying
+    # Not really necessary, just to get a green badge on “master”
+    - master
+language: rust
+dist: xenial
+rust:
+  - stable
+  - beta
+  - nightly
+env:
+  - RUST_BACKTRACE=1
+jobs:
+  allow_failures:
+    - rust: nightly
+  fast_finish: true

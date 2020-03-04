@@ -47,28 +47,54 @@ impl UrlEncode for () {
 
 pub trait TupleRef<'a> {
     type Ref: 'a;
+
+    fn as_ref(&'a self) -> Self::Ref;
 }
 
 impl<'a> TupleRef<'a> for Uuid {
     type Ref = &'a Uuid;
+
+    fn as_ref(&'a self) -> Self::Ref {
+        self
+    }
 }
 
 impl<'a> TupleRef<'a> for String {
     type Ref = &'a String;
+
+    fn as_ref(&'a self) -> Self::Ref {
+        self
+    }
 }
 
 impl<'a> TupleRef<'a> for () {
     type Ref = ();
+
+    fn as_ref(&'a self) -> Self::Ref {
+        ()
+    }
 }
 
 impl<'a, T1: 'a> TupleRef<'a> for (T1,) {
     type Ref = (&'a T1,);
+
+    fn as_ref(&'a self) -> Self::Ref {
+        (&self.0,)
+    }
 }
 
 impl<'a, T1: 'a, T2: 'a> TupleRef<'a> for (T1, T2) {
     type Ref = (&'a T1, &'a T2);
+
+    fn as_ref(&'a self) -> Self::Ref {
+        (&self.0, &self.1)
+    }
 }
 
 impl<'a, T1: 'a, T2: 'a, T3: 'a> TupleRef<'a> for (T1, T2, T3) {
     type Ref = (&'a T1, &'a T2, &'a T3);
+
+    fn as_ref(&'a self) -> Self::Ref {
+        (&self.0, &self.1, &self.2)
+    }
 }

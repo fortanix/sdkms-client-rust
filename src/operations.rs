@@ -17,7 +17,7 @@ pub trait Operation {
     type Output: for<'de> Deserialize<'de>;
 
     fn method() -> Method;
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String;
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String;
 
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
         Some(serde_json::to_value(body).expect("serialize to value"))
@@ -43,6 +43,20 @@ pub trait UrlEncode {
 
 impl UrlEncode for () {
     fn url_encode(&self, _m: &mut HashMap<&'static str, String>) {}
+}
+
+impl<T: UrlEncode> UrlEncode for Option<T> {
+    fn url_encode(&self, m: &mut HashMap<&'static str, String>) {
+        if let Some(val) = self {
+            val.url_encode(m);
+        }
+    }
+}
+
+impl<T: UrlEncode> UrlEncode for &T {
+    fn url_encode(&self, m: &mut HashMap<&'static str, String>) {
+        T::url_encode(self, m);
+    }
 }
 
 pub trait TupleRef<'a> {

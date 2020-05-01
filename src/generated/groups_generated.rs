@@ -40,7 +40,7 @@ impl Operation for OperationListGroups {
     fn method() -> Method {
         Method::Get
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups")
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -50,7 +50,7 @@ impl Operation for OperationListGroups {
 
 impl SdkmsClient {
     pub fn list_groups(&self) -> Result<Vec<Group>> {
-        self.execute::<OperationListGroups>(&(), (), &())
+        self.execute::<OperationListGroups>(&(), (), None)
     }
 }
 
@@ -65,7 +65,7 @@ impl Operation for OperationGetGroup {
     fn method() -> Method {
         Method::Get
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups/{id}", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -75,7 +75,7 @@ impl Operation for OperationGetGroup {
 
 impl SdkmsClient {
     pub fn get_group(&self, id: &Uuid) -> Result<Group> {
-        self.execute::<OperationGetGroup>(&(), (id,), &())
+        self.execute::<OperationGetGroup>(&(), (id,), None)
     }
 }
 
@@ -90,14 +90,14 @@ impl Operation for OperationCreateGroup {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups")
     }
 }
 
 impl SdkmsClient {
     pub fn create_group(&self, req: &GroupRequest) -> Result<Group> {
-        self.execute::<OperationCreateGroup>(req, (), &())
+        self.execute::<OperationCreateGroup>(req, (), None)
     }
 }
 
@@ -112,14 +112,14 @@ impl Operation for OperationUpdateGroup {
     fn method() -> Method {
         Method::Patch
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups/{id}", id = p.0)
     }
 }
 
 impl SdkmsClient {
     pub fn update_group(&self, id: &Uuid, req: &GroupRequest) -> Result<Group> {
-        self.execute::<OperationUpdateGroup>(req, (id,), &())
+        self.execute::<OperationUpdateGroup>(req, (id,), None)
     }
     pub fn request_approval_to_update_group(
         &self,
@@ -127,7 +127,7 @@ impl SdkmsClient {
         req: &GroupRequest,
         description: Option<String>,
     ) -> Result<PendingApproval<OperationUpdateGroup>> {
-        self.request_approval::<OperationUpdateGroup>(req, (id,), &(), description)
+        self.request_approval::<OperationUpdateGroup>(req, (id,), None, description)
     }
 }
 
@@ -142,7 +142,7 @@ impl Operation for OperationDeleteGroup {
     fn method() -> Method {
         Method::Delete
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups/{id}", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -152,6 +152,6 @@ impl Operation for OperationDeleteGroup {
 
 impl SdkmsClient {
     pub fn delete_group(&self, id: &Uuid) -> Result<()> {
-        self.execute::<OperationDeleteGroup>(&(), (id,), &())
+        self.execute::<OperationDeleteGroup>(&(), (id,), None)
     }
 }

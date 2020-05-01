@@ -60,7 +60,7 @@ impl Operation for OperationRefresh {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/refresh")
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -70,7 +70,7 @@ impl Operation for OperationRefresh {
 
 impl SdkmsClient {
     pub fn refresh(&self) -> Result<()> {
-        self.execute::<OperationRefresh>(&(), (), &())
+        self.execute::<OperationRefresh>(&(), (), None)
     }
 }
 
@@ -85,14 +85,14 @@ impl Operation for OperationSelectAccount {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/select_account")
     }
 }
 
 impl SdkmsClient {
     pub fn select_account(&self, req: &SelectAccountRequest) -> Result<SelectAccountResponse> {
-        self.execute::<OperationSelectAccount>(req, (), &())
+        self.execute::<OperationSelectAccount>(req, (), None)
     }
 }
 
@@ -107,14 +107,14 @@ impl Operation for OperationU2fAuth {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/auth/2fa/u2f")
     }
 }
 
 impl SdkmsClient {
     pub fn u2f_auth(&self, req: &U2fAuthRequest) -> Result<()> {
-        self.execute::<OperationU2fAuth>(req, (), &())
+        self.execute::<OperationU2fAuth>(req, (), None)
     }
 }
 
@@ -129,14 +129,14 @@ impl Operation for OperationRecoveryCodeAuth {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/auth/2fa/recovery_code")
     }
 }
 
 impl SdkmsClient {
     pub fn recovery_code_auth(&self, req: &RecoveryCodeAuthRequest) -> Result<()> {
-        self.execute::<OperationRecoveryCodeAuth>(req, (), &())
+        self.execute::<OperationRecoveryCodeAuth>(req, (), None)
     }
 }
 
@@ -151,14 +151,14 @@ impl Operation for OperationConfig2faAuth {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/config_2fa/auth")
     }
 }
 
 impl SdkmsClient {
     pub fn config_2fa_auth(&self, req: &Config2faAuthRequest) -> Result<Config2faAuthResponse> {
-        self.execute::<OperationConfig2faAuth>(req, (), &())
+        self.execute::<OperationConfig2faAuth>(req, (), None)
     }
 }
 
@@ -173,7 +173,7 @@ impl Operation for OperationConfig2faTerminate {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/config_2fa/terminate")
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -183,7 +183,7 @@ impl Operation for OperationConfig2faTerminate {
 
 impl SdkmsClient {
     pub fn config_2fa_terminate(&self) -> Result<()> {
-        self.execute::<OperationConfig2faTerminate>(&(), (), &())
+        self.execute::<OperationConfig2faTerminate>(&(), (), None)
     }
 }
 
@@ -198,7 +198,7 @@ impl Operation for OperationU2fNewChallenge {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/config_2fa/new_challenge")
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -208,6 +208,6 @@ impl Operation for OperationU2fNewChallenge {
 
 impl SdkmsClient {
     pub fn u2f_new_challenge(&self) -> Result<MfaChallengeResponse> {
-        self.execute::<OperationU2fNewChallenge>(&(), (), &())
+        self.execute::<OperationU2fNewChallenge>(&(), (), None)
     }
 }

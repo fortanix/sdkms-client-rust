@@ -482,21 +482,21 @@ impl Operation for OperationEncrypt {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/encrypt")
     }
 }
 
 impl SdkmsClient {
     pub fn encrypt(&self, req: &EncryptRequest) -> Result<EncryptResponse> {
-        self.execute::<OperationEncrypt>(req, (), &())
+        self.execute::<OperationEncrypt>(req, (), None)
     }
     pub fn request_approval_to_encrypt(
         &self,
         req: &EncryptRequest,
         description: Option<String>,
     ) -> Result<PendingApproval<OperationEncrypt>> {
-        self.request_approval::<OperationEncrypt>(req, (), &(), description)
+        self.request_approval::<OperationEncrypt>(req, (), None, description)
     }
 }
 
@@ -511,14 +511,14 @@ impl Operation for OperationEncryptInit {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/encrypt/init")
     }
 }
 
 impl SdkmsClient {
     pub fn encrypt_init(&self, req: &EncryptInitRequest) -> Result<EncryptInitResponse> {
-        self.execute::<OperationEncryptInit>(req, (), &())
+        self.execute::<OperationEncryptInit>(req, (), None)
     }
 }
 
@@ -533,14 +533,14 @@ impl Operation for OperationEncryptUpdate {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/encrypt/update")
     }
 }
 
 impl SdkmsClient {
     pub fn encrypt_update(&self, req: &EncryptUpdateRequest) -> Result<EncryptUpdateResponse> {
-        self.execute::<OperationEncryptUpdate>(req, (), &())
+        self.execute::<OperationEncryptUpdate>(req, (), None)
     }
 }
 
@@ -555,14 +555,14 @@ impl Operation for OperationEncryptFinal {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/encrypt/final")
     }
 }
 
 impl SdkmsClient {
     pub fn encrypt_final(&self, req: &EncryptFinalRequest) -> Result<EncryptFinalResponse> {
-        self.execute::<OperationEncryptFinal>(req, (), &())
+        self.execute::<OperationEncryptFinal>(req, (), None)
     }
 }
 
@@ -577,21 +577,21 @@ impl Operation for OperationDecrypt {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/decrypt")
     }
 }
 
 impl SdkmsClient {
     pub fn decrypt(&self, req: &DecryptRequest) -> Result<DecryptResponse> {
-        self.execute::<OperationDecrypt>(req, (), &())
+        self.execute::<OperationDecrypt>(req, (), None)
     }
     pub fn request_approval_to_decrypt(
         &self,
         req: &DecryptRequest,
         description: Option<String>,
     ) -> Result<PendingApproval<OperationDecrypt>> {
-        self.request_approval::<OperationDecrypt>(req, (), &(), description)
+        self.request_approval::<OperationDecrypt>(req, (), None, description)
     }
 }
 
@@ -606,14 +606,14 @@ impl Operation for OperationDecryptInit {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/decrypt/init")
     }
 }
 
 impl SdkmsClient {
     pub fn decrypt_init(&self, req: &DecryptInitRequest) -> Result<DecryptInitResponse> {
-        self.execute::<OperationDecryptInit>(req, (), &())
+        self.execute::<OperationDecryptInit>(req, (), None)
     }
 }
 
@@ -628,14 +628,14 @@ impl Operation for OperationDecryptUpdate {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/decrypt/update")
     }
 }
 
 impl SdkmsClient {
     pub fn decrypt_update(&self, req: &DecryptUpdateRequest) -> Result<DecryptUpdateResponse> {
-        self.execute::<OperationDecryptUpdate>(req, (), &())
+        self.execute::<OperationDecryptUpdate>(req, (), None)
     }
 }
 
@@ -650,14 +650,14 @@ impl Operation for OperationDecryptFinal {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/decrypt/final")
     }
 }
 
 impl SdkmsClient {
     pub fn decrypt_final(&self, req: &DecryptFinalRequest) -> Result<DecryptFinalResponse> {
-        self.execute::<OperationDecryptFinal>(req, (), &())
+        self.execute::<OperationDecryptFinal>(req, (), None)
     }
 }
 
@@ -672,21 +672,21 @@ impl Operation for OperationSign {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/sign")
     }
 }
 
 impl SdkmsClient {
     pub fn sign(&self, req: &SignRequest) -> Result<SignResponse> {
-        self.execute::<OperationSign>(req, (), &())
+        self.execute::<OperationSign>(req, (), None)
     }
     pub fn request_approval_to_sign(
         &self,
         req: &SignRequest,
         description: Option<String>,
     ) -> Result<PendingApproval<OperationSign>> {
-        self.request_approval::<OperationSign>(req, (), &(), description)
+        self.request_approval::<OperationSign>(req, (), None, description)
     }
 }
 
@@ -701,14 +701,14 @@ impl Operation for OperationVerify {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/verify")
     }
 }
 
 impl SdkmsClient {
     pub fn verify(&self, req: &VerifyRequest) -> Result<VerifyResponse> {
-        self.execute::<OperationVerify>(req, (), &())
+        self.execute::<OperationVerify>(req, (), None)
     }
 }
 
@@ -723,21 +723,21 @@ impl Operation for OperationWrap {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/wrapkey")
     }
 }
 
 impl SdkmsClient {
     pub fn wrap(&self, req: &WrapKeyRequest) -> Result<WrapKeyResponse> {
-        self.execute::<OperationWrap>(req, (), &())
+        self.execute::<OperationWrap>(req, (), None)
     }
     pub fn request_approval_to_wrap(
         &self,
         req: &WrapKeyRequest,
         description: Option<String>,
     ) -> Result<PendingApproval<OperationWrap>> {
-        self.request_approval::<OperationWrap>(req, (), &(), description)
+        self.request_approval::<OperationWrap>(req, (), None, description)
     }
 }
 
@@ -752,21 +752,21 @@ impl Operation for OperationUnwrap {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/unwrapkey")
     }
 }
 
 impl SdkmsClient {
     pub fn unwrap(&self, req: &UnwrapKeyRequest) -> Result<Sobject> {
-        self.execute::<OperationUnwrap>(req, (), &())
+        self.execute::<OperationUnwrap>(req, (), None)
     }
     pub fn request_approval_to_unwrap(
         &self,
         req: &UnwrapKeyRequest,
         description: Option<String>,
     ) -> Result<PendingApproval<OperationUnwrap>> {
-        self.request_approval::<OperationUnwrap>(req, (), &(), description)
+        self.request_approval::<OperationUnwrap>(req, (), None, description)
     }
 }
 
@@ -781,21 +781,21 @@ impl Operation for OperationMac {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/mac")
     }
 }
 
 impl SdkmsClient {
     pub fn mac(&self, req: &MacRequest) -> Result<MacResponse> {
-        self.execute::<OperationMac>(req, (), &())
+        self.execute::<OperationMac>(req, (), None)
     }
     pub fn request_approval_to_mac(
         &self,
         req: &MacRequest,
         description: Option<String>,
     ) -> Result<PendingApproval<OperationMac>> {
-        self.request_approval::<OperationMac>(req, (), &(), description)
+        self.request_approval::<OperationMac>(req, (), None, description)
     }
 }
 
@@ -810,14 +810,14 @@ impl Operation for OperationMacVerify {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/macverify")
     }
 }
 
 impl SdkmsClient {
     pub fn mac_verify(&self, req: &VerifyMacRequest) -> Result<VerifyResponse> {
-        self.execute::<OperationMacVerify>(req, (), &())
+        self.execute::<OperationMacVerify>(req, (), None)
     }
 }
 
@@ -832,21 +832,21 @@ impl Operation for OperationDerive {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/derive")
     }
 }
 
 impl SdkmsClient {
     pub fn derive(&self, req: &DeriveKeyRequest) -> Result<Sobject> {
-        self.execute::<OperationDerive>(req, (), &())
+        self.execute::<OperationDerive>(req, (), None)
     }
     pub fn request_approval_to_derive(
         &self,
         req: &DeriveKeyRequest,
         description: Option<String>,
     ) -> Result<PendingApproval<OperationDerive>> {
-        self.request_approval::<OperationDerive>(req, (), &(), description)
+        self.request_approval::<OperationDerive>(req, (), None, description)
     }
 }
 
@@ -861,21 +861,21 @@ impl Operation for OperationAgree {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/agree")
     }
 }
 
 impl SdkmsClient {
     pub fn agree(&self, req: &AgreeKeyRequest) -> Result<Sobject> {
-        self.execute::<OperationAgree>(req, (), &())
+        self.execute::<OperationAgree>(req, (), None)
     }
     pub fn request_approval_to_agree(
         &self,
         req: &AgreeKeyRequest,
         description: Option<String>,
     ) -> Result<PendingApproval<OperationAgree>> {
-        self.request_approval::<OperationAgree>(req, (), &(), description)
+        self.request_approval::<OperationAgree>(req, (), None, description)
     }
 }
 
@@ -890,13 +890,13 @@ impl Operation for OperationCreateDigest {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/digest")
     }
 }
 
 impl SdkmsClient {
     pub fn create_digest(&self, req: &DigestRequest) -> Result<DigestResponse> {
-        self.execute::<OperationCreateDigest>(req, (), &())
+        self.execute::<OperationCreateDigest>(req, (), None)
     }
 }

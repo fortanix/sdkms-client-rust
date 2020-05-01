@@ -38,7 +38,7 @@ impl Operation for OperationVersion {
     fn method() -> Method {
         Method::Get
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/version")
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -48,6 +48,6 @@ impl Operation for OperationVersion {
 
 impl SdkmsClient {
     pub fn version(&self) -> Result<VersionResponse> {
-        self.execute::<OperationVersion>(&(), (), &())
+        self.execute::<OperationVersion>(&(), (), None)
     }
 }

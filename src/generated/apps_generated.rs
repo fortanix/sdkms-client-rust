@@ -23,6 +23,7 @@ pub mod app_permissions {
             const EXPORT = 0x0000000000000200;
             const MANAGE = 0x0000000000000400;
             const AGREEKEY = 0x0000000000000800;
+            const MASKDECRYPT = 0x0000000000001000;
         }
     }
 }
@@ -49,6 +50,7 @@ pub enum AppCredential {
     Secret(String),
     Certificate(Blob),
     TrustedCa(TrustAnchor),
+    GoogleServiceAccount {},
     SignedJwt {
         valid_issuers: HashSet<String>,
         signing_keys: JwtSigningKeys,
@@ -61,6 +63,7 @@ pub enum AppAuthType {
     Secret,
     Certificate,
     TrustedCa,
+    GoogleServiceAccount,
     SignedJwt,
 }
 

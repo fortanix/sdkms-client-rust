@@ -24,6 +24,8 @@ pub enum SubscriptionType {
         max_plugin: Option<u32>,
         max_operation: Option<u64>,
         max_tenant: Option<u32>,
+        max_tenant_plugin: Option<u32>,
+        max_tenant_operation: Option<u64>,
     },
 }
 

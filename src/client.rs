@@ -241,7 +241,7 @@ impl SdkmsClient {
         O: for<'de> Deserialize<'de>,
     {
         let req = serde_json::to_value(req)?;
-        let output = self.execute::<OperationInvokePlugin>(&req, (id,), &())?;
+        let output = self.execute::<OperationInvokePlugin>(&req, (id,), None)?;
         Ok(serde_json::from_value(output)?)
     }
 
@@ -249,7 +249,7 @@ impl SdkmsClient {
         &self,
         body: &O::Body,
         p: <O::PathParams as TupleRef>::Ref,
-        q: &O::QueryParams,
+        q: Option<&O::QueryParams>,
     ) -> Result<O::Output> {
         self.json_request(O::method(), &O::path(p, q), O::to_body(body).as_ref())
     }
@@ -258,7 +258,7 @@ impl SdkmsClient {
         &self,
         body: &O::Body,
         p: <O::PathParams as TupleRef>::Ref,
-        q: &O::QueryParams,
+        q: Option<&O::QueryParams>,
         description: Option<String>,
     ) -> Result<PendingApproval<O>> {
         let request = self.create_approval_request(&ApprovalRequestRequest {

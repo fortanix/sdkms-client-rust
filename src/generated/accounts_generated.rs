@@ -444,7 +444,7 @@ impl Operation for OperationListAccounts {
     fn method() -> Method {
         Method::Get
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts?{q}", q = q.encode())
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -453,7 +453,7 @@ impl Operation for OperationListAccounts {
 }
 
 impl SdkmsClient {
-    pub fn list_accounts(&self, query_params: &GetAccountParams) -> Result<Vec<Account>> {
+    pub fn list_accounts(&self, query_params: Option<&GetAccountParams>) -> Result<Vec<Account>> {
         self.execute::<OperationListAccounts>(&(), (), query_params)
     }
 }
@@ -469,7 +469,7 @@ impl Operation for OperationGetAccount {
     fn method() -> Method {
         Method::Get
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{id}?{q}", id = p.0, q = q.encode())
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -478,7 +478,11 @@ impl Operation for OperationGetAccount {
 }
 
 impl SdkmsClient {
-    pub fn get_account(&self, id: &Uuid, query_params: &GetAccountParams) -> Result<Account> {
+    pub fn get_account(
+        &self,
+        id: &Uuid,
+        query_params: Option<&GetAccountParams>,
+    ) -> Result<Account> {
         self.execute::<OperationGetAccount>(&(), (id,), query_params)
     }
 }
@@ -494,21 +498,21 @@ impl Operation for OperationCreateAccount {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts")
     }
 }
 
 impl SdkmsClient {
     pub fn create_account(&self, req: &AccountRequest) -> Result<Account> {
-        self.execute::<OperationCreateAccount>(req, (), &())
+        self.execute::<OperationCreateAccount>(req, (), None)
     }
     pub fn request_approval_to_create_account(
         &self,
         req: &AccountRequest,
         description: Option<String>,
     ) -> Result<PendingApproval<OperationCreateAccount>> {
-        self.request_approval::<OperationCreateAccount>(req, (), &(), description)
+        self.request_approval::<OperationCreateAccount>(req, (), None, description)
     }
 }
 
@@ -523,14 +527,14 @@ impl Operation for OperationUpdateAccount {
     fn method() -> Method {
         Method::Patch
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{id}", id = p.0)
     }
 }
 
 impl SdkmsClient {
     pub fn update_account(&self, id: &Uuid, req: &AccountRequest) -> Result<Account> {
-        self.execute::<OperationUpdateAccount>(req, (id,), &())
+        self.execute::<OperationUpdateAccount>(req, (id,), None)
     }
     pub fn request_approval_to_update_account(
         &self,
@@ -538,7 +542,7 @@ impl SdkmsClient {
         req: &AccountRequest,
         description: Option<String>,
     ) -> Result<PendingApproval<OperationUpdateAccount>> {
-        self.request_approval::<OperationUpdateAccount>(req, (id,), &(), description)
+        self.request_approval::<OperationUpdateAccount>(req, (id,), None, description)
     }
 }
 
@@ -553,7 +557,7 @@ impl Operation for OperationDeleteAccount {
     fn method() -> Method {
         Method::Delete
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{id}", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -563,7 +567,7 @@ impl Operation for OperationDeleteAccount {
 
 impl SdkmsClient {
     pub fn delete_account(&self, id: &Uuid) -> Result<()> {
-        self.execute::<OperationDeleteAccount>(&(), (id,), &())
+        self.execute::<OperationDeleteAccount>(&(), (id,), None)
     }
 }
 
@@ -578,7 +582,7 @@ impl Operation for OperationAccountUsage {
     fn method() -> Method {
         Method::Get
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{id}/usage?{q}", id = p.0, q = q.encode())
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -587,7 +591,11 @@ impl Operation for OperationAccountUsage {
 }
 
 impl SdkmsClient {
-    pub fn account_usage(&self, id: &Uuid, query_params: &CountParams) -> Result<GetUsageResponse> {
+    pub fn account_usage(
+        &self,
+        id: &Uuid,
+        query_params: Option<&CountParams>,
+    ) -> Result<GetUsageResponse> {
         self.execute::<OperationAccountUsage>(&(), (id,), query_params)
     }
 }

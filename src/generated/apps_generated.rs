@@ -201,7 +201,7 @@ impl Operation for OperationListApps {
     fn method() -> Method {
         Method::Get
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps?{q}", q = q.encode())
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -210,7 +210,7 @@ impl Operation for OperationListApps {
 }
 
 impl SdkmsClient {
-    pub fn list_apps(&self, query_params: &ListAppsParams) -> Result<Vec<App>> {
+    pub fn list_apps(&self, query_params: Option<&ListAppsParams>) -> Result<Vec<App>> {
         self.execute::<OperationListApps>(&(), (), query_params)
     }
 }
@@ -226,7 +226,7 @@ impl Operation for OperationGetApp {
     fn method() -> Method {
         Method::Get
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{id}?{q}", id = p.0, q = q.encode())
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -235,7 +235,7 @@ impl Operation for OperationGetApp {
 }
 
 impl SdkmsClient {
-    pub fn get_app(&self, id: &Uuid, query_params: &GetAppParams) -> Result<App> {
+    pub fn get_app(&self, id: &Uuid, query_params: Option<&GetAppParams>) -> Result<App> {
         self.execute::<OperationGetApp>(&(), (id,), query_params)
     }
 }
@@ -251,13 +251,13 @@ impl Operation for OperationCreateApp {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps?{q}", q = q.encode())
     }
 }
 
 impl SdkmsClient {
-    pub fn create_app(&self, query_params: &GetAppParams, req: &AppRequest) -> Result<App> {
+    pub fn create_app(&self, query_params: Option<&GetAppParams>, req: &AppRequest) -> Result<App> {
         self.execute::<OperationCreateApp>(req, (), query_params)
     }
 }
@@ -273,7 +273,7 @@ impl Operation for OperationUpdateApp {
     fn method() -> Method {
         Method::Patch
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{id}?{q}", id = p.0, q = q.encode())
     }
 }
@@ -282,7 +282,7 @@ impl SdkmsClient {
     pub fn update_app(
         &self,
         id: &Uuid,
-        query_params: &GetAppParams,
+        query_params: Option<&GetAppParams>,
         req: &AppRequest,
     ) -> Result<App> {
         self.execute::<OperationUpdateApp>(req, (id,), query_params)
@@ -300,7 +300,7 @@ impl Operation for OperationDeleteApp {
     fn method() -> Method {
         Method::Delete
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{id}", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -310,7 +310,7 @@ impl Operation for OperationDeleteApp {
 
 impl SdkmsClient {
     pub fn delete_app(&self, id: &Uuid) -> Result<()> {
-        self.execute::<OperationDeleteApp>(&(), (id,), &())
+        self.execute::<OperationDeleteApp>(&(), (id,), None)
     }
 }
 
@@ -325,7 +325,7 @@ impl Operation for OperationResetAppSecret {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!(
             "/sys/v1/apps/{id}/reset_secret?{q}",
             id = p.0,
@@ -338,7 +338,7 @@ impl SdkmsClient {
     pub fn reset_app_secret(
         &self,
         id: &Uuid,
-        query_params: &GetAppParams,
+        query_params: Option<&GetAppParams>,
         req: &AppResetSecretRequest,
     ) -> Result<App> {
         self.execute::<OperationResetAppSecret>(req, (id,), query_params)
@@ -356,7 +356,7 @@ impl Operation for OperationGetAppCredential {
     fn method() -> Method {
         Method::Get
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{id}/credential", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -366,13 +366,13 @@ impl Operation for OperationGetAppCredential {
 
 impl SdkmsClient {
     pub fn get_app_credential(&self, id: &Uuid) -> Result<AppCredentialResponse> {
-        self.execute::<OperationGetAppCredential>(&(), (id,), &())
+        self.execute::<OperationGetAppCredential>(&(), (id,), None)
     }
     pub fn request_approval_to_get_app_credential(
         &self,
         id: &Uuid,
         description: Option<String>,
     ) -> Result<PendingApproval<OperationGetAppCredential>> {
-        self.request_approval::<OperationGetAppCredential>(&(), (id,), &(), description)
+        self.request_approval::<OperationGetAppCredential>(&(), (id,), None, description)
     }
 }

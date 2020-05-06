@@ -153,7 +153,7 @@ impl Operation for OperationListPlugins {
     fn method() -> Method {
         Method::Get
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/plugins?{q}", q = q.encode())
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -162,7 +162,7 @@ impl Operation for OperationListPlugins {
 }
 
 impl SdkmsClient {
-    pub fn list_plugins(&self, query_params: &ListPluginsParams) -> Result<Vec<Plugin>> {
+    pub fn list_plugins(&self, query_params: Option<&ListPluginsParams>) -> Result<Vec<Plugin>> {
         self.execute::<OperationListPlugins>(&(), (), query_params)
     }
 }
@@ -178,7 +178,7 @@ impl Operation for OperationGetPlugin {
     fn method() -> Method {
         Method::Get
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/plugins/{id}", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -188,7 +188,7 @@ impl Operation for OperationGetPlugin {
 
 impl SdkmsClient {
     pub fn get_plugin(&self, id: &Uuid) -> Result<Plugin> {
-        self.execute::<OperationGetPlugin>(&(), (id,), &())
+        self.execute::<OperationGetPlugin>(&(), (id,), None)
     }
 }
 
@@ -203,21 +203,21 @@ impl Operation for OperationCreatePlugin {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/plugins")
     }
 }
 
 impl SdkmsClient {
     pub fn create_plugin(&self, req: &PluginRequest) -> Result<Plugin> {
-        self.execute::<OperationCreatePlugin>(req, (), &())
+        self.execute::<OperationCreatePlugin>(req, (), None)
     }
     pub fn request_approval_to_create_plugin(
         &self,
         req: &PluginRequest,
         description: Option<String>,
     ) -> Result<PendingApproval<OperationCreatePlugin>> {
-        self.request_approval::<OperationCreatePlugin>(req, (), &(), description)
+        self.request_approval::<OperationCreatePlugin>(req, (), None, description)
     }
 }
 
@@ -232,14 +232,14 @@ impl Operation for OperationUpdatePlugin {
     fn method() -> Method {
         Method::Patch
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/plugins/{id}", id = p.0)
     }
 }
 
 impl SdkmsClient {
     pub fn update_plugin(&self, id: &Uuid, req: &PluginRequest) -> Result<Plugin> {
-        self.execute::<OperationUpdatePlugin>(req, (id,), &())
+        self.execute::<OperationUpdatePlugin>(req, (id,), None)
     }
     pub fn request_approval_to_update_plugin(
         &self,
@@ -247,7 +247,7 @@ impl SdkmsClient {
         req: &PluginRequest,
         description: Option<String>,
     ) -> Result<PendingApproval<OperationUpdatePlugin>> {
-        self.request_approval::<OperationUpdatePlugin>(req, (id,), &(), description)
+        self.request_approval::<OperationUpdatePlugin>(req, (id,), None, description)
     }
 }
 
@@ -262,7 +262,7 @@ impl Operation for OperationDeletePlugin {
     fn method() -> Method {
         Method::Delete
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/plugins/{id}", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -272,7 +272,7 @@ impl Operation for OperationDeletePlugin {
 
 impl SdkmsClient {
     pub fn delete_plugin(&self, id: &Uuid) -> Result<()> {
-        self.execute::<OperationDeletePlugin>(&(), (id,), &())
+        self.execute::<OperationDeletePlugin>(&(), (id,), None)
     }
 }
 
@@ -287,14 +287,14 @@ impl Operation for OperationInvokePlugin {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/plugins/{id}", id = p.0)
     }
 }
 
 impl SdkmsClient {
     pub fn invoke_plugin(&self, id: &Uuid, req: &serde_json::Value) -> Result<PluginOutput> {
-        self.execute::<OperationInvokePlugin>(req, (id,), &())
+        self.execute::<OperationInvokePlugin>(req, (id,), None)
     }
     pub fn request_approval_to_invoke_plugin(
         &self,
@@ -302,6 +302,6 @@ impl SdkmsClient {
         req: &serde_json::Value,
         description: Option<String>,
     ) -> Result<PendingApproval<OperationInvokePlugin>> {
-        self.request_approval::<OperationInvokePlugin>(req, (id,), &(), description)
+        self.request_approval::<OperationInvokePlugin>(req, (id,), None, description)
     }
 }

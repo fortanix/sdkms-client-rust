@@ -183,14 +183,14 @@ impl Operation for OperationCreateSobject {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys")
     }
 }
 
 impl SdkmsClient {
     pub fn create_sobject(&self, req: &SobjectRequest) -> Result<Sobject> {
-        self.execute::<OperationCreateSobject>(req, (), &())
+        self.execute::<OperationCreateSobject>(req, (), None)
     }
 }
 
@@ -205,14 +205,14 @@ impl Operation for OperationImportSobject {
     fn method() -> Method {
         Method::Put
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys")
     }
 }
 
 impl SdkmsClient {
     pub fn import_sobject(&self, req: &SobjectRequest) -> Result<Sobject> {
-        self.execute::<OperationImportSobject>(req, (), &())
+        self.execute::<OperationImportSobject>(req, (), None)
     }
 }
 
@@ -227,14 +227,14 @@ impl Operation for OperationUpdateSobject {
     fn method() -> Method {
         Method::Patch
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{id}", id = p.0)
     }
 }
 
 impl SdkmsClient {
     pub fn update_sobject(&self, id: &Uuid, req: &SobjectRequest) -> Result<Sobject> {
-        self.execute::<OperationUpdateSobject>(req, (id,), &())
+        self.execute::<OperationUpdateSobject>(req, (id,), None)
     }
     pub fn request_approval_to_update_sobject(
         &self,
@@ -242,7 +242,7 @@ impl SdkmsClient {
         req: &SobjectRequest,
         description: Option<String>,
     ) -> Result<PendingApproval<OperationUpdateSobject>> {
-        self.request_approval::<OperationUpdateSobject>(req, (id,), &(), description)
+        self.request_approval::<OperationUpdateSobject>(req, (id,), None, description)
     }
 }
 
@@ -257,7 +257,7 @@ impl Operation for OperationDeleteSobject {
     fn method() -> Method {
         Method::Delete
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{id}", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -267,14 +267,14 @@ impl Operation for OperationDeleteSobject {
 
 impl SdkmsClient {
     pub fn delete_sobject(&self, id: &Uuid) -> Result<()> {
-        self.execute::<OperationDeleteSobject>(&(), (id,), &())
+        self.execute::<OperationDeleteSobject>(&(), (id,), None)
     }
     pub fn request_approval_to_delete_sobject(
         &self,
         id: &Uuid,
         description: Option<String>,
     ) -> Result<PendingApproval<OperationDeleteSobject>> {
-        self.request_approval::<OperationDeleteSobject>(&(), (id,), &(), description)
+        self.request_approval::<OperationDeleteSobject>(&(), (id,), None, description)
     }
 }
 
@@ -289,7 +289,7 @@ impl Operation for OperationListSobjects {
     fn method() -> Method {
         Method::Get
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys?{q}", q = q.encode())
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -298,7 +298,7 @@ impl Operation for OperationListSobjects {
 }
 
 impl SdkmsClient {
-    pub fn list_sobjects(&self, query_params: &ListSobjectsParams) -> Result<Vec<Sobject>> {
+    pub fn list_sobjects(&self, query_params: Option<&ListSobjectsParams>) -> Result<Vec<Sobject>> {
         self.execute::<OperationListSobjects>(&(), (), query_params)
     }
 }
@@ -314,7 +314,7 @@ impl Operation for OperationGetSobject {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/info?{q}", q = q.encode())
     }
 }
@@ -322,7 +322,7 @@ impl Operation for OperationGetSobject {
 impl SdkmsClient {
     pub fn get_sobject(
         &self,
-        query_params: &GetSobjectParams,
+        query_params: Option<&GetSobjectParams>,
         req: &SobjectDescriptor,
     ) -> Result<Sobject> {
         self.execute::<OperationGetSobject>(req, (), query_params)
@@ -340,7 +340,7 @@ impl Operation for OperationRemovePrivate {
     fn method() -> Method {
         Method::Delete
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{id}/private", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -350,7 +350,7 @@ impl Operation for OperationRemovePrivate {
 
 impl SdkmsClient {
     pub fn remove_private(&self, id: &Uuid) -> Result<()> {
-        self.execute::<OperationRemovePrivate>(&(), (id,), &())
+        self.execute::<OperationRemovePrivate>(&(), (id,), None)
     }
 }
 
@@ -365,21 +365,21 @@ impl Operation for OperationExportSobject {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/export")
     }
 }
 
 impl SdkmsClient {
     pub fn export_sobject(&self, req: &SobjectDescriptor) -> Result<Sobject> {
-        self.execute::<OperationExportSobject>(req, (), &())
+        self.execute::<OperationExportSobject>(req, (), None)
     }
     pub fn request_approval_to_export_sobject(
         &self,
         req: &SobjectDescriptor,
         description: Option<String>,
     ) -> Result<PendingApproval<OperationExportSobject>> {
-        self.request_approval::<OperationExportSobject>(req, (), &(), description)
+        self.request_approval::<OperationExportSobject>(req, (), None, description)
     }
 }
 
@@ -394,14 +394,14 @@ impl Operation for OperationDigestSobject {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/digest")
     }
 }
 
 impl SdkmsClient {
     pub fn digest_sobject(&self, req: &ObjectDigestRequest) -> Result<ObjectDigestResponse> {
-        self.execute::<OperationDigestSobject>(req, (), &())
+        self.execute::<OperationDigestSobject>(req, (), None)
     }
 }
 
@@ -416,14 +416,14 @@ impl Operation for OperationPersistTransientKey {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/persist")
     }
 }
 
 impl SdkmsClient {
     pub fn persist_transient_key(&self, req: &PersistTransientKeyRequest) -> Result<Sobject> {
-        self.execute::<OperationPersistTransientKey>(req, (), &())
+        self.execute::<OperationPersistTransientKey>(req, (), None)
     }
 }
 
@@ -438,14 +438,14 @@ impl Operation for OperationRotateSobject {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/rekey")
     }
 }
 
 impl SdkmsClient {
     pub fn rotate_sobject(&self, req: &SobjectRequest) -> Result<Sobject> {
-        self.execute::<OperationRotateSobject>(req, (), &())
+        self.execute::<OperationRotateSobject>(req, (), None)
     }
 }
 
@@ -460,7 +460,7 @@ impl Operation for OperationActivateSobject {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{id}/activate", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -470,7 +470,7 @@ impl Operation for OperationActivateSobject {
 
 impl SdkmsClient {
     pub fn activate_sobject(&self, id: &Uuid) -> Result<()> {
-        self.execute::<OperationActivateSobject>(&(), (id,), &())
+        self.execute::<OperationActivateSobject>(&(), (id,), None)
     }
 }
 
@@ -485,14 +485,14 @@ impl Operation for OperationRevokeSobject {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{id}/revoke", id = p.0)
     }
 }
 
 impl SdkmsClient {
     pub fn revoke_sobject(&self, id: &Uuid, req: &RevocationReason) -> Result<()> {
-        self.execute::<OperationRevokeSobject>(req, (id,), &())
+        self.execute::<OperationRevokeSobject>(req, (id,), None)
     }
 }
 
@@ -507,7 +507,7 @@ impl Operation for OperationBatchSign {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/batch/sign")
     }
 }
@@ -517,14 +517,14 @@ impl SdkmsClient {
         &self,
         req: &Vec<SignRequest>,
     ) -> Result<Vec<BatchResponseItem<SignResponse>>> {
-        self.execute::<OperationBatchSign>(req, (), &())
+        self.execute::<OperationBatchSign>(req, (), None)
     }
     pub fn request_approval_to_batch_sign(
         &self,
         req: &Vec<SignRequest>,
         description: Option<String>,
     ) -> Result<PendingApproval<OperationBatchSign>> {
-        self.request_approval::<OperationBatchSign>(req, (), &(), description)
+        self.request_approval::<OperationBatchSign>(req, (), None, description)
     }
 }
 
@@ -539,7 +539,7 @@ impl Operation for OperationBatchVerify {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/batch/verify")
     }
 }
@@ -549,6 +549,6 @@ impl SdkmsClient {
         &self,
         req: &Vec<VerifyRequest>,
     ) -> Result<Vec<BatchResponseItem<VerifyResponse>>> {
-        self.execute::<OperationBatchVerify>(req, (), &())
+        self.execute::<OperationBatchVerify>(req, (), None)
     }
 }

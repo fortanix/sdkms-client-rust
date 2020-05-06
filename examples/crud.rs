@@ -37,7 +37,7 @@ fn main() -> Result<(), SdkmsError> {
         },
         ..Default::default()
     };
-    let keys = client.list_sobjects(&query_params)?;
+    let keys = client.list_sobjects(Some(&query_params))?;
     println!("\n\nListing all sobjects ({}):", keys.len());
     for key in keys {
         println!("{}", sobject_to_string(&key));

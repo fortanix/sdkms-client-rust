@@ -66,7 +66,7 @@ impl Operation for OperationListExternalRoles {
     fn method() -> Method {
         Method::Get
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/external_roles?{q}", q = q.encode())
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -77,7 +77,7 @@ impl Operation for OperationListExternalRoles {
 impl SdkmsClient {
     pub fn list_external_roles(
         &self,
-        query_params: &ListExternalRolesParams,
+        query_params: Option<&ListExternalRolesParams>,
     ) -> Result<Vec<ExternalRole>> {
         self.execute::<OperationListExternalRoles>(&(), (), query_params)
     }
@@ -94,7 +94,7 @@ impl Operation for OperationGetExternalRole {
     fn method() -> Method {
         Method::Get
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/external_roles/{id}", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -104,7 +104,7 @@ impl Operation for OperationGetExternalRole {
 
 impl SdkmsClient {
     pub fn get_external_role(&self, id: &Uuid) -> Result<ExternalRole> {
-        self.execute::<OperationGetExternalRole>(&(), (id,), &())
+        self.execute::<OperationGetExternalRole>(&(), (id,), None)
     }
 }
 
@@ -119,14 +119,14 @@ impl Operation for OperationCreateExternalRole {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/external_roles")
     }
 }
 
 impl SdkmsClient {
     pub fn create_external_role(&self, req: &ExternalRoleRequest) -> Result<ExternalRole> {
-        self.execute::<OperationCreateExternalRole>(req, (), &())
+        self.execute::<OperationCreateExternalRole>(req, (), None)
     }
 }
 
@@ -141,7 +141,7 @@ impl Operation for OperationSyncExternalRole {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/external_roles/{id}/sync", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -151,7 +151,7 @@ impl Operation for OperationSyncExternalRole {
 
 impl SdkmsClient {
     pub fn sync_external_role(&self, id: &Uuid) -> Result<ExternalRole> {
-        self.execute::<OperationSyncExternalRole>(&(), (id,), &())
+        self.execute::<OperationSyncExternalRole>(&(), (id,), None)
     }
 }
 
@@ -166,7 +166,7 @@ impl Operation for OperationUpdateExternalRole {
     fn method() -> Method {
         Method::Patch
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/external_roles/{id}", id = p.0)
     }
 }
@@ -177,7 +177,7 @@ impl SdkmsClient {
         id: &Uuid,
         req: &ExternalRoleRequest,
     ) -> Result<ExternalRole> {
-        self.execute::<OperationUpdateExternalRole>(req, (id,), &())
+        self.execute::<OperationUpdateExternalRole>(req, (id,), None)
     }
 }
 
@@ -192,7 +192,7 @@ impl Operation for OperationDeleteExternalRole {
     fn method() -> Method {
         Method::Delete
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/external_roles/{id}", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -202,6 +202,6 @@ impl Operation for OperationDeleteExternalRole {
 
 impl SdkmsClient {
     pub fn delete_external_role(&self, id: &Uuid) -> Result<()> {
-        self.execute::<OperationDeleteExternalRole>(&(), (id,), &())
+        self.execute::<OperationDeleteExternalRole>(&(), (id,), None)
     }
 }

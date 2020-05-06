@@ -215,14 +215,14 @@ impl Operation for OperationSignupUser {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users")
     }
 }
 
 impl SdkmsClient {
     pub fn signup_user(&self, req: &SignupRequest) -> Result<User> {
-        self.execute::<OperationSignupUser>(req, (), &())
+        self.execute::<OperationSignupUser>(req, (), None)
     }
 }
 
@@ -237,7 +237,7 @@ impl Operation for OperationListUsers {
     fn method() -> Method {
         Method::Get
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users?{q}", q = q.encode())
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -246,7 +246,7 @@ impl Operation for OperationListUsers {
 }
 
 impl SdkmsClient {
-    pub fn list_users(&self, query_params: &ListUsersParams) -> Result<Vec<User>> {
+    pub fn list_users(&self, query_params: Option<&ListUsersParams>) -> Result<Vec<User>> {
         self.execute::<OperationListUsers>(&(), (), query_params)
     }
 }
@@ -262,7 +262,7 @@ impl Operation for OperationGetUser {
     fn method() -> Method {
         Method::Get
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{id}", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -272,7 +272,7 @@ impl Operation for OperationGetUser {
 
 impl SdkmsClient {
     pub fn get_user(&self, id: &Uuid) -> Result<User> {
-        self.execute::<OperationGetUser>(&(), (id,), &())
+        self.execute::<OperationGetUser>(&(), (id,), None)
     }
 }
 
@@ -287,14 +287,14 @@ impl Operation for OperationUpdateUser {
     fn method() -> Method {
         Method::Patch
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{id}", id = p.0)
     }
 }
 
 impl SdkmsClient {
     pub fn update_user(&self, id: &Uuid, req: &UserRequest) -> Result<User> {
-        self.execute::<OperationUpdateUser>(req, (id,), &())
+        self.execute::<OperationUpdateUser>(req, (id,), None)
     }
 }
 
@@ -309,14 +309,14 @@ impl Operation for OperationResetPassword {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{id}/reset_password", id = p.0)
     }
 }
 
 impl SdkmsClient {
     pub fn reset_password(&self, id: &Uuid, req: &PasswordResetRequest) -> Result<()> {
-        self.execute::<OperationResetPassword>(req, (id,), &())
+        self.execute::<OperationResetPassword>(req, (id,), None)
     }
 }
 
@@ -331,14 +331,14 @@ impl Operation for OperationForgotPassword {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/forgot_password")
     }
 }
 
 impl SdkmsClient {
     pub fn forgot_password(&self, req: &ForgotPasswordRequest) -> Result<()> {
-        self.execute::<OperationForgotPassword>(req, (), &())
+        self.execute::<OperationForgotPassword>(req, (), None)
     }
 }
 
@@ -353,14 +353,14 @@ impl Operation for OperationInviteUser {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/invite")
     }
 }
 
 impl SdkmsClient {
     pub fn invite_user(&self, req: &UserRequest) -> Result<User> {
-        self.execute::<OperationInviteUser>(req, (), &())
+        self.execute::<OperationInviteUser>(req, (), None)
     }
 }
 
@@ -375,14 +375,14 @@ impl Operation for OperationProcessInvite {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/process_invite")
     }
 }
 
 impl SdkmsClient {
     pub fn process_invite(&self, req: &ProcessInviteRequest) -> Result<()> {
-        self.execute::<OperationProcessInvite>(req, (), &())
+        self.execute::<OperationProcessInvite>(req, (), None)
     }
 }
 
@@ -397,7 +397,7 @@ impl Operation for OperationResendInvite {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{id}/resend_invite", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -407,7 +407,7 @@ impl Operation for OperationResendInvite {
 
 impl SdkmsClient {
     pub fn resend_invite(&self, id: &Uuid) -> Result<()> {
-        self.execute::<OperationResendInvite>(&(), (id,), &())
+        self.execute::<OperationResendInvite>(&(), (id,), None)
     }
 }
 
@@ -422,7 +422,7 @@ impl Operation for OperationDeleteUser {
     fn method() -> Method {
         Method::Delete
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users")
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -432,7 +432,7 @@ impl Operation for OperationDeleteUser {
 
 impl SdkmsClient {
     pub fn delete_user(&self) -> Result<()> {
-        self.execute::<OperationDeleteUser>(&(), (), &())
+        self.execute::<OperationDeleteUser>(&(), (), None)
     }
 }
 
@@ -447,14 +447,14 @@ impl Operation for OperationChangePassword {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/change_password")
     }
 }
 
 impl SdkmsClient {
     pub fn change_password(&self, req: &PasswordChangeRequest) -> Result<()> {
-        self.execute::<OperationChangePassword>(req, (), &())
+        self.execute::<OperationChangePassword>(req, (), None)
     }
 }
 
@@ -469,7 +469,7 @@ impl Operation for OperationGetUserAccounts {
     fn method() -> Method {
         Method::Get
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/accounts")
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -479,7 +479,7 @@ impl Operation for OperationGetUserAccounts {
 
 impl SdkmsClient {
     pub fn get_user_accounts(&self) -> Result<HashMap<Uuid, UserAccountFlags>> {
-        self.execute::<OperationGetUserAccounts>(&(), (), &())
+        self.execute::<OperationGetUserAccounts>(&(), (), None)
     }
 }
 
@@ -494,7 +494,7 @@ impl Operation for OperationDeleteUserAccount {
     fn method() -> Method {
         Method::Delete
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{id}/accounts", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -504,7 +504,7 @@ impl Operation for OperationDeleteUserAccount {
 
 impl SdkmsClient {
     pub fn delete_user_account(&self, id: &Uuid) -> Result<()> {
-        self.execute::<OperationDeleteUserAccount>(&(), (id,), &())
+        self.execute::<OperationDeleteUserAccount>(&(), (id,), None)
     }
 }
 
@@ -519,7 +519,7 @@ impl Operation for OperationGenerateRecoveryCodes {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/generate_recovery_codes")
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -529,6 +529,6 @@ impl Operation for OperationGenerateRecoveryCodes {
 
 impl SdkmsClient {
     pub fn generate_recovery_codes(&self) -> Result<RecoveryCodes> {
-        self.execute::<OperationGenerateRecoveryCodes>(&(), (), &())
+        self.execute::<OperationGenerateRecoveryCodes>(&(), (), None)
     }
 }

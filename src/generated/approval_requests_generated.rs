@@ -126,7 +126,7 @@ impl Operation for OperationListApprovalRequests {
     fn method() -> Method {
         Method::Get
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests?{q}", q = q.encode())
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -137,7 +137,7 @@ impl Operation for OperationListApprovalRequests {
 impl SdkmsClient {
     pub fn list_approval_requests(
         &self,
-        query_params: &ListApprovalRequestsParams,
+        query_params: Option<&ListApprovalRequestsParams>,
     ) -> Result<Vec<ApprovalRequest>> {
         self.execute::<OperationListApprovalRequests>(&(), (), query_params)
     }
@@ -154,7 +154,7 @@ impl Operation for OperationGetApprovalRequest {
     fn method() -> Method {
         Method::Get
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{id}", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -164,7 +164,7 @@ impl Operation for OperationGetApprovalRequest {
 
 impl SdkmsClient {
     pub fn get_approval_request(&self, id: &Uuid) -> Result<ApprovalRequest> {
-        self.execute::<OperationGetApprovalRequest>(&(), (id,), &())
+        self.execute::<OperationGetApprovalRequest>(&(), (id,), None)
     }
 }
 
@@ -179,14 +179,14 @@ impl Operation for OperationCreateApprovalRequest {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests")
     }
 }
 
 impl SdkmsClient {
     pub fn create_approval_request(&self, req: &ApprovalRequestRequest) -> Result<ApprovalRequest> {
-        self.execute::<OperationCreateApprovalRequest>(req, (), &())
+        self.execute::<OperationCreateApprovalRequest>(req, (), None)
     }
 }
 
@@ -201,14 +201,14 @@ impl Operation for OperationApproveRequest {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{id}/approve", id = p.0)
     }
 }
 
 impl SdkmsClient {
     pub fn approve_request(&self, id: &Uuid, req: &ApproveRequest) -> Result<ApprovalRequest> {
-        self.execute::<OperationApproveRequest>(req, (id,), &())
+        self.execute::<OperationApproveRequest>(req, (id,), None)
     }
 }
 
@@ -223,7 +223,7 @@ impl Operation for OperationDenyRequest {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{id}/deny", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -233,7 +233,7 @@ impl Operation for OperationDenyRequest {
 
 impl SdkmsClient {
     pub fn deny_request(&self, id: &Uuid) -> Result<ApprovalRequest> {
-        self.execute::<OperationDenyRequest>(&(), (id,), &())
+        self.execute::<OperationDenyRequest>(&(), (id,), None)
     }
 }
 
@@ -248,7 +248,7 @@ impl Operation for OperationGetApprovalRequestResult {
     fn method() -> Method {
         Method::Post
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{id}/result", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -258,7 +258,7 @@ impl Operation for OperationGetApprovalRequestResult {
 
 impl SdkmsClient {
     pub fn get_approval_request_result(&self, id: &Uuid) -> Result<ApprovableResult> {
-        self.execute::<OperationGetApprovalRequestResult>(&(), (id,), &())
+        self.execute::<OperationGetApprovalRequestResult>(&(), (id,), None)
     }
 }
 
@@ -273,7 +273,7 @@ impl Operation for OperationDeleteApprovalRequest {
     fn method() -> Method {
         Method::Delete
     }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: &Self::QueryParams) -> String {
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{id}", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
@@ -283,6 +283,6 @@ impl Operation for OperationDeleteApprovalRequest {
 
 impl SdkmsClient {
     pub fn delete_approval_request(&self, id: &Uuid) -> Result<()> {
-        self.execute::<OperationDeleteApprovalRequest>(&(), (id,), &())
+        self.execute::<OperationDeleteApprovalRequest>(&(), (id,), None)
     }
 }

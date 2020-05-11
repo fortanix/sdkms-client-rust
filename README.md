@@ -1,3 +1,9 @@
+# Fortanix SDKMS Rust SDK
+
+This repository contains a Rust client library for
+[Fortanix](https://fortanix.com/)
+[Self Defending Key Management Service](https://fortanix.com/products/sdkms/).
+
 # Contributing
 
 We gratefully accept bug reports and contributions from the community.

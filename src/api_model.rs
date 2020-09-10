@@ -7,6 +7,7 @@
 use chrono::{DateTime, Local, TimeZone, Utc};
 use hyper;
 use hyper::status::StatusCode;
+#[cfg(feature = "native-tls")]
 use hyper_native_tls::native_tls;
 use rustc_serialize::base64::{FromBase64, ToBase64, STANDARD};
 use serde::de::Error as DeserializeError;
@@ -148,6 +149,7 @@ pub enum Error {
     EncoderError(serde_json::error::Error),
     IoError(io::Error),
     NetworkError(hyper::Error),
+#[cfg(feature = "native-tls")]
     TlsError(native_tls::Error),
 }
 
@@ -169,6 +171,7 @@ impl fmt::Display for Error {
             Error::EncoderError(ref err) => write!(fmt, "{}", err),
             Error::IoError(ref err) => write!(fmt, "{}", err),
             Error::NetworkError(ref err) => write!(fmt, "{}", err),
+            #[cfg(feature = "native-tls")]
             Error::TlsError(ref err) => write!(fmt, "{}", err),
             Error::StatusCode(ref msg) => write!(fmt, "unexpected status code: {}", msg),
         }
@@ -207,6 +210,7 @@ impl From<hyper::Error> for Error {
     }
 }
 
+#[cfg(feature = "native-tls")]
 impl From<native_tls::Error> for Error {
     fn from(error: native_tls::Error) -> Error {
         Error::TlsError(error)

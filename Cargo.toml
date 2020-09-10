@@ -12,14 +12,18 @@ documentation = "https://docs.rs/sdkms"
 homepage = "https://fortanix.com/products/sdkms/"
 categories = ["api-bindings"]
 
+[features]
+#default = ["native-tls"]
+native-tls = ["hyper-native-tls"]
+
 [dependencies]
 chrono = "0.4"
 serde = "1.0"
 serde_derive = "1.0"
 serde_json = "1.0"
-hyper-native-tls = "0.3"
+hyper-native-tls = { version = "0.3", optional = true }
 hyper = "0.10"
-uuid = { version = "0.7", features = ["serde", "v4"] }
+uuid = { version = "0.6.3", features = ["v4", "serde"] }
 rustc-serialize = "0.3"
 bitflags = "1.0"
 url = "1.7"

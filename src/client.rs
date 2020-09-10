@@ -7,12 +7,15 @@
 use api_model::*;
 use operations::*;
 
+#[cfg(feature = "native-tls")]
 use hyper::client::Pool;
 use hyper::header::{Authorization, ContentType};
 use hyper::method::Method;
+#[cfg(feature = "native-tls")]
 use hyper::net::HttpsConnector;
 use hyper::status::StatusCode;
 use hyper::Client as HyperClient;
+#[cfg(feature = "native-tls")]
 use hyper_native_tls::NativeTlsClient;
 use rustc_serialize::base64::{ToBase64, STANDARD};
 use serde::{Deserialize, Serialize};
@@ -85,10 +88,15 @@ impl SdkmsClientBuilder {
         let client = match self.client {
             Some(client) => client,
             None => {
-                let ssl = NativeTlsClient::new()?;
-                let connector = HttpsConnector::new(ssl);
-                let client = HyperClient::with_connector(Pool::with_connector(Default::default(), connector));
-                Arc::new(client)
+                #[cfg(feature = "native-tls")]
+                {
+                    let ssl = NativeTlsClient::new()?;
+                    let connector = HttpsConnector::new(ssl);
+                    let client = HyperClient::with_connector(Pool::with_connector(Default::default(), connector));
+                    Arc::new(client)
+                }
+                #[cfg(not(feature = "native-tls"))]
+                panic!("Unsuported");
             }
         };
         Ok(SdkmsClient {

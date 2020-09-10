@@ -67,6 +67,8 @@ extern crate uuid;
 extern crate bitflags;
 
 extern crate hyper;
+
+#[cfg(feature = "native-tls")]
 extern crate hyper_native_tls;
 
 extern crate url;

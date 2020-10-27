@@ -1,32 +1,27 @@
 extern crate sdkms;
 extern crate uuid;
 
-use hyper::Client as HyperClient;
 use hyper::client::Pool;
-use hyper::net::HttpsConnector;
-use mbedtls::rng::Rdseed;
-use mbedtls::ssl::mbed::MbedSSLConfig;
-use mbedtls::ssl::mbed::{Endpoint, Preset, Transport, AuthMode, Version};
-use sdkms::api_model::*;
-use sdkms::{Error as SdkmsError, SdkmsClient};
-use std::collections::HashMap;
-use std::str::FromStr;
-use std::sync::Arc;
-use uuid::Uuid;
+use mbedtls::arc::rng::Rdseed;
+use mbedtls::arc::ssl::Config;
+use mbedtls::arc::ssl::config::{Endpoint, Preset, Transport, AuthMode, Version};
 use mbedtls_hyper::MbedSSLNetworkConnector;
+use sdkms::{Error as SdkmsError, SdkmsClient};
+use std::sync::Arc;
+use mbedtls::arc::rng::CtrDrbg;
 
 const MY_USERNAME: &'static str = "...";
 const MY_PASSWORD: &'static str = "...";
 
 
 fn main() -> Result<(), SdkmsError> {
-    let mut entropy = Rdseed;
-    let mut rng = mbedtls::rng::CtrDrbg::new(&mut entropy, None).unwrap();
+    let entropy = Arc::new(Rdseed);
+    let rng = Arc::new(CtrDrbg::new(entropy, None).unwrap());
 
-    let mut config = MbedSSLConfig::new(Endpoint::Client, Transport::Stream, Preset::Default);
+    let mut config = Config::new(Endpoint::Client, Transport::Stream, Preset::Default);
     
     config.set_authmode(AuthMode::None);
-    config.set_rng(Some(&mut rng));
+    config.set_rng(rng);
     config.set_min_version(Version::Tls1_2).unwrap();
     
     // Immutable from this point on

@@ -7,12 +7,15 @@
 use api_model::*;
 use operations::*;
 
+#[cfg(feature = "hyper-native-tls")]
 use hyper::client::Pool;
 use hyper::header::{Authorization, ContentType};
 use hyper::method::Method;
+#[cfg(feature = "hyper-native-tls")]
 use hyper::net::HttpsConnector;
 use hyper::status::StatusCode;
 use hyper::Client as HyperClient;
+#[cfg(feature = "hyper-native-tls")]
 use hyper_native_tls::NativeTlsClient;
 use rustc_serialize::base64::{ToBase64, STANDARD};
 use serde::{Deserialize, Serialize};
@@ -85,12 +88,18 @@ impl SdkmsClientBuilder {
         let client = match self.client {
             Some(client) => client,
             None => {
-                let ssl = NativeTlsClient::new()?;
-                let connector = HttpsConnector::new(ssl);
-                let client = HyperClient::with_connector(Pool::with_connector(Default::default(), connector));
-                Arc::new(client)
+                #[cfg(feature = "hyper-native-tls")]
+                {
+                    let ssl = NativeTlsClient::new()?;
+                    let connector = HttpsConnector::new(ssl);
+                    let client = HyperClient::with_connector(Pool::with_connector(Default::default(), connector));
+                    Arc::new(client)
+                }
+                #[cfg(not(feature = "hyper-native-tls"))]
+                panic!("You should either provide a hyper Client or compile this crate with hyper-native-tls feature");
             }
         };
+
         Ok(SdkmsClient {
             client,
             api_endpoint: self.api_endpoint.unwrap_or_else(|| DEFAULT_API_ENDPOINT.to_owned()),

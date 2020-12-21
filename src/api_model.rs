@@ -5,22 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use chrono::{DateTime, Local, TimeZone, Utc};
-use hyper;
-use hyper::status::StatusCode;
-#[cfg(feature = "native-tls")]
+use hyper::{self, status::StatusCode};
+#[cfg(not(target_env = "sgx"))]
 use hyper_native_tls::native_tls;
 use rustc_serialize::base64::{FromBase64, ToBase64, STANDARD};
-use serde::de::Error as DeserializeError;
-use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
-use std::collections::{HashMap, HashSet};
-use std::ops::{Deref, DerefMut};
-use std::str::FromStr;
-use std::{error, fmt, io};
+use serde::{de, de::Error as DeserializeError, Deserialize, Deserializer, Serialize, Serializer};
+use std::{
+    collections::{HashMap, HashSet},
+    error, fmt, io,
+    ops::{Deref, DerefMut},
+    str::FromStr,
+};
 use uuid::Uuid;
 
 pub use generated::*;
 
-/// Arbitrary binary data that is serialized/deserialized to/from base 64 string.
+/// Arbitrary binary data that is serialized/deserialized to/from base 64
+/// string.
 #[derive(Default, Clone, Debug, Eq, PartialEq, Hash)]
 pub struct Blob(Vec<u8>);
 
@@ -98,10 +99,11 @@ impl AsRef<[u8]> for Blob {
 pub type Name = String;
 pub type Email = String;
 
-// Data structure defitions for time wrapper structure - Store the number of seconds since EPOCH
+// Data structure defitions for time wrapper structure - Store the number of
+// seconds since EPOCH
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Default)]
 pub struct Time(pub u64);
-static ISO_8601_FORMAT: &'static str = "%Y%m%dT%H%M%SZ";
+static ISO_8601_FORMAT: &str = "%Y%m%dT%H%M%SZ";
 
 impl Serialize for Time {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
@@ -114,10 +116,7 @@ impl<'de> Deserialize<'de> for Time {
         let s: String = Deserialize::deserialize(deserializer)?;
         Utc.datetime_from_str(&s, ISO_8601_FORMAT)
             .map(|t| Time(t.timestamp() as u64))
-            .map_err(|_| D::Error::invalid_value(
-                serde::de::Unexpected::Str(&s),
-                &"Date/time in ISO 8601 format",
-            ))
+            .map_err(|_| D::Error::invalid_value(serde::de::Unexpected::Str(&s), &"Date/time in ISO 8601 format"))
     }
 }
 
@@ -149,7 +148,7 @@ pub enum Error {
     EncoderError(serde_json::error::Error),
     IoError(io::Error),
     NetworkError(hyper::Error),
-#[cfg(feature = "native-tls")]
+    #[cfg(not(target_env = "sgx"))]
     TlsError(native_tls::Error),
 }
 
@@ -171,7 +170,7 @@ impl fmt::Display for Error {
             Error::EncoderError(ref err) => write!(fmt, "{}", err),
             Error::IoError(ref err) => write!(fmt, "{}", err),
             Error::NetworkError(ref err) => write!(fmt, "{}", err),
-            #[cfg(feature = "native-tls")]
+            #[cfg(not(target_env = "sgx"))]
             Error::TlsError(ref err) => write!(fmt, "{}", err),
             Error::StatusCode(ref msg) => write!(fmt, "unexpected status code: {}", msg),
         }
@@ -210,7 +209,7 @@ impl From<hyper::Error> for Error {
     }
 }
 
-#[cfg(feature = "native-tls")]
+#[cfg(not(target_env = "sgx"))]
 impl From<native_tls::Error> for Error {
     fn from(error: native_tls::Error) -> Error {
         Error::TlsError(error)
@@ -247,9 +246,7 @@ pub enum BatchResponseItem<T> {
 impl<T> BatchResponseItem<T> {
     pub fn status(&self) -> u16 {
         match *self {
-            BatchResponseItem::Success { status, .. } | BatchResponseItem::Error { status, .. } => {
-                status
-            }
+            BatchResponseItem::Success { status, .. } | BatchResponseItem::Error { status, .. } => status,
         }
     }
 }
@@ -312,10 +309,11 @@ impl Default for Order {
     }
 }
 
-// AppGroups contains a list of groups and optionally permissions granted to an app in each group.
-// In order to get information about the app permissions in each group, you should set
-// `group_permissions` to true in GetAppParams/ListAppsParams when making app-related requests.
-// When creating a new app, you should always specify desired permissions for each group.
+// AppGroups contains a list of groups and optionally permissions granted to an
+// app in each group. In order to get information about the app permissions in
+// each group, you should set `group_permissions` to true in
+// GetAppParams/ListAppsParams when making app-related requests. When creating a
+// new app, you should always specify desired permissions for each group.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AppGroups(HashMap<Uuid, Option<AppPermissions>>);
 

@@ -1,4 +1,4 @@
-/* Copyright (c) Fortanix, Inc.
+/* Copyright (c) Fortanix, Inc.required
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,28 +7,42 @@
 use api_model::*;
 use operations::*;
 
-#[cfg(feature = "native-tls")]
-use hyper::client::Pool;
-use hyper::header::{Authorization, ContentType};
-use hyper::method::Method;
-#[cfg(feature = "native-tls")]
-use hyper::net::HttpsConnector;
-use hyper::status::StatusCode;
-use hyper::Client as HyperClient;
-#[cfg(feature = "native-tls")]
-use hyper_native_tls::NativeTlsClient;
+use hyper::{
+    client::Pool,
+    header::{Authorization, ContentType},
+    method::Method,
+    net::HttpsConnector,
+    status::StatusCode,
+    Client as HyperClient,
+};
 use rustc_serialize::base64::{ToBase64, STANDARD};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use std::cell::RefCell;
-use std::fmt;
-use std::io::Read;
-use std::marker::PhantomData;
-use std::sync::Arc;
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::{
+    cell::RefCell,
+    fmt,
+    io::Read,
+    marker::PhantomData,
+    sync::Arc,
+    time::{SystemTime, UNIX_EPOCH},
+};
 
-pub const DEFAULT_API_ENDPOINT: &'static str = "https://sdkms.fortanix.com";
+#[cfg(not(target_env = "sgx"))]
+use hyper_native_tls::NativeTlsClient;
+
+#[cfg(target_env = "sgx")]
+use mbedtls::{
+    rng::Rdrand,
+    ssl::{
+        config::{AuthMode, Endpoint, Preset, Transport, Version},
+        Config,
+    },
+};
+#[cfg(target_env = "sgx")]
+use mbedtls_hyper::MbedSSLClient;
+
+pub const DEFAULT_API_ENDPOINT: &str = "https://sdkms.fortanix.com";
 
 pub type Result<T> = ::std::result::Result<T, Error>;
 
@@ -67,13 +81,15 @@ impl SdkmsClientBuilder {
         self.client = Some(client);
         self
     }
-    /// This can be used to set the API endpoint. Otherwise the [default endpoint](./constant.DEFAULT_API_ENDPOINT.html) is used.
+    /// This can be used to set the API endpoint. Otherwise the [default
+    /// endpoint](./constant.DEFAULT_API_ENDPOINT.html) is used.
     pub fn with_api_endpoint(mut self, api_endpoint: &str) -> Self {
         self.api_endpoint = Some(api_endpoint.to_owned());
         self
     }
     /// This can be used to make API calls without establishing a session.
-    /// The API key will be passed along as HTTP Basic auth header on all API calls.
+    /// The API key will be passed along as HTTP Basic auth header on all API
+    /// calls.
     pub fn with_api_key(mut self, api_key: &str) -> Self {
         self.auth = Some(Auth::from_api_key(api_key));
         self
@@ -88,15 +104,32 @@ impl SdkmsClientBuilder {
         let client = match self.client {
             Some(client) => client,
             None => {
-                #[cfg(feature = "native-tls")]
+                #[cfg(not(target_env = "sgx"))]
                 {
-                    let ssl = NativeTlsClient::new()?;
+                    let ssl = NativeTlsClient::new().expect("failed to create native tls client");
                     let connector = HttpsConnector::new(ssl);
                     let client = HyperClient::with_connector(Pool::with_connector(Default::default(), connector));
                     Arc::new(client)
                 }
-                #[cfg(not(feature = "native-tls"))]
-                panic!("Unsuported");
+                #[cfg(target_env = "sgx")]
+                {
+                    let mut config = Config::new(Endpoint::Client, Transport::Stream, Preset::Default);
+                    config.set_authmode(AuthMode::Optional);
+
+                    let rng = Arc::new(Rdrand);
+
+                    config.set_rng(rng.clone());
+                    config.set_min_version(Version::Tls1_2).unwrap();
+
+                    // Client certificate use to authenticate on the server
+                    // config.push_cert(cert, key).unwrap();
+                    let ssl = MbedSSLClient::new(Arc::new(config), true);
+
+                    Arc::new(hyper::Client::with_connector(Pool::with_connector(
+                        Default::default(),
+                        HttpsConnector::new(ssl),
+                    )))
+                }
             }
         };
         Ok(SdkmsClient {
@@ -111,40 +144,47 @@ impl SdkmsClientBuilder {
 
 /// A client session with SDKMS.
 ///
-/// REST APIs are exposed as methods on this type. Communication with SDKMS API endpoint is protected with TLS and this
-/// type uses [`hyper::Client`] along with [`hyper_native_tls::NativeTlsClient`] for HTTP/TLS.
+/// REST APIs are exposed as methods on this type. Communication with SDKMS API
+/// endpoint is protected with TLS and this type uses [`hyper::Client`] along
+/// with [`hyper_native_tls::NativeTlsClient`] for HTTP/TLS.
 ///
-/// When making crypto API calls using an API key, it is possible to pass the API key as an HTTP Basic Authorization
-/// header along with each request. This can be achieved by setting the API key using
-/// [`SdkmsClientBuilder::with_api_key()`]. Note that some features, e.g. transient keys, may not be available when
-/// using this authentication method. To be able to use such features, you can establish a session using any of the
-/// following methods:
+/// When making crypto API calls using an API key, it is possible to pass the
+/// API key as an HTTP Basic Authorization header along with each request. This
+/// can be achieved by setting the API key using [`SdkmsClientBuilder::
+/// with_api_key()`]. Note that some features, e.g. transient keys, may not be
+/// available when using this authentication method. To be able to use such
+/// features, you can establish a session using any of the following methods:
 /// - [`authenticate_with_api_key()`](#method.authenticate_with_api_key)
 /// - [`authenticate_with_cert()`](#method.authenticate_with_cert)
 /// - [`authenticate_app()`](#method.authenticate_app)
 ///
-/// Note that certain non-cryptographic APIs require a user session, which can be established using
-/// [`authenticate_user()`](#method.authenticate_user). This includes many APIs such as:
+/// Note that certain non-cryptographic APIs require a user session, which can
+/// be established using [`authenticate_user()`](#method.authenticate_user).
+/// This includes many APIs such as:
 /// - [`create_group()`](#method.create_group)
 /// - [`create_app()`](#method.create_app)
 /// - ...
 ///
-/// Also note that a user session is generally not permitted to call crypto APIs. In case your current authorization
-/// is not appropriate for a particular API call, you'll get an error to that effect from SDKMS.
+/// Also note that a user session is generally not permitted to call crypto
+/// APIs. In case your current authorization is not appropriate for a particular
+/// API call, you'll get an error to that effect from SDKMS.
 ///
-/// Certain APIs are "approvable", i.e. they can be subject to an approval policy. In such cases there are two methods
-/// on [`SdkmsClient`], e.g. [`encrypt()`] / [`request_approval_to_encrypt()`]. Whether or not you need to call
-/// [`request_approval_to_encrypt()`] depends on the approval policy that is applicable to the security object being
-/// used in your request. You can find out if a particular request is subject to an approval policy by first calling
-/// the regular API, e.g. [`encrypt()`] and checking if the response indicates that an approval request is needed at
-/// which point you can call [`request_approval_to_encrypt()`]. There is an example of how to do this in
-/// [the repository](https://github.com/fortanix/sdkms-client-rust/blob/master/examples/approval_request.rs).
+/// Certain APIs are "approvable", i.e. they can be subject to an approval
+/// policy. In such cases there are two methods on [`SdkmsClient`], e.g.
+/// [`encrypt()`] / [`request_approval_to_encrypt()`]. Whether or not you need
+/// to call [`request_approval_to_encrypt()`] depends on the approval policy
+/// that is applicable to the security object being used in your request. You
+/// can find out if a particular request is subject to an approval policy by
+/// first calling the regular API, e.g. [`encrypt()`] and checking if the
+/// response indicates that an approval request is needed at which point you can
+/// call [`request_approval_to_encrypt()`]. There is an example of how to do
+/// this in [the repository](https://github.com/fortanix/sdkms-client-rust/blob/master/examples/approval_request.rs).
 ///
 /// [`hyper::Client`]: https://docs.rs/hyper/0.10/hyper/client/struct.Client.html
 /// [`hyper_native_tls::NativeTlsClient`]: https://docs.rs/hyper-native-tls/0.3/hyper_native_tls/struct.NativeTlsClient.html
-/// [`SdkmsClientBuilder::with_api_key()`]: ./struct.SdkmsClientBuilder.html#method.with_api_key
-/// [`SdkmsClient`]: ./struct.SdkmsClient.html
-/// [`encrypt()`]: #method.encrypt
+/// [`SdkmsClientBuilder::with_api_key()`]:
+/// ./struct.SdkmsClientBuilder.html#method.with_api_key [`SdkmsClient`]:
+/// ./struct.SdkmsClient.html [`encrypt()`]: #method.encrypt
 /// [`request_approval_to_encrypt()`]: #method.request_approval_to_encrypt
 pub struct SdkmsClient {
     auth: Option<Auth>,
@@ -221,7 +261,12 @@ impl SdkmsClient {
         E: Serialize,
         D: for<'de> Deserialize<'de>,
     {
-        let Self { ref client, ref api_endpoint, ref auth, .. } = *self;
+        let Self {
+            ref client,
+            ref api_endpoint,
+            ref auth,
+            ..
+        } = *self;
         let result = json_request_with_auth(client, api_endpoint, method, uri, auth.as_ref(), req)?;
         self.last_used.replace(now().0);
         Ok(result)
@@ -279,8 +324,7 @@ impl SdkmsClient {
     }
 
     pub fn expires_in(&self) -> Option<u64> {
-        let expires_at =
-            *self.last_used.borrow() + self.auth_response().map_or(0, |ar| ar.expires_in as u64);
+        let expires_at = *self.last_used.borrow() + self.auth_response().map_or(0, |ar| ar.expires_in as u64);
         expires_at.checked_sub(now().0)
     }
 }
@@ -339,9 +383,7 @@ fn now() -> Time {
 fn json_decode_reader<R: Read, T: for<'de> Deserialize<'de>>(rdr: &mut R) -> serde_json::Result<T> {
     match serde_json::from_reader(rdr) {
         // When the body of the response is empty, attempt to deserialize null value instead
-        Err(ref e) if e.is_eof() && e.line() == 1 && e.column() == 0 => {
-            serde_json::from_value(serde_json::Value::Null)
-        }
+        Err(ref e) if e.is_eof() && e.line() == 1 && e.column() == 0 => serde_json::from_value(serde_json::Value::Null),
         v => v,
     }
 }

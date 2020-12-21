@@ -1,29 +1,27 @@
-extern crate env_logger;
 extern crate sdkms;
 extern crate uuid;
 
-use sdkms::api_model::*;
-use sdkms::{Error as SdkmsError, SdkmsClient};
-use std::str::FromStr;
+use sdkms::{api_model::*, Error as SdkmsError, SdkmsClient};
+use std::{env, str::FromStr};
 use uuid::Uuid;
 
-const MY_USERNAME: &'static str = "name@example.com";
-const MY_PASSWORD: &'static str = "password";
-const MY_ACCT_ID: &'static str = "b6080ec0-df2e-...";
+pub const DEFAULT_API_ENDPOINT: &str = "https://sdkms.fortanix.com";
 
 fn main() -> Result<(), SdkmsError> {
-    env_logger::init();
+    let username = env::args().nth(1).expect("username");
+    let password = env::args().nth(2).expect("password");
+    let acct_id = env::args().nth(3).expect("account name");
 
     let mut client = SdkmsClient::builder()
-        .with_api_endpoint("https://sdkms.fortanix.com")
+        .with_api_endpoint(DEFAULT_API_ENDPOINT)
         .build()?
-        .authenticate_user(MY_USERNAME, MY_PASSWORD)?;
+        .authenticate_user(&username, &password)?;
 
-    let acct_id = Uuid::from_str(MY_ACCT_ID).expect("valid uuid");
+    let acct_id = Uuid::from_str(&acct_id).expect("valid uuid");
     client.select_account(&SelectAccountRequest { acct_id })?;
     let user_id = client.entity_id().unwrap();
     let user = client.get_user(&user_id)?;
-    println!("User: {:#?}", user);
+    println!("User: {:?}", user);
 
     client.terminate()?;
     Ok(())

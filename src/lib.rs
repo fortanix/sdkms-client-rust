@@ -6,12 +6,12 @@
 
 //! API bindings for [Fortanix SDKMS].
 //!
-//! The [`SdkmsClient`] type provides access to [REST APIs] exposed by SDKMS through method calls.
-//! Input/output types are defined in [`api_model`].
+//! The [`SdkmsClient`] type provides access to [REST APIs] exposed by SDKMS
+//! through method calls. Input/output types are defined in [`api_model`].
 //!
 //! ## Example
-//! Here is a quick example for how to use this crate. A more extensive set of examples can be found
-//! [in the source repository](https://github.com/fortanix/sdkms-client-rust/blob/master/examples)
+//! Here is a quick example for how to use this crate. A more extensive set of
+//! examples can be found [in the source repository](https://github.com/fortanix/sdkms-client-rust/blob/master/examples)
 //!
 //! ```no_run
 //! use sdkms::api_model::*;
@@ -68,7 +68,12 @@ extern crate bitflags;
 
 extern crate hyper;
 
-#[cfg(feature = "native-tls")]
+#[cfg(target_env = "sgx")]
+extern crate mbedtls;
+#[cfg(target_env = "sgx")]
+extern crate mbedtls_hyper;
+
+#[cfg(not(target_env = "sgx"))]
 extern crate hyper_native_tls;
 
 extern crate url;

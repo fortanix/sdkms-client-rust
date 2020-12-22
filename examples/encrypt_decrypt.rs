@@ -6,8 +6,8 @@ use std::env;
 pub const DEFAULT_API_ENDPOINT: &str = "https://sdkms.fortanix.com";
 
 fn main() -> Result<(), SdkmsError> {
-    let api_key = env::args().nth(1).expect("api key required");
-    let key_name = env::args().nth(2).expect("sdkms key-name required");
+    let api_key = env::args().nth(1).expect("api key");
+    let key_name = env::args().nth(2).expect("sdkms key-name");
 
     let client = SdkmsClient::builder()
         .with_api_endpoint(DEFAULT_API_ENDPOINT)

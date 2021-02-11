@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
+pub use std::net::IpAddr;
 
 /// Operations allowed to be performed by an app.
 pub use self::app_permissions::AppPermissions;
@@ -36,10 +37,27 @@ pub enum AppOauthConfig {
     Disabled,
 }
 
+#[derive(Serialize, Deserialize, PartialEq, Eq, Debug, Clone)]
+#[serde(rename_all = "snake_case")]
+pub enum SubjectGeneral {
+    // https://tools.ietf.org/html/rfc5280#section-4.2.1.6
+    DirectoryName(Vec<[String; 2]>),
+    DnsName(String),
+    IpAddress(IpAddr),
+}
+
+#[derive(Serialize, Deserialize, PartialEq, Eq, Debug, Clone)]
+#[serde(rename_all = "snake_case")]
+pub enum TrustAnchorSubject {
+    Subject(Vec<[String; 2]>),
+    SubjectGeneral(SubjectGeneral),
+}
+
 /// A trusted CA for app authentication.
-#[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Eq, Debug, Clone)]
 pub struct TrustAnchor {
-    pub subject: Vec<[String; 2]>,
+    #[serde(flatten)]
+    pub subject: TrustAnchorSubject,
     pub ca_certificate: Blob,
 }
 

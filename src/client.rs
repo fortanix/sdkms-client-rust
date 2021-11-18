@@ -4,8 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use api_model::*;
-use operations::*;
+use crate::api_model::*;
+use crate::operations::*;
 
 #[cfg(feature = "hyper-native-tls")]
 use hyper::client::Pool;
@@ -43,7 +43,11 @@ impl Auth {
     }
 
     fn from_user_pass<T: fmt::Display>(username: T, password: &str) -> Self {
-        Auth::Basic(format!("{}:{}", username, password).as_bytes().to_base64(STANDARD))
+        Auth::Basic(
+            format!("{}:{}", username, password)
+                .as_bytes()
+                .to_base64(STANDARD),
+        )
     }
 
     fn format_header(&self) -> String {
@@ -92,7 +96,10 @@ impl SdkmsClientBuilder {
                 {
                     let ssl = NativeTlsClient::new()?;
                     let connector = HttpsConnector::new(ssl);
-                    let client = HyperClient::with_connector(Pool::with_connector(Default::default(), connector));
+                    let client = HyperClient::with_connector(Pool::with_connector(
+                        Default::default(),
+                        connector,
+                    ));
                     Arc::new(client)
                 }
                 #[cfg(not(feature = "hyper-native-tls"))]
@@ -102,7 +109,9 @@ impl SdkmsClientBuilder {
 
         Ok(SdkmsClient {
             client,
-            api_endpoint: self.api_endpoint.unwrap_or_else(|| DEFAULT_API_ENDPOINT.to_owned()),
+            api_endpoint: self
+                .api_endpoint
+                .unwrap_or_else(|| DEFAULT_API_ENDPOINT.to_owned()),
             auth: self.auth,
             last_used: AtomicU64::new(0),
             auth_response: None,
@@ -222,7 +231,12 @@ impl SdkmsClient {
         E: Serialize,
         D: for<'de> Deserialize<'de>,
     {
-        let Self { ref client, ref api_endpoint, ref auth, .. } = *self;
+        let Self {
+            ref client,
+            ref api_endpoint,
+            ref auth,
+            ..
+        } = *self;
         let result = json_request_with_auth(client, api_endpoint, method, uri, auth.as_ref(), req)?;
         self.last_used.store(now().0, Ordering::Relaxed);
         Ok(result)
@@ -280,7 +294,8 @@ impl SdkmsClient {
     }
 
     pub fn expires_in(&self) -> Option<u64> {
-        let expires_at = self.last_used.load(Ordering::Relaxed) + self.auth_response().map_or(0, |ar| ar.expires_in as u64);
+        let expires_at = self.last_used.load(Ordering::Relaxed)
+            + self.auth_response().map_or(0, |ar| ar.expires_in as u64);
         expires_at.checked_sub(now().0)
     }
 }
@@ -381,7 +396,8 @@ where
         Ok(ref mut res) => {
             info!("{} {} {}", res.status.to_u16(), method, url);
             let mut buffer = String::new();
-            res.read_to_string(&mut buffer).map_err(|err| Error::IoError(err))?;
+            res.read_to_string(&mut buffer)
+                .map_err(|err| Error::IoError(err))?;
             Err(Error::from_status(res.status, buffer))
         }
     }

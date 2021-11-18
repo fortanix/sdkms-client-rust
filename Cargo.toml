@@ -11,6 +11,7 @@ repository = "https://github.com/fortanix/sdkms-client-rust"
 documentation = "https://docs.rs/sdkms"
 homepage = "https://fortanix.com/products/sdkms/"
 categories = ["api-bindings"]
+edition = "2018"
 
 [features]
 default = ["hyper-native-tls"]

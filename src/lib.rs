@@ -83,5 +83,5 @@ mod client;
 mod generated;
 pub mod operations;
 
-pub use api_model::Error;
-pub use client::*;
+pub use crate::api_model::Error;
+pub use crate::client::*;

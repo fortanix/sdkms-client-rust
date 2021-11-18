@@ -4,7 +4,7 @@ version = "0.3.0"
 authors = ["Fortanix, Inc."]
 license = "MPL-2.0"
 description = """
-API bindings for Fortanix SDKMS
+API bindings for Fortanix DSM (a.k.a. Fortanix SDKMS)
 """
 readme = "README.md"
 repository = "https://github.com/fortanix/sdkms-client-rust"

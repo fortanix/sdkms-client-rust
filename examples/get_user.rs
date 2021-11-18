@@ -1,7 +1,3 @@
-extern crate env_logger;
-extern crate sdkms;
-extern crate uuid;
-
 use sdkms::api_model::*;
 use sdkms::{Error as SdkmsError, SdkmsClient};
 use std::str::FromStr;

@@ -116,7 +116,7 @@ macro_rules! singleton_backcompat {
             use ::serde;
             use std::result::Result;
             mod normal {
-                use ::serde;
+                use serde::{Deserialize, Serialize};
                 $(#[derive $derives])*
                 #[derive(Serialize, Deserialize)]
                 #[serde(rename_all = "UPPERCASE")]

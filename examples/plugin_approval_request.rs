@@ -1,14 +1,7 @@
-extern crate env_logger;
-extern crate rustc_serialize;
-extern crate sdkms;
-#[macro_use]
-extern crate serde_derive;
-extern crate serde_json;
-extern crate uuid;
-
 use rustc_serialize::base64::{ToBase64, STANDARD};
 use sdkms::api_model::*;
 use sdkms::{Error as SdkmsError, SdkmsClient};
+use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use std::{thread, time};
 use uuid::Uuid;

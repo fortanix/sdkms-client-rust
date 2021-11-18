@@ -55,24 +55,7 @@
 //! [Fortanix SDKMS]: https://fortanix.com/products/sdkms/
 
 #[macro_use]
-extern crate serde_derive;
-extern crate rustc_serialize;
-extern crate serde;
-
-extern crate chrono;
-extern crate serde_json;
-extern crate uuid;
-
-#[macro_use]
 extern crate bitflags;
-
-extern crate hyper;
-
-#[cfg(feature = "hyper-native-tls")]
-extern crate hyper_native_tls;
-
-extern crate url;
-
 #[macro_use]
 extern crate log;
 

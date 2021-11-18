@@ -7,16 +7,10 @@
 use crate::api_model::*;
 use crate::operations::*;
 
-#[cfg(feature = "hyper-native-tls")]
-use hyper::client::Pool;
 use hyper::header::{Authorization, ContentType};
 use hyper::method::Method;
-#[cfg(feature = "hyper-native-tls")]
-use hyper::net::HttpsConnector;
 use hyper::status::StatusCode;
 use hyper::Client as HyperClient;
-#[cfg(feature = "hyper-native-tls")]
-use hyper_native_tls::NativeTlsClient;
 use rustc_serialize::base64::{ToBase64, STANDARD};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -94,6 +88,10 @@ impl SdkmsClientBuilder {
             None => {
                 #[cfg(feature = "hyper-native-tls")]
                 {
+                    use hyper::client::Pool;
+                    use hyper::net::HttpsConnector;
+                    use hyper_native_tls::NativeTlsClient;
+
                     let ssl = NativeTlsClient::new()?;
                     let connector = HttpsConnector::new(ssl);
                     let client = HyperClient::with_connector(Pool::with_connector(

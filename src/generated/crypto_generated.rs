@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
+use serde::{Deserialize, Serialize};
 
 /// A cryptographic algorithm.
 #[derive(Debug, Eq, PartialEq, Copy, Hash, Serialize, Deserialize, Clone)]

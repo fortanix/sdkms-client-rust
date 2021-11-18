@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
+use serde::{Deserialize, Serialize};
 
 /// Operations allowed to be performed on a given key.
 pub use self::key_operations::KeyOperations;

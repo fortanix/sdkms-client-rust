@@ -1,28 +1,28 @@
 [package]
 name = "sdkms"
-version = "0.2.1"
+version = "0.3.0"
 authors = ["Fortanix, Inc."]
 license = "MPL-2.0"
 description = """
-API bindings for Fortanix SDKMS
+API bindings for Fortanix DSM (a.k.a. Fortanix SDKMS)
 """
 readme = "README.md"
 repository = "https://github.com/fortanix/sdkms-client-rust"
 documentation = "https://docs.rs/sdkms"
 homepage = "https://fortanix.com/products/sdkms/"
 categories = ["api-bindings"]
+edition = "2018"
 
 [features]
 default = ["hyper-native-tls"]
 
 [dependencies]
 chrono = "0.4"
-serde = "1.0"
-serde_derive = "1.0"
+serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 hyper-native-tls = { version = "0.3", optional = true }
 hyper = "0.10"
-uuid = { version = "0.7", features = ["serde", "v4"] }
+uuid = { version = "0.8", features = ["serde", "v4"] }
 rustc-serialize = "0.3"
 bitflags = "1.0"
 url = "1.7"

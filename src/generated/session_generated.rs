@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
+use serde::{Deserialize, Serialize};
 
 /// A challenge used for multi-factor authentication.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]

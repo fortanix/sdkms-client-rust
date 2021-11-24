@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
+use serde::{Deserialize, Serialize};
 
 /// Operations allowed to be performed by an app.
 pub use self::app_permissions::AppPermissions;

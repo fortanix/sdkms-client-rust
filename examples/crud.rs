@@ -1,8 +1,3 @@
-extern crate chrono;
-extern crate env_logger;
-extern crate rand;
-extern crate sdkms;
-
 use chrono::Local;
 use rand::prelude::*;
 use sdkms::api_model::*;

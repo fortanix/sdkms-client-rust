@@ -4,10 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use api_model::*;
-use client::{PendingApproval, Result, SdkmsClient};
+use crate::api_model::*;
+use crate::client::{PendingApproval, Result, SdkmsClient};
+use crate::operations::*;
 use hyper::method::Method;
-use operations::*;
 use std::collections::{HashMap, HashSet};
 use std::fmt;
 use uuid::Uuid;
@@ -97,24 +97,36 @@ impl fmt::Display for ApprovalStatus {
 
 impl Default for AppSort {
     fn default() -> Self {
-        AppSort::ByAppId { order: Order::Ascending, start: None }
+        AppSort::ByAppId {
+            order: Order::Ascending,
+            start: None,
+        }
     }
 }
 
 impl Default for SobjectSort {
     fn default() -> Self {
-        SobjectSort::ByKid { order: Order::Ascending, start: None }
+        SobjectSort::ByKid {
+            order: Order::Ascending,
+            start: None,
+        }
     }
 }
 
 impl Default for PluginSort {
     fn default() -> Self {
-        PluginSort::ByPluginId { order: Order::Ascending, start: None }
+        PluginSort::ByPluginId {
+            order: Order::Ascending,
+            start: None,
+        }
     }
 }
 
 impl Default for UserSort {
     fn default() -> Self {
-        UserSort::ByUserId { order: Order::Ascending, start: None }
+        UserSort::ByUserId {
+            order: Order::Ascending,
+            start: None,
+        }
     }
 }

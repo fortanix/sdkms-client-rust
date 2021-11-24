@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
+use serde::{Deserialize, Serialize};
 
 /// Type of a plugin.
 #[derive(Debug, Eq, PartialEq, Copy, Serialize, Deserialize, Clone)]

@@ -1,7 +1,3 @@
-extern crate env_logger;
-extern crate rustc_serialize;
-extern crate sdkms;
-
 use rustc_serialize::base64::{ToBase64, STANDARD};
 use sdkms::api_model::*;
 use sdkms::{Error as SdkmsError, SdkmsClient};

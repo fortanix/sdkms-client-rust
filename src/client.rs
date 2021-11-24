@@ -4,27 +4,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use api_model::*;
-use operations::*;
+use crate::api_model::*;
+use crate::operations::*;
 
-#[cfg(feature = "hyper-native-tls")]
-use hyper::client::Pool;
 use hyper::header::{Authorization, ContentType};
 use hyper::method::Method;
-#[cfg(feature = "hyper-native-tls")]
-use hyper::net::HttpsConnector;
 use hyper::status::StatusCode;
 use hyper::Client as HyperClient;
-#[cfg(feature = "hyper-native-tls")]
-use hyper_native_tls::NativeTlsClient;
 use rustc_serialize::base64::{ToBase64, STANDARD};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use std::cell::RefCell;
 use std::fmt;
 use std::io::Read;
 use std::marker::PhantomData;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -43,7 +37,11 @@ impl Auth {
     }
 
     fn from_user_pass<T: fmt::Display>(username: T, password: &str) -> Self {
-        Auth::Basic(format!("{}:{}", username, password).as_bytes().to_base64(STANDARD))
+        Auth::Basic(
+            format!("{}:{}", username, password)
+                .as_bytes()
+                .to_base64(STANDARD),
+        )
     }
 
     fn format_header(&self) -> String {
@@ -90,9 +88,16 @@ impl SdkmsClientBuilder {
             None => {
                 #[cfg(feature = "hyper-native-tls")]
                 {
+                    use hyper::client::Pool;
+                    use hyper::net::HttpsConnector;
+                    use hyper_native_tls::NativeTlsClient;
+
                     let ssl = NativeTlsClient::new()?;
                     let connector = HttpsConnector::new(ssl);
-                    let client = HyperClient::with_connector(Pool::with_connector(Default::default(), connector));
+                    let client = HyperClient::with_connector(Pool::with_connector(
+                        Default::default(),
+                        connector,
+                    ));
                     Arc::new(client)
                 }
                 #[cfg(not(feature = "hyper-native-tls"))]
@@ -102,9 +107,11 @@ impl SdkmsClientBuilder {
 
         Ok(SdkmsClient {
             client,
-            api_endpoint: self.api_endpoint.unwrap_or_else(|| DEFAULT_API_ENDPOINT.to_owned()),
+            api_endpoint: self
+                .api_endpoint
+                .unwrap_or_else(|| DEFAULT_API_ENDPOINT.to_owned()),
             auth: self.auth,
-            last_used: RefCell::new(0),
+            last_used: AtomicU64::new(0),
             auth_response: None,
         })
     }
@@ -151,7 +158,7 @@ pub struct SdkmsClient {
     auth: Option<Auth>,
     api_endpoint: String,
     client: Arc<HyperClient>,
-    last_used: RefCell<u64>, // Time.0
+    last_used: AtomicU64, // Time.0
     auth_response: Option<AuthResponse>,
 }
 
@@ -177,7 +184,7 @@ impl SdkmsClient {
             client: self.client.clone(),
             api_endpoint: self.api_endpoint.clone(),
             auth: Some(Auth::Bearer(auth_response.access_token.clone())),
-            last_used: RefCell::new(now().0),
+            last_used: AtomicU64::new(now().0),
             auth_response: Some(auth_response),
         })
     }
@@ -222,9 +229,14 @@ impl SdkmsClient {
         E: Serialize,
         D: for<'de> Deserialize<'de>,
     {
-        let Self { ref client, ref api_endpoint, ref auth, .. } = *self;
+        let Self {
+            ref client,
+            ref api_endpoint,
+            ref auth,
+            ..
+        } = *self;
         let result = json_request_with_auth(client, api_endpoint, method, uri, auth.as_ref(), req)?;
-        self.last_used.replace(now().0);
+        self.last_used.store(now().0, Ordering::Relaxed);
         Ok(result)
     }
 }
@@ -280,8 +292,8 @@ impl SdkmsClient {
     }
 
     pub fn expires_in(&self) -> Option<u64> {
-        let expires_at =
-            *self.last_used.borrow() + self.auth_response().map_or(0, |ar| ar.expires_in as u64);
+        let expires_at = self.last_used.load(Ordering::Relaxed)
+            + self.auth_response().map_or(0, |ar| ar.expires_in as u64);
         expires_at.checked_sub(now().0)
     }
 }
@@ -382,8 +394,26 @@ where
         Ok(ref mut res) => {
             info!("{} {} {}", res.status.to_u16(), method, url);
             let mut buffer = String::new();
-            res.read_to_string(&mut buffer).map_err(|err| Error::IoError(err))?;
+            res.read_to_string(&mut buffer)
+                .map_err(|err| Error::IoError(err))?;
             Err(Error::from_status(res.status, buffer))
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn assert_send<T: Send>() {}
+    fn assert_sync<T: Sync>() {}
+
+    #[test]
+    fn client_is_send_and_sync() {
+        assert_send::<SdkmsClient>();
+        assert_sync::<SdkmsClient>();
+
+        assert_send::<SdkmsClientBuilder>();
+        assert_sync::<SdkmsClientBuilder>();
     }
 }

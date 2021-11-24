@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
+use serde::{Deserialize, Serialize};
 
 /// A Principal who can approve or deny an approval request.
 #[derive(Copy, PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone)]

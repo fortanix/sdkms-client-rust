@@ -18,7 +18,7 @@ use std::str::FromStr;
 use std::{error, fmt, io};
 use uuid::Uuid;
 
-pub use generated::*;
+pub use crate::generated::*;
 
 /// Arbitrary binary data that is serialized/deserialized to/from base 64 string.
 #[derive(Default, Clone, Debug, Eq, PartialEq, Hash)]
@@ -114,10 +114,12 @@ impl<'de> Deserialize<'de> for Time {
         let s: String = Deserialize::deserialize(deserializer)?;
         Utc.datetime_from_str(&s, ISO_8601_FORMAT)
             .map(|t| Time(t.timestamp() as u64))
-            .map_err(|_| D::Error::invalid_value(
-                serde::de::Unexpected::Str(&s),
-                &"Date/time in ISO 8601 format",
-            ))
+            .map_err(|_| {
+                D::Error::invalid_value(
+                    serde::de::Unexpected::Str(&s),
+                    &"Date/time in ISO 8601 format",
+                )
+            })
     }
 }
 
@@ -149,7 +151,7 @@ pub enum Error {
     EncoderError(serde_json::error::Error),
     IoError(io::Error),
     NetworkError(hyper::Error),
-#[cfg(feature = "hyper-native-tls")]
+    #[cfg(feature = "hyper-native-tls")]
     TlsError(native_tls::Error),
 }
 

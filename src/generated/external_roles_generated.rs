@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
+use serde::{Deserialize, Serialize};
 
 /// Type of an external role.
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]

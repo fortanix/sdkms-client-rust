@@ -1,6 +1,3 @@
-extern crate env_logger;
-extern crate sdkms;
-
 use sdkms::api_model::*;
 use sdkms::{Error as SdkmsError, SdkmsClient};
 

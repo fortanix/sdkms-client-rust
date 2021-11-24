@@ -1,11 +1,5 @@
-extern crate env_logger;
-extern crate sdkms;
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-extern crate uuid;
-
 use sdkms::{Error as SdkmsError, SdkmsClient};
+use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use uuid::Uuid;
 

@@ -7,7 +7,7 @@
 use crate::api_model::*;
 use crate::client::{PendingApproval, Result, SdkmsClient};
 use crate::operations::*;
-use hyper::method::Method;
+use simple_hyper_client::Method;
 use std::collections::{HashMap, HashSet};
 use std::fmt;
 use uuid::Uuid;

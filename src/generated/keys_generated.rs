@@ -182,7 +182,7 @@ impl Operation for OperationCreateSobject {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys")
@@ -204,7 +204,7 @@ impl Operation for OperationImportSobject {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Put
+        Method::PUT
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys")
@@ -226,7 +226,7 @@ impl Operation for OperationUpdateSobject {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Patch
+        Method::PATCH
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{id}", id = p.0)
@@ -256,7 +256,7 @@ impl Operation for OperationDeleteSobject {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{id}", id = p.0)
@@ -288,7 +288,7 @@ impl Operation for OperationListSobjects {
     type Output = Vec<Sobject>;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys?{q}", q = q.encode())
@@ -313,7 +313,7 @@ impl Operation for OperationGetSobject {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/info?{q}", q = q.encode())
@@ -339,7 +339,7 @@ impl Operation for OperationRemovePrivate {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{id}/private", id = p.0)
@@ -364,7 +364,7 @@ impl Operation for OperationExportSobject {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/export")
@@ -393,7 +393,7 @@ impl Operation for OperationDigestSobject {
     type Output = ObjectDigestResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/digest")
@@ -415,7 +415,7 @@ impl Operation for OperationPersistTransientKey {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/persist")
@@ -437,7 +437,7 @@ impl Operation for OperationRotateSobject {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/rekey")
@@ -459,7 +459,7 @@ impl Operation for OperationActivateSobject {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{id}/activate", id = p.0)
@@ -484,7 +484,7 @@ impl Operation for OperationRevokeSobject {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{id}/revoke", id = p.0)
@@ -506,7 +506,7 @@ impl Operation for OperationBatchSign {
     type Output = Vec<BatchResponseItem<SignResponse>>;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/batch/sign")
@@ -538,7 +538,7 @@ impl Operation for OperationBatchVerify {
     type Output = Vec<BatchResponseItem<VerifyResponse>>;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/batch/verify")

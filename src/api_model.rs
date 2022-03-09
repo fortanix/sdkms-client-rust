@@ -5,11 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use chrono::{DateTime, Local, TimeZone, Utc};
-use hyper;
-use hyper::status::StatusCode;
-#[cfg(feature = "hyper-native-tls")]
-use hyper_native_tls::native_tls;
-use rustc_serialize::base64::{FromBase64, ToBase64, STANDARD};
+use simple_hyper_client::StatusCode;
+#[cfg(feature = "native-tls")]
+use tokio_native_tls::native_tls;
 use serde::de::Error as DeserializeError;
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use std::collections::{HashMap, HashSet};
@@ -64,7 +62,7 @@ impl DerefMut for Blob {
 
 impl Serialize for Blob {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        serializer.serialize_str(&self.0.to_base64(STANDARD))
+        serializer.serialize_str(&base64::encode(&self.0))
     }
 }
 
@@ -79,7 +77,7 @@ impl<'de> Deserialize<'de> for Blob {
             }
 
             fn visit_str<E: de::Error>(self, string: &str) -> Result<Blob, E> {
-                Ok(Blob(string.from_base64().map_err(|_| {
+                Ok(Blob(base64::decode(string).map_err(|_| {
                     de::Error::invalid_value(de::Unexpected::Str(string), &"base64 encoded string")
                 })?))
             }
@@ -150,8 +148,8 @@ pub enum Error {
     StatusCode(String),
     EncoderError(serde_json::error::Error),
     IoError(io::Error),
-    NetworkError(hyper::Error),
-    #[cfg(feature = "hyper-native-tls")]
+    NetworkError(simple_hyper_client::Error),
+    #[cfg(feature = "native-tls")]
     TlsError(native_tls::Error),
 }
 
@@ -173,7 +171,7 @@ impl fmt::Display for Error {
             Error::EncoderError(ref err) => write!(fmt, "{}", err),
             Error::IoError(ref err) => write!(fmt, "{}", err),
             Error::NetworkError(ref err) => write!(fmt, "{}", err),
-            #[cfg(feature = "hyper-native-tls")]
+            #[cfg(feature = "native-tls")]
             Error::TlsError(ref err) => write!(fmt, "{}", err),
             Error::StatusCode(ref msg) => write!(fmt, "unexpected status code: {}", msg),
         }
@@ -183,12 +181,12 @@ impl fmt::Display for Error {
 impl Error {
     pub fn from_status(status: StatusCode, msg: String) -> Self {
         match status {
-            StatusCode::Unauthorized => Error::Unauthorized(msg),
-            StatusCode::Forbidden => Error::Forbidden(msg),
-            StatusCode::BadRequest => Error::BadRequest(msg),
-            StatusCode::Conflict => Error::Conflict(msg),
-            StatusCode::Locked => Error::Locked(msg),
-            StatusCode::NotFound => Error::NotFound(msg),
+            StatusCode::UNAUTHORIZED => Error::Unauthorized(msg),
+            StatusCode::FORBIDDEN => Error::Forbidden(msg),
+            StatusCode::BAD_REQUEST => Error::BadRequest(msg),
+            StatusCode::CONFLICT => Error::Conflict(msg),
+            StatusCode::LOCKED => Error::Locked(msg),
+            StatusCode::NOT_FOUND => Error::NotFound(msg),
             _ => Error::StatusCode(format!("{}\n{}", status.to_string(), msg)),
         }
     }
@@ -206,13 +204,13 @@ impl From<io::Error> for Error {
     }
 }
 
-impl From<hyper::Error> for Error {
-    fn from(error: hyper::Error) -> Error {
+impl From<simple_hyper_client::Error> for Error {
+    fn from(error: simple_hyper_client::Error) -> Error {
         Error::NetworkError(error)
     }
 }
 
-#[cfg(feature = "hyper-native-tls")]
+#[cfg(feature = "native-tls")]
 impl From<native_tls::Error> for Error {
     fn from(error: native_tls::Error) -> Error {
         Error::TlsError(error)

@@ -125,7 +125,7 @@ impl Operation for OperationListApprovalRequests {
     type Output = Vec<ApprovalRequest>;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests?{q}", q = q.encode())
@@ -153,7 +153,7 @@ impl Operation for OperationGetApprovalRequest {
     type Output = ApprovalRequest;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{id}", id = p.0)
@@ -178,7 +178,7 @@ impl Operation for OperationCreateApprovalRequest {
     type Output = ApprovalRequest;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests")
@@ -200,7 +200,7 @@ impl Operation for OperationApproveRequest {
     type Output = ApprovalRequest;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{id}/approve", id = p.0)
@@ -222,7 +222,7 @@ impl Operation for OperationDenyRequest {
     type Output = ApprovalRequest;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{id}/deny", id = p.0)
@@ -247,7 +247,7 @@ impl Operation for OperationGetApprovalRequestResult {
     type Output = ApprovableResult;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{id}/result", id = p.0)
@@ -272,7 +272,7 @@ impl Operation for OperationDeleteApprovalRequest {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{id}", id = p.0)

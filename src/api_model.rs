@@ -4,16 +4,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use chrono::{DateTime, Local, TimeZone, Utc};
 use simple_hyper_client::StatusCode;
 #[cfg(feature = "native-tls")]
 use tokio_native_tls::native_tls;
 use serde::de::Error as DeserializeError;
+use serde::ser::Error as SerializeError;
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use std::collections::{HashMap, HashSet};
+use std::convert::TryFrom;
 use std::ops::{Deref, DerefMut};
 use std::str::FromStr;
+use std::time::SystemTime;
 use std::{error, fmt, io};
+use time::format_description::FormatItem;
+use time::macros::format_description;
+use time::{OffsetDateTime, PrimitiveDateTime};
 use uuid::Uuid;
 
 pub use crate::generated::*;
@@ -96,46 +101,72 @@ impl AsRef<[u8]> for Blob {
 pub type Name = String;
 pub type Email = String;
 
-// Data structure defitions for time wrapper structure - Store the number of seconds since EPOCH
+/// `Time` stores the number of seconds since Unix epoch.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Default)]
 pub struct Time(pub u64);
-static ISO_8601_FORMAT: &'static str = "%Y%m%dT%H%M%SZ";
+
+static ISO_8601_FORMAT: &[FormatItem<'_>] = format_description!("[year][month][day]T[hour][minute][second]Z");
 
 impl Serialize for Time {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        serializer.serialize_str(&self.to_datetime().format(ISO_8601_FORMAT).to_string())
+        let utc = self.to_utc_datetime().map_err(|e| S::Error::custom(e.to_string()))?;
+        let s = utc.format(ISO_8601_FORMAT).map_err(|e| S::Error::custom(e.to_string()))?;
+        serializer.serialize_str(&s)
     }
 }
 
 impl<'de> Deserialize<'de> for Time {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let s: String = Deserialize::deserialize(deserializer)?;
-        Utc.datetime_from_str(&s, ISO_8601_FORMAT)
-            .map(|t| Time(t.timestamp() as u64))
-            .map_err(|_| {
-                D::Error::invalid_value(
-                    serde::de::Unexpected::Str(&s),
-                    &"Date/time in ISO 8601 format",
-                )
-            })
+        let t = PrimitiveDateTime::parse(&s, ISO_8601_FORMAT)
+            .map_err(|e| D::Error::custom(format!("expected date/time in ISO-8601 format: {}", e)))?;
+
+        Time::try_from(t.assume_utc()).map_err(|e| D::Error::custom(e))
     }
 }
 
 impl Time {
     pub fn now() -> Self {
-        Self::from(Local::now())
+        let t = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap();
+        Self(t.as_secs())
     }
-    pub fn to_datetime(&self) -> DateTime<Utc> {
-        Utc.timestamp(self.0 as i64, 0)
+
+    pub fn to_utc_datetime(&self) -> Result<OffsetDateTime, TimeOutOfRange> {
+        if self.0 > i64::MAX as u64 {
+            return Err(TimeOutOfRange::TooLarge);
+        }
+        OffsetDateTime::from_unix_timestamp(self.0 as i64).map_err(|_| TimeOutOfRange::TooLarge)
     }
 }
 
-impl<Tz: TimeZone> From<DateTime<Tz>> for Time {
-    fn from(t: DateTime<Tz>) -> Self {
-        assert!(t.timestamp() >= 0);
-        Time(t.timestamp() as u64)
+impl TryFrom<OffsetDateTime> for Time {
+    type Error = TimeOutOfRange;
+
+    fn try_from(t: OffsetDateTime) -> Result<Self, Self::Error> {
+        if t.unix_timestamp() < 0 {
+            return Err(TimeOutOfRange::BeforeUnixEpoch);
+        }
+        Ok(Time(t.unix_timestamp() as u64))
     }
 }
+
+#[derive(Debug)]
+pub enum TimeOutOfRange {
+    BeforeUnixEpoch,
+    TooLarge,
+}
+
+impl fmt::Display for TimeOutOfRange {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        use TimeOutOfRange::*;
+        match *self {
+            BeforeUnixEpoch => write!(fmt, "date/times before Unix epoch (Jan. 1, 1970 00:00:00 UTC) cannot be stored as `Time`"),
+            TooLarge => write!(fmt, "`Time` value is out of range for `OffsetDateTime`"),
+        }
+    }
+}
+
+impl error::Error for TimeOutOfRange {}
 
 #[derive(Debug)]
 pub enum Error {
@@ -410,5 +441,30 @@ mod tests {
         let a = AppGroups::from(HashMap::new());
         let json = r#"[]"#;
         assert_eq!(a, serde_json::from_str(&json).unwrap());
+    }
+
+    #[test]
+    fn time() {
+        let t = Time::now();
+        t.to_utc_datetime().expect("in bounds");
+        serde_json::to_string(&t).expect("in bounds and correct format");
+
+        let t: Time = serde_json::from_str(r#""20200315T012345Z""#).expect("valid date/time");
+        assert_eq!(t.0, 1584235425);
+
+        let t: Time = serde_json::from_str(r#""19700101T000000Z""#).expect("valid date/time");
+        assert_eq!(t.0, 0);
+
+        let err = serde_json::from_str::<Time>(r#""20220119T024257""#).unwrap_err();
+        assert_eq!(err.to_string(), "expected date/time in ISO-8601 format: a character literal was not valid");
+
+        let err = serde_json::from_str::<Time>(r#""19670120T012345Z""#).unwrap_err();
+        assert_eq!(err.to_string(), "date/times before Unix epoch (Jan. 1, 1970 00:00:00 UTC) cannot be stored as `Time`");
+
+        let err = Time(i64::MAX as u64 + 10).to_utc_datetime().unwrap_err();
+        assert_eq!(err.to_string(), "`Time` value is out of range for `OffsetDateTime`");
+
+        let err = Time::try_from(OffsetDateTime::from_unix_timestamp(-1).unwrap()).unwrap_err();
+        assert_eq!(err.to_string(), "date/times before Unix epoch (Jan. 1, 1970 00:00:00 UTC) cannot be stored as `Time`");
     }
 }

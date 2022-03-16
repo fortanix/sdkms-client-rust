@@ -1,4 +1,3 @@
-use chrono::Local;
 use rand::prelude::*;
 use sdkms::api_model::*;
 use sdkms::{Error as SdkmsError, SdkmsClient};
@@ -51,7 +50,7 @@ fn sobject_to_string(s: &Sobject) -> String {
         s.name.as_ref().map(String::as_str).unwrap_or_default(),
         s.group_id.map_or("?".to_owned(), |kid| kid.to_string()),
         s.enabled,
-        s.created_at.to_datetime().with_timezone(&Local),
+        s.created_at.to_utc_datetime().unwrap(),
     )
 }
 

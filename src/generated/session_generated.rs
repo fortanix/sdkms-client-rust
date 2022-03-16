@@ -59,7 +59,7 @@ impl Operation for OperationRefresh {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/refresh")
@@ -84,7 +84,7 @@ impl Operation for OperationSelectAccount {
     type Output = SelectAccountResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/select_account")
@@ -106,7 +106,7 @@ impl Operation for OperationU2fAuth {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/auth/2fa/u2f")
@@ -128,7 +128,7 @@ impl Operation for OperationRecoveryCodeAuth {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/auth/2fa/recovery_code")
@@ -150,7 +150,7 @@ impl Operation for OperationConfig2faAuth {
     type Output = Config2faAuthResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/config_2fa/auth")
@@ -172,7 +172,7 @@ impl Operation for OperationConfig2faTerminate {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/config_2fa/terminate")
@@ -197,7 +197,7 @@ impl Operation for OperationU2fNewChallenge {
     type Output = MfaChallengeResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/config_2fa/new_challenge")

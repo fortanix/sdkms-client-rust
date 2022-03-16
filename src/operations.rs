@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use hyper::method::Method;
+use simple_hyper_client::Method;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fmt::Write;

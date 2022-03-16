@@ -37,7 +37,7 @@ impl Operation for OperationVersion {
     type Output = VersionResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/version")

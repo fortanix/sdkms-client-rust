@@ -18,3 +18,9 @@ jobs:
   allow_failures:
     - rust: nightly
   fast_finish: true
+before_install:
+  - cargo install cargo-audit
+script:
+  - cargo build --verbose
+  - cargo test --verbose
+  - cargo audit

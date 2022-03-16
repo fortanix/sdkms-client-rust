@@ -203,7 +203,7 @@ impl Operation for OperationListApps {
     type Output = Vec<App>;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps?{q}", q = q.encode())
@@ -228,7 +228,7 @@ impl Operation for OperationGetApp {
     type Output = App;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{id}?{q}", id = p.0, q = q.encode())
@@ -253,7 +253,7 @@ impl Operation for OperationCreateApp {
     type Output = App;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps?{q}", q = q.encode())
@@ -275,7 +275,7 @@ impl Operation for OperationUpdateApp {
     type Output = App;
 
     fn method() -> Method {
-        Method::Patch
+        Method::PATCH
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{id}?{q}", id = p.0, q = q.encode())
@@ -302,7 +302,7 @@ impl Operation for OperationDeleteApp {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{id}", id = p.0)
@@ -327,7 +327,7 @@ impl Operation for OperationResetAppSecret {
     type Output = App;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!(
@@ -358,7 +358,7 @@ impl Operation for OperationGetAppCredential {
     type Output = AppCredentialResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{id}/credential", id = p.0)

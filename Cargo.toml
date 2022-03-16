@@ -1,6 +1,6 @@
 [package]
 name = "sdkms"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["Fortanix, Inc."]
 license = "MPL-2.0"
 description = """
@@ -14,19 +14,21 @@ categories = ["api-bindings"]
 edition = "2018"
 
 [features]
-default = ["hyper-native-tls"]
+default = ["native-tls"]
+native-tls = ["simple-hyper-client/native-tls", "tokio-native-tls"]
 
 [dependencies]
-chrono = "0.4"
+base64 = "0.13"
+bitflags = "1.0"
+headers = "0.3.7"
+log = "0.4"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-hyper-native-tls = { version = "0.3", optional = true }
-hyper = "0.10"
-uuid = { version = "0.8", features = ["serde", "v4"] }
-rustc-serialize = "0.3"
-bitflags = "1.0"
+simple-hyper-client = "0.1.0"
+time = { version = "0.3", features = ["formatting", "macros", "parsing"] }
+tokio-native-tls = { version = "0.3", optional = true }
 url = "1.7"
-log = "0.4"
+uuid = { version = "0.8", features = ["serde", "v4"] }
 
 [dev-dependencies]
 env_logger = "0.6"

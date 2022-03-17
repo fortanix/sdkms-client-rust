@@ -445,7 +445,7 @@ impl Operation for OperationListAccounts {
     type Output = Vec<Account>;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts?{q}", q = q.encode())
@@ -470,7 +470,7 @@ impl Operation for OperationGetAccount {
     type Output = Account;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{id}?{q}", id = p.0, q = q.encode())
@@ -499,7 +499,7 @@ impl Operation for OperationCreateAccount {
     type Output = Account;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts")
@@ -528,7 +528,7 @@ impl Operation for OperationUpdateAccount {
     type Output = Account;
 
     fn method() -> Method {
-        Method::Patch
+        Method::PATCH
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{id}", id = p.0)
@@ -558,7 +558,7 @@ impl Operation for OperationDeleteAccount {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{id}", id = p.0)
@@ -583,7 +583,7 @@ impl Operation for OperationAccountUsage {
     type Output = GetUsageResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{id}/usage?{q}", id = p.0, q = q.encode())

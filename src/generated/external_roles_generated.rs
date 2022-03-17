@@ -65,7 +65,7 @@ impl Operation for OperationListExternalRoles {
     type Output = Vec<ExternalRole>;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/external_roles?{q}", q = q.encode())
@@ -93,7 +93,7 @@ impl Operation for OperationGetExternalRole {
     type Output = ExternalRole;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/external_roles/{id}", id = p.0)
@@ -118,7 +118,7 @@ impl Operation for OperationCreateExternalRole {
     type Output = ExternalRole;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/external_roles")
@@ -140,7 +140,7 @@ impl Operation for OperationSyncExternalRole {
     type Output = ExternalRole;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/external_roles/{id}/sync", id = p.0)
@@ -165,7 +165,7 @@ impl Operation for OperationUpdateExternalRole {
     type Output = ExternalRole;
 
     fn method() -> Method {
-        Method::Patch
+        Method::PATCH
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/external_roles/{id}", id = p.0)
@@ -191,7 +191,7 @@ impl Operation for OperationDeleteExternalRole {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/external_roles/{id}", id = p.0)

@@ -1,4 +1,3 @@
-use rustc_serialize::base64::{ToBase64, STANDARD};
 use sdkms::api_model::*;
 use sdkms::{Error as SdkmsError, SdkmsClient};
 use serde::{Deserialize, Serialize};
@@ -30,7 +29,7 @@ fn main() -> Result<(), SdkmsError> {
     }
     let output = pa.result(&client)??;
     let output: SignResponse = serde_json::from_value(output)?;
-    println!("Signature: {}", output.signature.to_base64(STANDARD));
+    println!("Signature: {}", base64::encode(output.signature));
     Ok(())
 }
 

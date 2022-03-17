@@ -214,7 +214,7 @@ impl Operation for OperationSignupUser {
     type Output = User;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users")
@@ -236,7 +236,7 @@ impl Operation for OperationListUsers {
     type Output = Vec<User>;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users?{q}", q = q.encode())
@@ -261,7 +261,7 @@ impl Operation for OperationGetUser {
     type Output = User;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{id}", id = p.0)
@@ -286,7 +286,7 @@ impl Operation for OperationUpdateUser {
     type Output = User;
 
     fn method() -> Method {
-        Method::Patch
+        Method::PATCH
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{id}", id = p.0)
@@ -308,7 +308,7 @@ impl Operation for OperationResetPassword {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{id}/reset_password", id = p.0)
@@ -330,7 +330,7 @@ impl Operation for OperationForgotPassword {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/forgot_password")
@@ -352,7 +352,7 @@ impl Operation for OperationInviteUser {
     type Output = User;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/invite")
@@ -374,7 +374,7 @@ impl Operation for OperationProcessInvite {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/process_invite")
@@ -396,7 +396,7 @@ impl Operation for OperationResendInvite {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{id}/resend_invite", id = p.0)
@@ -421,7 +421,7 @@ impl Operation for OperationDeleteUser {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users")
@@ -446,7 +446,7 @@ impl Operation for OperationChangePassword {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/change_password")
@@ -468,7 +468,7 @@ impl Operation for OperationGetUserAccounts {
     type Output = HashMap<Uuid, UserAccountFlags>;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/accounts")
@@ -493,7 +493,7 @@ impl Operation for OperationDeleteUserAccount {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{id}/accounts", id = p.0)
@@ -518,7 +518,7 @@ impl Operation for OperationGenerateRecoveryCodes {
     type Output = RecoveryCodes;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/generate_recovery_codes")

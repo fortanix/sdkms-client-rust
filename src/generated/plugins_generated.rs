@@ -152,7 +152,7 @@ impl Operation for OperationListPlugins {
     type Output = Vec<Plugin>;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/plugins?{q}", q = q.encode())
@@ -177,7 +177,7 @@ impl Operation for OperationGetPlugin {
     type Output = Plugin;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/plugins/{id}", id = p.0)
@@ -202,7 +202,7 @@ impl Operation for OperationCreatePlugin {
     type Output = Plugin;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/plugins")
@@ -231,7 +231,7 @@ impl Operation for OperationUpdatePlugin {
     type Output = Plugin;
 
     fn method() -> Method {
-        Method::Patch
+        Method::PATCH
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/plugins/{id}", id = p.0)
@@ -261,7 +261,7 @@ impl Operation for OperationDeletePlugin {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/plugins/{id}", id = p.0)
@@ -286,7 +286,7 @@ impl Operation for OperationInvokePlugin {
     type Output = PluginOutput;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/plugins/{id}", id = p.0)

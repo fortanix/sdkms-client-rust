@@ -1,4 +1,3 @@
-use rustc_serialize::base64::{ToBase64, STANDARD};
 use sdkms::api_model::*;
 use sdkms::{Error as SdkmsError, SdkmsClient};
 use std::{thread, time};
@@ -23,7 +22,7 @@ fn main() -> Result<(), SdkmsError> {
         deterministic_signature: None,
     };
     let sign_resp = sign(&client, &sign_req)?;
-    println!("Signature: {}", sign_resp.signature.to_base64(STANDARD));
+    println!("Signature: {}", base64::encode(sign_resp.signature));
     Ok(())
 }
 

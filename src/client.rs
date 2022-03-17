@@ -7,11 +7,10 @@
 use crate::api_model::*;
 use crate::operations::*;
 
-use hyper::header::{Authorization, ContentType};
-use hyper::method::Method;
-use hyper::status::StatusCode;
-use hyper::Client as HyperClient;
-use rustc_serialize::base64::{ToBase64, STANDARD};
+use headers::{ContentType, HeaderMap, HeaderMapExt, HeaderValue};
+use simple_hyper_client::{Bytes, Method, StatusCode};
+use simple_hyper_client::blocking::Client as HttpClient;
+use simple_hyper_client::hyper::header::AUTHORIZATION;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -19,7 +18,6 @@ use std::fmt;
 use std::io::Read;
 use std::marker::PhantomData;
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::Arc;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 pub const DEFAULT_API_ENDPOINT: &'static str = "https://sdkms.fortanix.com";
@@ -37,31 +35,30 @@ impl Auth {
     }
 
     fn from_user_pass<T: fmt::Display>(username: T, password: &str) -> Self {
-        Auth::Basic(
-            format!("{}:{}", username, password)
-                .as_bytes()
-                .to_base64(STANDARD),
-        )
+        Auth::Basic(base64::encode(format!("{}:{}", username, password)))
     }
 
-    fn format_header(&self) -> String {
-        match *self {
+    fn format_header(&self) -> HeaderValue {
+        let value = match *self {
             Auth::Basic(ref basic) => format!("Basic {}", basic),
             Auth::Bearer(ref bearer) => format!("Bearer {}", bearer),
-        }
+        };
+        let bytes = Bytes::from(value);
+        // TODO: return error instead of expect
+        HeaderValue::from_maybe_shared(bytes).expect("invalid characters in auth header")
     }
 }
 
 /// A builder for [`SdkmsClient`](./struct.SdkmsClient.html)
 pub struct SdkmsClientBuilder {
-    client: Option<Arc<HyperClient>>,
+    client: Option<HttpClient>,
     api_endpoint: Option<String>,
     auth: Option<Auth>,
 }
 
 impl SdkmsClientBuilder {
-    /// This can be used to customize the underlying HTTPS client if desired.
-    pub fn with_hyper_client(mut self, client: Arc<HyperClient>) -> Self {
+    /// This can be used to customize the underlying HTTP client if desired.
+    pub fn with_http_client(mut self, client: HttpClient) -> Self {
         self.client = Some(client);
         self
     }
@@ -86,22 +83,17 @@ impl SdkmsClientBuilder {
         let client = match self.client {
             Some(client) => client,
             None => {
-                #[cfg(feature = "hyper-native-tls")]
+                #[cfg(feature = "native-tls")]
                 {
-                    use hyper::client::Pool;
-                    use hyper::net::HttpsConnector;
-                    use hyper_native_tls::NativeTlsClient;
+                    use simple_hyper_client::HttpsConnector;
+                    use tokio_native_tls::native_tls::TlsConnector;
 
-                    let ssl = NativeTlsClient::new()?;
-                    let connector = HttpsConnector::new(ssl);
-                    let client = HyperClient::with_connector(Pool::with_connector(
-                        Default::default(),
-                        connector,
-                    ));
-                    Arc::new(client)
+                    let ssl = TlsConnector::new()?;
+                    let connector = HttpsConnector::new(ssl.into());
+                    HttpClient::with_connector(connector)
                 }
-                #[cfg(not(feature = "hyper-native-tls"))]
-                panic!("You should either provide a hyper Client or compile this crate with hyper-native-tls feature");
+                #[cfg(not(feature = "native-tls"))]
+                panic!("You should either provide an HTTP Client or compile this crate with native-tls feature");
             }
         };
 
@@ -120,7 +112,7 @@ impl SdkmsClientBuilder {
 /// A client session with SDKMS.
 ///
 /// REST APIs are exposed as methods on this type. Communication with SDKMS API endpoint is protected with TLS and this
-/// type uses [`hyper::Client`] along with [`hyper_native_tls::NativeTlsClient`] for HTTP/TLS.
+/// type uses [`simple_hyper_client::blocking::Client`] along with [`tokio_native_tls::TlsConnector`] for HTTP/TLS.
 ///
 /// When making crypto API calls using an API key, it is possible to pass the API key as an HTTP Basic Authorization
 /// header along with each request. This can be achieved by setting the API key using
@@ -148,8 +140,8 @@ impl SdkmsClientBuilder {
 /// which point you can call [`request_approval_to_encrypt()`]. There is an example of how to do this in
 /// [the repository](https://github.com/fortanix/sdkms-client-rust/blob/master/examples/approval_request.rs).
 ///
-/// [`hyper::Client`]: https://docs.rs/hyper/0.10/hyper/client/struct.Client.html
-/// [`hyper_native_tls::NativeTlsClient`]: https://docs.rs/hyper-native-tls/0.3/hyper_native_tls/struct.NativeTlsClient.html
+/// [`simple_hyper_client::blocking::Client`]: https://docs.rs/simple-hyper-client/0.1.0/simple_hyper_client/blocking/struct.Client.html
+/// [`tokio_native_tls::TlsConnector`]: https://docs.rs/tokio-native-tls/0.3.0/tokio_native_tls/struct.TlsConnector.html
 /// [`SdkmsClientBuilder::with_api_key()`]: ./struct.SdkmsClientBuilder.html#method.with_api_key
 /// [`SdkmsClient`]: ./struct.SdkmsClient.html
 /// [`encrypt()`]: #method.encrypt
@@ -157,7 +149,7 @@ impl SdkmsClientBuilder {
 pub struct SdkmsClient {
     auth: Option<Auth>,
     api_endpoint: String,
-    client: Arc<HyperClient>,
+    client: HttpClient,
     last_used: AtomicU64, // Time.0
     auth_response: Option<AuthResponse>,
 }
@@ -175,7 +167,7 @@ impl SdkmsClient {
         let auth_response: AuthResponse = json_request_with_auth(
             &self.client,
             &self.api_endpoint,
-            Method::Post,
+            Method::POST,
             "/sys/v1/session/auth",
             auth,
             None::<&()>,
@@ -250,7 +242,7 @@ impl Drop for SdkmsClient {
 impl SdkmsClient {
     pub fn terminate(&mut self) -> Result<()> {
         if let Some(Auth::Bearer(_)) = self.auth {
-            self.json_request(Method::Post, "/sys/v1/session/terminate", None::<&()>)?;
+            self.json_request(Method::POST, "/sys/v1/session/terminate", None::<&()>)?;
             self.auth = None;
         }
         Ok(())
@@ -329,7 +321,7 @@ impl<O: Operation> PendingApproval<O> {
             serde_json::from_value::<O::Output>(result.body).map_err(Error::EncoderError)
         } else {
             let msg: String = serde_json::from_value(result.body).map_err(Error::EncoderError)?;
-            Err(Error::from_status(StatusCode::from_u16(result.status), msg))
+            Err(Error::from_status(StatusCode::from_u16(result.status).unwrap(), msg))
         })
     }
 }
@@ -360,7 +352,7 @@ fn json_decode_reader<R: Read, T: for<'de> Deserialize<'de>>(rdr: &mut R) -> ser
 }
 
 fn json_request_with_auth<E, D>(
-    client: &HyperClient,
+    client: &HttpClient,
     api_endpoint: &str,
     method: Method,
     path: &str,
@@ -372,31 +364,33 @@ where
     D: for<'de> Deserialize<'de>,
 {
     let url = format!("{}{}", api_endpoint, path);
-    let encbody;
-    let mut req_builder = client.request(method.clone(), &url);
+    let mut req = client.request(method.clone(), &url)?;
+    let mut headers = HeaderMap::new();
     if let Some(auth) = auth {
-        req_builder = req_builder.header(Authorization(auth.format_header()));
+        headers.insert(AUTHORIZATION, auth.format_header());
     }
     if let Some(request_body) = body {
-        req_builder = req_builder.header(ContentType::json());
-        encbody = serde_json::to_string(request_body).map_err(Error::EncoderError)?;
-        req_builder = req_builder.body(encbody.as_bytes())
+        headers.typed_insert(ContentType::json());
+        let body = serde_json::to_string(request_body).map_err(Error::EncoderError)?;
+        req = req.body(body);
     }
-    match req_builder.send() {
+    req = req.headers(headers);
+    match req.send() {
         Err(e) => {
             info!("Error {} {}", method, url);
             Err(Error::NetworkError(e))
         }
-        Ok(ref mut res) if res.status.is_success() => {
-            info!("{} {} {}", res.status.to_u16(), method, url);
-            json_decode_reader(res).map_err(|err| Error::EncoderError(err))
+        Ok(ref mut res) if res.status().is_success() => {
+            info!("{} {} {}", res.status().as_u16(), method, url);
+            json_decode_reader(res.body_mut()).map_err(|err| Error::EncoderError(err))
         }
         Ok(ref mut res) => {
-            info!("{} {} {}", res.status.to_u16(), method, url);
+            info!("{} {} {}", res.status().as_u16(), method, url);
             let mut buffer = String::new();
-            res.read_to_string(&mut buffer)
+            res.body_mut()
+                .read_to_string(&mut buffer)
                 .map_err(|err| Error::IoError(err))?;
-            Err(Error::from_status(res.status, buffer))
+            Err(Error::from_status(res.status(), buffer))
         }
     }
 }

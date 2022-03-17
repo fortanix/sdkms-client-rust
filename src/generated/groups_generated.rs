@@ -39,7 +39,7 @@ impl Operation for OperationListGroups {
     type Output = Vec<Group>;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups")
@@ -64,7 +64,7 @@ impl Operation for OperationGetGroup {
     type Output = Group;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups/{id}", id = p.0)
@@ -89,7 +89,7 @@ impl Operation for OperationCreateGroup {
     type Output = Group;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups")
@@ -111,7 +111,7 @@ impl Operation for OperationUpdateGroup {
     type Output = Group;
 
     fn method() -> Method {
-        Method::Patch
+        Method::PATCH
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups/{id}", id = p.0)
@@ -141,7 +141,7 @@ impl Operation for OperationDeleteGroup {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups/{id}", id = p.0)

@@ -140,7 +140,7 @@ impl SdkmsClientBuilder {
 /// which point you can call [`request_approval_to_encrypt()`]. There is an example of how to do this in
 /// [the repository](https://github.com/fortanix/sdkms-client-rust/blob/master/examples/approval_request.rs).
 ///
-/// [`simple_hyper_client::blocking::Client`]: TODO
+/// [`simple_hyper_client::blocking::Client`]: https://docs.rs/simple-hyper-client/0.1.0/simple_hyper_client/blocking/struct.Client.html
 /// [`tokio_native_tls::TlsConnector`]: https://docs.rs/tokio-native-tls/0.3.0/tokio_native_tls/struct.TlsConnector.html
 /// [`SdkmsClientBuilder::with_api_key()`]: ./struct.SdkmsClientBuilder.html#method.with_api_key
 /// [`SdkmsClient`]: ./struct.SdkmsClient.html

@@ -1,8 +1,8 @@
 /* Copyright (c) Fortanix, Inc.
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+*
+* This Source Code Form is subject to the terms of the Mozilla Public
+* License, v. 2.0. If a copy of the MPL was not distributed with this
+* file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use crate::api_model::*;
 use crate::operations::*;
@@ -24,21 +24,21 @@ pub const DEFAULT_API_ENDPOINT: &'static str = "https://sdkms.fortanix.com";
 
 pub type Result<T> = ::std::result::Result<T, Error>;
 
-enum Auth {
+pub enum Auth {
     Basic(String),
     Bearer(String),
 }
 
 impl Auth {
-    fn from_api_key(api_key: &str) -> Self {
+    pub fn from_api_key(api_key: &str) -> Self {
         Auth::Basic(api_key.to_owned())
     }
 
-    fn from_user_pass<T: fmt::Display>(username: T, password: &str) -> Self {
+    pub fn from_user_pass<T: fmt::Display>(username: T, password: &str) -> Self {
         Auth::Basic(base64::encode(format!("{}:{}", username, password)))
     }
 
-    fn format_header(&self) -> HeaderValue {
+    pub fn format_header(&self) -> HeaderValue {
         let value = match *self {
             Auth::Basic(ref basic) => format!("Basic {}", basic),
             Auth::Bearer(ref bearer) => format!("Bearer {}", bearer),
@@ -147,11 +147,11 @@ impl SdkmsClientBuilder {
 /// [`encrypt()`]: #method.encrypt
 /// [`request_approval_to_encrypt()`]: #method.request_approval_to_encrypt
 pub struct SdkmsClient {
-    auth: Option<Auth>,
-    api_endpoint: String,
-    client: HttpClient,
-    last_used: AtomicU64, // Time.0
-    auth_response: Option<AuthResponse>,
+    pub(super) auth: Option<Auth>,
+    pub(super) api_endpoint: String,
+    pub(super) client: HttpClient,
+    pub(super) last_used: AtomicU64, // Time.0
+    pub(super) auth_response: Option<AuthResponse>,
 }
 
 impl SdkmsClient {
@@ -161,40 +161,6 @@ impl SdkmsClient {
             api_endpoint: None,
             auth: None,
         }
-    }
-
-    fn authenticate(&self, auth: Option<&Auth>) -> Result<Self> {
-        let auth_response: AuthResponse = json_request_with_auth(
-            &self.client,
-            &self.api_endpoint,
-            Method::POST,
-            "/sys/v1/session/auth",
-            auth,
-            None::<&()>,
-        )?;
-        Ok(SdkmsClient {
-            client: self.client.clone(),
-            api_endpoint: self.api_endpoint.clone(),
-            auth: Some(Auth::Bearer(auth_response.access_token.clone())),
-            last_used: AtomicU64::new(now().0),
-            auth_response: Some(auth_response),
-        })
-    }
-
-    pub fn authenticate_with_api_key(&self, api_key: &str) -> Result<Self> {
-        self.authenticate(Some(Auth::from_api_key(api_key)).as_ref())
-    }
-
-    pub fn authenticate_with_cert(&self, app_id: Option<&Uuid>) -> Result<Self> {
-        self.authenticate(app_id.map(|id| Auth::from_user_pass(id, "")).as_ref())
-    }
-
-    pub fn authenticate_app(&self, app_id: &Uuid, app_secret: &str) -> Result<Self> {
-        self.authenticate(Some(Auth::from_user_pass(app_id, app_secret)).as_ref())
-    }
-
-    pub fn authenticate_user(&self, email: &str, password: &str) -> Result<Self> {
-        self.authenticate(Some(Auth::from_user_pass(email, password)).as_ref())
     }
 
     pub fn api_endpoint(&self) -> &str {
@@ -215,22 +181,6 @@ impl SdkmsClient {
             _ => false,
         }
     }
-
-    fn json_request<E, D>(&self, method: Method, uri: &str, req: Option<&E>) -> Result<D>
-    where
-        E: Serialize,
-        D: for<'de> Deserialize<'de>,
-    {
-        let Self {
-            ref client,
-            ref api_endpoint,
-            ref auth,
-            ..
-        } = *self;
-        let result = json_request_with_auth(client, api_endpoint, method, uri, auth.as_ref(), req)?;
-        self.last_used.store(now().0, Ordering::Relaxed);
-        Ok(result)
-    }
 }
 
 impl Drop for SdkmsClient {
@@ -240,49 +190,6 @@ impl Drop for SdkmsClient {
 }
 
 impl SdkmsClient {
-    pub fn terminate(&mut self) -> Result<()> {
-        if let Some(Auth::Bearer(_)) = self.auth {
-            self.json_request(Method::POST, "/sys/v1/session/terminate", None::<&()>)?;
-            self.auth = None;
-        }
-        Ok(())
-    }
-
-    pub fn invoke_plugin_nice<I, O>(&self, id: &Uuid, req: &I) -> Result<O>
-    where
-        I: Serialize,
-        O: for<'de> Deserialize<'de>,
-    {
-        let req = serde_json::to_value(req)?;
-        let output = self.execute::<OperationInvokePlugin>(&req, (id,), None)?;
-        Ok(serde_json::from_value(output)?)
-    }
-
-    pub fn execute<O: Operation>(
-        &self,
-        body: &O::Body,
-        p: <O::PathParams as TupleRef>::Ref,
-        q: Option<&O::QueryParams>,
-    ) -> Result<O::Output> {
-        self.json_request(O::method(), &O::path(p, q), O::to_body(body).as_ref())
-    }
-
-    pub fn request_approval<O: Operation>(
-        &self,
-        body: &O::Body,
-        p: <O::PathParams as TupleRef>::Ref,
-        q: Option<&O::QueryParams>,
-        description: Option<String>,
-    ) -> Result<PendingApproval<O>> {
-        let request = self.create_approval_request(&ApprovalRequestRequest {
-            operation: Some(O::path(p, q)),
-            method: Some(format!("{}", O::method())),
-            body: O::to_body(body),
-            description,
-        })?;
-        Ok(PendingApproval::from_request_id(request.request_id))
-    }
-
     pub fn expires_in(&self) -> Option<u64> {
         let expires_at = self.last_used.load(Ordering::Relaxed)
             + self.auth_response().map_or(0, |ar| ar.expires_in as u64);
@@ -335,16 +242,7 @@ impl<O: Operation> Clone for PendingApproval<O> {
     }
 }
 
-fn now() -> Time {
-    Time(
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("Invalid system time")
-            .as_secs(),
-    )
-}
-
-fn json_decode_reader<R: Read, T: for<'de> Deserialize<'de>>(rdr: &mut R) -> serde_json::Result<T> {
+pub(super) fn json_decode_reader<R: Read, T: for<'de> Deserialize<'de>>(rdr: &mut R) -> serde_json::Result<T> {
     match serde_json::from_reader(rdr) {
         // When the body of the response is empty, attempt to deserialize null value instead
         Err(ref e) if e.is_eof() && e.line() == 1 && e.column() == 0 => {
@@ -354,48 +252,23 @@ fn json_decode_reader<R: Read, T: for<'de> Deserialize<'de>>(rdr: &mut R) -> ser
     }
 }
 
-fn json_request_with_auth<E, D>(
-    client: &HttpClient,
-    api_endpoint: &str,
-    method: Method,
-    path: &str,
-    auth: Option<&Auth>,
-    body: Option<&E>,
-) -> Result<D>
-where
-    E: Serialize,
-    D: for<'de> Deserialize<'de>,
-{
-    let url = format!("{}{}", api_endpoint, path);
-    let mut req = client.request(method.clone(), &url)?;
-    let mut headers = HeaderMap::new();
-    if let Some(auth) = auth {
-        headers.insert(AUTHORIZATION, auth.format_header());
-    }
-    if let Some(request_body) = body {
-        headers.typed_insert(ContentType::json());
-        let body = serde_json::to_string(request_body).map_err(Error::EncoderError)?;
-        req = req.body(body);
-    }
-    req = req.headers(headers);
-    match req.send() {
-        Err(e) => {
-            info!("Error {} {}", method, url);
-            Err(Error::NetworkError(e))
+pub(super) fn json_decode_bytes<T: for<'de> Deserialize<'de>>(buff: &mut Bytes) -> serde_json::Result<T> {
+    match serde_json::from_slice(buff) {
+        // When the body of the response is empty, attempt to deserialize null value instead
+        Err(ref e) if e.is_eof() && e.line() == 1 && e.column() == 0 => {
+            serde_json::from_value(serde_json::Value::Null)
         }
-        Ok(ref mut res) if res.status().is_success() => {
-            info!("{} {} {}", res.status().as_u16(), method, url);
-            json_decode_reader(res.body_mut()).map_err(|err| Error::EncoderError(err))
-        }
-        Ok(ref mut res) => {
-            info!("{} {} {}", res.status().as_u16(), method, url);
-            let mut buffer = String::new();
-            res.body_mut()
-                .read_to_string(&mut buffer)
-                .map_err(|err| Error::IoError(err))?;
-            Err(Error::from_status(res.status(), buffer))
-        }
+        v => v,
     }
+}
+
+pub(super) fn now() -> Time {
+    Time(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("Invalid system time")
+            .as_secs(),
+    )
 }
 
 #[cfg(test)]

@@ -20,8 +20,11 @@ use time::{OffsetDateTime, PrimitiveDateTime};
 #[cfg(feature = "native-tls")]
 use tokio_native_tls::native_tls;
 use uuid::Uuid;
+use serde::ser::SerializeStruct;
+use serde::ser::SerializeSeq;
 
 pub use crate::generated::*;
+use crate::operations::UrlEncode;
 
 /// Arbitrary binary data that is serialized/deserialized to/from base 64 string.
 #[derive(Default, Clone, Debug, Eq, PartialEq, Hash)]
@@ -95,6 +98,12 @@ impl<'de> Deserialize<'de> for Blob {
 impl AsRef<[u8]> for Blob {
     fn as_ref(&self) -> &[u8] {
         &self.0
+    }
+}
+
+impl ToString for Blob {
+    fn to_string(&self) -> String {
+        self.to_string()
     }
 }
 
@@ -486,5 +495,293 @@ mod tests {
             err.to_string(),
             "date/times before Unix epoch (Jan. 1, 1970 00:00:00 UTC) cannot be stored as `Time`"
         );
+    }
+}
+
+#[derive(Copy, Clone, PartialEq, Eq, Debug, Hash)]
+pub struct PluginVersion {
+    pub major: u32,
+    pub minor: u32
+}
+
+impl Serialize for PluginVersion {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        let version = format!("{}.{}", self.major, self.minor);
+        serializer.serialize_str(&version)
+    }
+}
+
+impl<'de> Deserialize<'de> for PluginVersion {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let version: String = Deserialize::deserialize(deserializer)?;
+        let mut components = version.split(".");
+        let major = components.next().ok_or_else(|| D::Error::custom("no major version found"))?
+            .parse::<u32>().map_err(D::Error::custom)?;
+        let minor = components.next().ok_or_else(|| D::Error::custom("no minor version found"))?
+            .parse::<u32>().map_err(D::Error::custom)?;
+        Ok(PluginVersion {
+            major,
+            minor
+        })
+    }
+}
+
+impl fmt::Display for PluginVersion {
+    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        write!(formatter, "{}.{}", self.major, self.minor)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct CustomMetadata(pub HashMap<String, String>);
+
+impl Serialize for CustomMetadata {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        self.0.iter().map(|(k, v)| (format!("custom_metadata.{}", k), v)).collect::<HashMap<_, _>>()
+            .serialize(serializer)
+    }
+}
+
+mod custom_metadata_params_de {
+    use super::CustomMetadata;
+    use serde::de::{self, Deserialize, Deserializer, IgnoredAny, MapAccess, Visitor};
+    use std::collections::HashMap;
+    use std::fmt;
+
+    enum Key {
+        Key(String),
+        Ignored,
+    }
+
+    struct KeyVisitor;
+    impl<'de> Visitor<'de> for KeyVisitor {
+        type Value = Key;
+
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("`custom_metadata.{key}` where {key} is an arbitrary identifier")
+        }
+
+        fn visit_str<E: de::Error>(self, value: &str) -> Result<Self::Value, E> {
+            let prefix = "custom_metadata.";
+            if value.starts_with(prefix) {
+                return Ok(Key::Key(value[prefix.len()..].to_owned()));
+            }
+            Ok(Key::Ignored)
+        }
+    }
+
+    impl<'de> Deserialize<'de> for Key {
+        fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+            deserializer.deserialize_identifier(KeyVisitor)
+        }
+    }
+
+    struct CMVisitor;
+    impl<'de> Visitor<'de> for CMVisitor {
+        type Value = CustomMetadata;
+
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("map containing key/value pairs of form custom_metadata.K = V ")
+        }
+
+        fn visit_map<M: MapAccess<'de>>(self, mut access: M) -> Result<Self::Value, M::Error> {
+            let mut map = HashMap::with_capacity(access.size_hint().unwrap_or(0));
+
+            while let Some(key) = access.next_key::<Key>()? {
+                match key {
+                    Key::Key(key) => {
+                        let value = access.next_value::<String>()?;
+                        map.insert(key, value);
+                    }
+                    Key::Ignored => {
+                        let _ = access.next_value::<IgnoredAny>()?;
+                    }
+                }
+            }
+            Ok(CustomMetadata(map))
+        }
+    }
+
+    impl<'de> Deserialize<'de> for CustomMetadata {
+        fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+            deserializer.deserialize_map(CMVisitor)
+        }
+    }
+}
+
+impl UrlEncode for CustomMetadata {
+    fn url_encode(&self, m: &mut HashMap<String, String>) {
+        // m.extend(self.0.clone().iter()));
+        for (key,value) in self.0.clone().into_iter() {
+            m.insert(key, value);
+        }
+    }
+}
+#[derive(Clone, Debug, Default)]
+pub struct GetAllResponse {
+    pub metadata : Option<Metadata>,
+    pub items: Vec<Sobject>
+}
+
+impl GetAllResponse {
+    pub fn new(is_with_metadata: bool, total_cnt: usize, items: Vec<Sobject>) -> Self {
+        let metadata = if is_with_metadata {
+            Some(Metadata {total_count: total_cnt, filtered_count: items.len()})
+        } else {
+            None
+        };
+
+        GetAllResponse { metadata, items }
+    }
+
+    // for backward compatibility, used by plugins
+    pub fn into_vector(self) -> Vec<Sobject> {
+        self.items
+    }
+}
+
+impl Serialize for GetAllResponse {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        if self.metadata.is_some() {
+            let mut state = serializer.serialize_struct("GetAllResponse", 2)?;
+            state.serialize_field("metadata", &self.metadata.as_ref().expect("expected metadta"))?;
+            state.serialize_field("items", &self.items)?;
+            return state.end();
+        } else {
+            let mut seq = serializer.serialize_seq(Some(self.items.len()))?;
+            for item in self.items.iter() {
+                seq.serialize_element(item)?;
+            }
+            return seq.end();
+        }
+    }
+}
+
+// This is only required for provider/sdkms to deserialize data for clients
+impl<'de> Deserialize<'de> for GetAllResponse {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        struct GetAllResponseVisitor;
+
+        impl<'de> serde::de::Visitor<'de> for GetAllResponseVisitor {
+            type Value = GetAllResponse;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("GetAllResponseItem")
+            }
+
+            fn visit_seq<V>(self, mut seq: V) -> Result<GetAllResponse, V::Error>
+            where
+                V: serde::de::SeqAccess<'de>,
+            {
+                let mut items: Vec<Sobject> = Vec::new();
+                loop {
+                    let data = seq.next_element()?;
+                    if let Some(item) = data {
+                        items.push(item);
+                    } else {
+                        break;
+                    }
+                }
+                Ok(GetAllResponse{metadata: None, items})
+            }
+
+            fn visit_map<V>(self, mut map: V) -> Result<GetAllResponse, V::Error>
+            where
+                V: serde::de::MapAccess<'de>,
+            {
+                let mut metadata = None;
+                let mut items = Vec::new();
+                loop {
+                    if let Some(key) = map.next_key::<String>()? {
+                        match key.as_str() {
+                            "metadata" => metadata = map.next_value()?,
+                            "items" => items = map.next_value()?,
+                            other => return Err(serde::de::Error::invalid_value(serde::de::Unexpected::Str(&format!("unexpected key {}", other)), &self)),
+                        }
+                    } else {
+                        break
+                    }
+                }
+
+                Ok(GetAllResponse {items, metadata })
+            }
+        }
+
+        deserializer.deserialize_seq(GetAllResponseVisitor)
+    }
+}
+
+impl std::iter::IntoIterator for GetAllResponse {
+    type Item = Sobject;
+    type IntoIter = std::vec::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.items.into_iter()
+    }
+}
+
+impl AppRole {
+    pub fn as_str(&self) -> &str {
+        match *self {
+            AppRole::Admin => "admin",
+            AppRole::Crypto => "app",
+        }
+    }
+
+    pub fn account_role(&self) -> AccountRole {
+        match *self {
+            AppRole::Admin => AccountRole::AdminApp,
+            AppRole::Crypto => AccountRole::CryptoApp,
+        }
+    }
+
+    pub fn backcompat_deserialize_opt<'a, D: Deserializer<'a>>(deserializer: D) -> Result<Self, D::Error> {
+        Ok(Option::<AppRole>::deserialize(deserializer)?.unwrap_or_default())
+    }
+}
+
+impl Default for AppRole {
+    fn default() -> Self {
+        AppRole::Crypto
+    }
+}
+
+impl ToString for AppRole {
+    fn to_string(&self) -> String {
+        self.as_str().to_string()
+    }
+}
+
+impl ToString for ObjectType {
+    fn to_string(&self) -> String {
+        match *self {
+            ObjectType::Aes => "AES".to_string(),
+            ObjectType::Des => "DES".to_string(),
+            ObjectType::Des3 => "DES3".to_string(),
+            ObjectType::Rsa => "RSA".to_string(),
+            ObjectType::Dsa => "DSA".to_string(),
+            ObjectType::Ec => "EC".to_string(),
+            ObjectType::Opaque => "OPAQUE".to_string(),
+            ObjectType::Hmac => "HMAC".to_string(),
+            ObjectType::Secret => "SECRET".to_string(),
+            ObjectType::Seed => "SEED".to_string(),
+            ObjectType::Round5Beta => "ROUND5BETA".to_string(),
+            ObjectType::LedaBeta => "LEDABETA".to_string(),
+            ObjectType::Lms => "LMS".to_string(),
+            ObjectType::Certificate => "CERTIFICATE".to_string(),
+            ObjectType::Pbe => "PBE".to_string()
+        }
+    }
+}
+
+impl Default for SubscriptionType {
+    fn default() -> SubscriptionType {
+        SubscriptionType::Trial { expires_at: None }
     }
 }

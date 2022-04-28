@@ -5,12 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use crate::api_model::*;
-use crate::client::{PendingApproval, Result, SdkmsClient};
+use crate::client::*;
 use crate::operations::*;
 use simple_hyper_client::Method;
 use std::collections::{HashMap, HashSet};
 use std::fmt;
 use uuid::Uuid;
+use serde::{Deserialize, Serialize, Deserializer};
+use std::net::IpAddr;
+use strum::{EnumIter};
 
 mod accounts_generated;
 mod approval_requests_generated;
@@ -71,6 +74,7 @@ impl Default for RsaOptions {
             public_exponent: None,
             encryption_policy: Vec::new(),
             signature_policy: Vec::new(),
+            minimum_key_length: None,
         }
     }
 }

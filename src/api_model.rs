@@ -4,12 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use simple_hyper_client::StatusCode;
-#[cfg(feature = "native-tls")]
-use tokio_native_tls::native_tls;
 use serde::de::Error as DeserializeError;
 use serde::ser::Error as SerializeError;
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
+use simple_hyper_client::StatusCode;
 use std::collections::{HashMap, HashSet};
 use std::convert::TryFrom;
 use std::ops::{Deref, DerefMut};
@@ -19,6 +17,8 @@ use std::{error, fmt, io};
 use time::format_description::FormatItem;
 use time::macros::format_description;
 use time::{OffsetDateTime, PrimitiveDateTime};
+#[cfg(feature = "native-tls")]
+use tokio_native_tls::native_tls;
 use uuid::Uuid;
 
 pub use crate::generated::*;
@@ -105,12 +105,17 @@ pub type Email = String;
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Default)]
 pub struct Time(pub u64);
 
-static ISO_8601_FORMAT: &[FormatItem<'_>] = format_description!("[year][month][day]T[hour][minute][second]Z");
+static ISO_8601_FORMAT: &[FormatItem<'_>] =
+    format_description!("[year][month][day]T[hour][minute][second]Z");
 
 impl Serialize for Time {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        let utc = self.to_utc_datetime().map_err(|e| S::Error::custom(e.to_string()))?;
-        let s = utc.format(ISO_8601_FORMAT).map_err(|e| S::Error::custom(e.to_string()))?;
+        let utc = self
+            .to_utc_datetime()
+            .map_err(|e| S::Error::custom(e.to_string()))?;
+        let s = utc
+            .format(ISO_8601_FORMAT)
+            .map_err(|e| S::Error::custom(e.to_string()))?;
         serializer.serialize_str(&s)
     }
 }
@@ -118,8 +123,9 @@ impl Serialize for Time {
 impl<'de> Deserialize<'de> for Time {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let s: String = Deserialize::deserialize(deserializer)?;
-        let t = PrimitiveDateTime::parse(&s, ISO_8601_FORMAT)
-            .map_err(|e| D::Error::custom(format!("expected date/time in ISO-8601 format: {}", e)))?;
+        let t = PrimitiveDateTime::parse(&s, ISO_8601_FORMAT).map_err(|e| {
+            D::Error::custom(format!("expected date/time in ISO-8601 format: {}", e))
+        })?;
 
         Time::try_from(t.assume_utc()).map_err(|e| D::Error::custom(e))
     }
@@ -127,7 +133,9 @@ impl<'de> Deserialize<'de> for Time {
 
 impl Time {
     pub fn now() -> Self {
-        let t = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap();
+        let t = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap();
         Self(t.as_secs())
     }
 
@@ -456,15 +464,27 @@ mod tests {
         assert_eq!(t.0, 0);
 
         let err = serde_json::from_str::<Time>(r#""20220119T024257""#).unwrap_err();
-        assert_eq!(err.to_string(), "expected date/time in ISO-8601 format: a character literal was not valid");
+        assert_eq!(
+            err.to_string(),
+            "expected date/time in ISO-8601 format: a character literal was not valid"
+        );
 
         let err = serde_json::from_str::<Time>(r#""19670120T012345Z""#).unwrap_err();
-        assert_eq!(err.to_string(), "date/times before Unix epoch (Jan. 1, 1970 00:00:00 UTC) cannot be stored as `Time`");
+        assert_eq!(
+            err.to_string(),
+            "date/times before Unix epoch (Jan. 1, 1970 00:00:00 UTC) cannot be stored as `Time`"
+        );
 
         let err = Time(i64::MAX as u64 + 10).to_utc_datetime().unwrap_err();
-        assert_eq!(err.to_string(), "`Time` value is out of range for `OffsetDateTime`");
+        assert_eq!(
+            err.to_string(),
+            "`Time` value is out of range for `OffsetDateTime`"
+        );
 
         let err = Time::try_from(OffsetDateTime::from_unix_timestamp(-1).unwrap()).unwrap_err();
-        assert_eq!(err.to_string(), "date/times before Unix epoch (Jan. 1, 1970 00:00:00 UTC) cannot be stored as `Time`");
+        assert_eq!(
+            err.to_string(),
+            "date/times before Unix epoch (Jan. 1, 1970 00:00:00 UTC) cannot be stored as `Time`"
+        );
     }
 }

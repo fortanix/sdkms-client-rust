@@ -8,10 +8,10 @@ use crate::api_model::*;
 use crate::operations::*;
 
 use headers::{ContentType, HeaderMap, HeaderMapExt, HeaderValue};
-use simple_hyper_client::{Bytes, Method, StatusCode};
+use serde::{Deserialize, Serialize};
 use simple_hyper_client::blocking::Client as HttpClient;
 use simple_hyper_client::hyper::header::AUTHORIZATION;
-use serde::{Deserialize, Serialize};
+use simple_hyper_client::{Bytes, Method, StatusCode};
 use uuid::Uuid;
 
 use std::fmt;
@@ -321,7 +321,10 @@ impl<O: Operation> PendingApproval<O> {
             serde_json::from_value::<O::Output>(result.body).map_err(Error::EncoderError)
         } else {
             let msg: String = serde_json::from_value(result.body).map_err(Error::EncoderError)?;
-            Err(Error::from_status(StatusCode::from_u16(result.status).unwrap(), msg))
+            Err(Error::from_status(
+                StatusCode::from_u16(result.status).unwrap(),
+                msg,
+            ))
         })
     }
 }

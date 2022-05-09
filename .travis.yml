@@ -20,7 +20,9 @@ jobs:
   fast_finish: true
 before_install:
   - cargo install cargo-audit
+  - rustup component add rustfmt
 script:
+  - cargo fmt --check
   - cargo build --verbose
   - cargo test --verbose
   - cargo audit

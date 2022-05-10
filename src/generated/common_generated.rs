@@ -697,6 +697,28 @@ pub enum FpePreserveMask {
 /// Multiple parts, this is always 0 (due to a Multiple having only one subpart).
 pub type FpeSubpartIndex = usize;
 
+/// An access reason provided by Google when making EKMS API calls.
+#[derive(Debug, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum GoogleAccessReason {
+    ReasonUnspecified = 0,
+    CustomerInitiatedSupport = 1,
+    GoogleInitiatedService = 2,
+    ThirdPartyDataRequest = 3,
+    GoogleInitiatedReview = 4,
+    CustomerInitiatedAccess = 5,
+    GoogleInitiatedSystemOperation = 6,
+    ReasonNotExpected = 7,
+    ModifiedCustomerInitiatedAccess = 8
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "snake_case")]
+pub struct GoogleAccessReasonPolicy {
+    pub allow: HashSet<GoogleAccessReason>,
+    pub allow_missing_reason: bool
+}
+
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct HistoryItem {
     pub id: Uuid,
@@ -787,18 +809,44 @@ pub use self::key_operations::KeyOperations;
 pub mod key_operations {
     bitflags_set!{
         pub struct KeyOperations: u64 {
+            // If this is set, the key can be used to for signing.
             const SIGN = 0x0000000000000001;
+            //  If this is set, the key can used for verifying a signature.
             const VERIFY = 0x0000000000000002;
+            //  If this is set, the key can be used for encryption.
             const ENCRYPT = 0x0000000000000004;
+            //  If this is set, the key can be used for decryption.
             const DECRYPT = 0x0000000000000008;
+            //  If this is set, the key can be used wrapping other keys.
+            //  The key being wrapped must have the EXPORT operation enabled.
             const WRAPKEY = 0x0000000000000010;
+            //  If this is set, the key can be used to unwrap a wrapped key.
             const UNWRAPKEY = 0x0000000000000020;
+            //  If this is set, the key can be used to derive another key.
             const DERIVEKEY = 0x0000000000000040;
+            //  If this is set, the key can be used to compute a cryptographic
+            //  Message Authentication Code (MAC) on a message.
             const MACGENERATE = 0x0000000000000080;
+            //  If they is set, the key can be used to verify a MAC.
             const MACVERIFY = 0x0000000000000100;
+            //  If this is set, the value of the key can be retrieved
+            //  with an authenticated request. This shouldn't be set unless
+            //  required. It is more secure to keep the key's value inside DSM only.
             const EXPORT = 0x0000000000000200;
+            //  Without this operation, management operations like delete, destroy,
+            //  rotate, activate, restore, revoke, revert, update, remove_private, etc.
+            //  cannot be performed by a crypto App.
+            //  A user with access or admin app can still perform these operations.
+            //  This option is only relevant for crypto apps.
             const APPMANAGEABLE = 0x0000000000000400;
+            //  If this is set, audit logs will not be recorded for the key.
+            //   High volume here tries to signify a key that is being used a lot
+            //   and will produce lots of logs. Setting this operation disables
+            //   audit logs for the key.
             const HIGHVOLUME = 0x0000000000000800;
+            //  If this is set, the key can be used for key agreement.
+            //  Both the private and public key should have this option enabled
+            //  to perform an agree operation.
             const AGREEKEY = 0x0000000000001000;
         }
     }
@@ -1296,6 +1344,10 @@ pub struct Sobject {
     pub external: Option<ExternalSobjectInfo>,
     #[serde(default)]
     pub fpe: Option<FpeOptions>,
+    /// Key Access Justifications for GCP EKM.
+    /// For more details: https://cloud.google.com/cloud-provider-access-management/key-access-justifications/docs/overview
+    #[serde(default)]
+    pub google_access_reason_policy: Option<GoogleAccessReasonPolicy>,
     #[serde(default)]
     pub history: Option<Vec<HistoryItem>>,
     #[serde(default)]

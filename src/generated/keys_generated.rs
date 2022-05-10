@@ -36,7 +36,7 @@ pub struct ExportSobjectComponentsRequest {
     pub description: Option<String>
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, )]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, Default)]
 pub struct FilterList {
     #[serde(flatten)]
     pub head: Box<CustomMetadata>
@@ -261,6 +261,10 @@ pub struct SobjectRequest {
     pub enabled: Option<bool>,
     #[serde(default)]
     pub fpe: Option<FpeOptions>,
+    /// Key Access Justifications for GCP EKM.
+    /// For more details: https://cloud.google.com/cloud-provider-access-management/key-access-justifications/docs/overview
+    #[serde(default)]
+    pub google_access_reason_policy: Option<GoogleAccessReasonPolicy>,
     #[serde(default)]
     pub kcv: Option<String>,
     #[serde(default)]

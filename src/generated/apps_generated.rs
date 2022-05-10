@@ -186,28 +186,6 @@ impl UrlEncode for GetAppParams {
     }
 }
 
-/// An access reason provided by Google when making EKMS API calls.
-#[derive(Debug, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-pub enum GoogleAccessReason {
-    ReasonUnspecified = 0,
-    CustomerInitiatedSupport = 1,
-    GoogleInitiatedService = 2,
-    ThirdPartyDataRequest = 3,
-    GoogleInitiatedReview = 4,
-    CustomerInitiatedAccess = 5,
-    GoogleInitiatedSystemOperation = 6,
-    ReasonNotExpected = 7,
-    ModifiedCustomerInitiatedAccess = 8
-}
-
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "snake_case")]
-pub struct GoogleAccessReasonPolicy {
-    pub allow: HashSet<GoogleAccessReason>,
-    pub allow_missing_reason: bool
-}
-
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum IpAddressPolicy {

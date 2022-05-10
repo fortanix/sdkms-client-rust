@@ -11,7 +11,7 @@ use simple_hyper_client::Method;
 use std::collections::{HashMap, HashSet};
 use std::fmt;
 use uuid::Uuid;
-use serde::{Deserialize, Serialize, Deserializer};
+use serde::{Deserialize, Serialize};
 use std::net::IpAddr;
 use strum::{EnumIter};
 

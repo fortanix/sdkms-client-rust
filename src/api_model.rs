@@ -103,7 +103,7 @@ impl AsRef<[u8]> for Blob {
 
 impl ToString for Blob {
     fn to_string(&self) -> String {
-        self.to_string()
+        String::from_utf8(self.0.clone()).unwrap()
     }
 }
 
@@ -532,7 +532,7 @@ impl fmt::Display for PluginVersion {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct CustomMetadata(pub HashMap<String, String>);
 
 impl Serialize for CustomMetadata {
@@ -739,10 +739,6 @@ impl AppRole {
             AppRole::Admin => AccountRole::AdminApp,
             AppRole::Crypto => AccountRole::CryptoApp,
         }
-    }
-
-    pub fn backcompat_deserialize_opt<'a, D: Deserializer<'a>>(deserializer: D) -> Result<Self, D::Error> {
-        Ok(Option::<AppRole>::deserialize(deserializer)?.unwrap_or_default())
     }
 }
 

@@ -16,7 +16,6 @@ edition = "2018"
 [features]
 default = ["native-tls"]
 native-tls = ["simple-hyper-client/native-tls", "tokio-native-tls"]
-async = []
 
 [dependencies]
 base64 = "0.13"

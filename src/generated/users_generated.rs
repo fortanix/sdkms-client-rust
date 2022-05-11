@@ -8,18 +8,18 @@ use super::*;
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ConfirmEmailRequest {
-    pub confirm_token: String
+    pub confirm_token: String,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ConfirmEmailResponse {
-    pub user_email: String
+    pub user_email: String,
 }
 
 /// Initiate password reset sequence.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ForgotPasswordRequest {
-    pub user_email: String
+    pub user_email: String,
 }
 
 #[derive(Serialize, Deserialize, Clone, Default)]
@@ -29,7 +29,7 @@ pub struct ListUsersParams {
     pub limit: Option<usize>,
     pub offset: Option<usize>,
     #[serde(flatten)]
-    pub sort: UserSort
+    pub sort: UserSort,
 }
 
 impl UrlEncode for ListUsersParams {
@@ -54,14 +54,14 @@ impl UrlEncode for ListUsersParams {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PasswordChangeRequest {
     pub current_password: String,
-    pub new_password: String
+    pub new_password: String,
 }
 
 /// Request to perform a password reset.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PasswordResetRequest {
     pub reset_token: String,
-    pub new_password: String
+    pub new_password: String,
 }
 
 /// Accept/reject invitations to join account.
@@ -72,13 +72,13 @@ pub struct ProcessInviteRequest {
     pub accepts: Option<HashSet<Uuid>>,
     /// Optional list of account IDs to reject.
     #[serde(default)]
-    pub rejects: Option<HashSet<Uuid>>
+    pub rejects: Option<HashSet<Uuid>>,
 }
 
 /// U2F recovery codes.
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct RecoveryCodes {
-    pub recovery_codes: Vec<String>
+    pub recovery_codes: Vec<String>,
 }
 
 /// Request to signup a new user.
@@ -91,7 +91,7 @@ pub struct SignupRequest {
     #[serde(default)]
     pub first_name: Option<String>,
     #[serde(default)]
-    pub last_name: Option<String>
+    pub last_name: Option<String>,
 }
 
 /// Description of a U2F device to add for two factor authentication.
@@ -101,26 +101,26 @@ pub struct U2fAddDeviceRequest {
     pub name: String,
     pub registration_data: Blob,
     pub client_data: Blob,
-    pub version: String
+    pub version: String,
 }
 
 /// Request to delete a U2F device.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub struct U2fDelDeviceRequest {
-    pub name: String
+    pub name: String,
 }
 
 /// A U2f device that may be used for second factor authentication.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub struct U2fDevice {
-    pub name: String
+    pub name: String,
 }
 
 /// Request to rename a U2F device.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub struct U2fRenameDeviceRequest {
     pub old_name: String,
-    pub new_name: String
+    pub new_name: String,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -134,7 +134,7 @@ pub struct User {
     pub email_verified: Option<bool>,
     #[serde(default)]
     pub first_name: Option<String>,
-    pub groups: HashMap<Uuid,UserGroupRole>,
+    pub groups: HashMap<Uuid, UserGroupRole>,
     #[serde(default)]
     pub has_account: Option<bool>,
     #[serde(default)]
@@ -148,13 +148,13 @@ pub struct User {
     pub u2f_devices: Vec<U2fDevice>,
     #[serde(default)]
     pub user_email: Option<String>,
-    pub user_id: Uuid
+    pub user_id: Uuid,
 }
 
 /// User's role and state in an account.
 pub use self::user_flags::UserAccountFlags;
 pub mod user_flags {
-    bitflags_set!{
+    bitflags_set! {
         pub struct UserAccountFlags: u64 {
             const ACCOUNTADMINISTRATOR = 0x0000000000000001;
             const ACCOUNTMEMBER = 0x0000000000000002;
@@ -170,11 +170,11 @@ pub struct UserRequest {
     #[serde(default)]
     pub account_role: Option<UserAccountFlags>,
     #[serde(default)]
-    pub add_groups: Option<HashMap<Uuid,UserGroupRole>>,
+    pub add_groups: Option<HashMap<Uuid, UserGroupRole>>,
     #[serde(default)]
     pub add_u2f_devices: Option<Vec<U2fAddDeviceRequest>>,
     #[serde(default)]
-    pub del_groups: Option<HashMap<Uuid,UserGroupRole>>,
+    pub del_groups: Option<HashMap<Uuid, UserGroupRole>>,
     #[serde(default)]
     pub del_u2f_devices: Option<Vec<U2fDelDeviceRequest>>,
     #[serde(default)]
@@ -186,27 +186,27 @@ pub struct UserRequest {
     #[serde(default)]
     pub last_name: Option<String>,
     #[serde(default)]
-    pub mod_groups: Option<HashMap<Uuid,UserGroupRole>>,
+    pub mod_groups: Option<HashMap<Uuid, UserGroupRole>>,
     #[serde(default)]
     pub rename_u2f_devices: Option<Vec<U2fRenameDeviceRequest>>,
     #[serde(default)]
     pub user_email: Option<String>,
     #[serde(default)]
-    pub user_password: Option<String>
+    pub user_password: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum UserSort {
-    ByUserId {
-        order: Order,
-        start: Option<Uuid>
-    }
+    ByUserId { order: Order, start: Option<Uuid> },
 }
 
 impl UrlEncode for UserSort {
     fn url_encode(&self, m: &mut HashMap<String, String>) {
         match *self {
-            UserSort::ByUserId{ ref order, ref start } => {
+            UserSort::ByUserId {
+                ref order,
+                ref start,
+            } => {
                 m.insert("sort".to_string(), format!("user_id:{}", order));
                 if let Some(v) = start {
                     m.insert("start".to_string(), v.to_string());
@@ -218,12 +218,12 @@ impl UrlEncode for UserSort {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ValidateTokenRequest {
-    pub reset_token: String
+    pub reset_token: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ValidateTokenResponse {
-    pub user_email: String
+    pub user_email: String,
 }
 
 pub struct OperationChangePassword;
@@ -265,7 +265,11 @@ impl Operation for OperationConfirmEmail {
 }
 
 impl SdkmsClient {
-    pub fn confirm_email(&self, id: &Uuid, req: &ConfirmEmailRequest) -> Result<ConfirmEmailResponse> {
+    pub fn confirm_email(
+        &self,
+        id: &Uuid,
+        req: &ConfirmEmailRequest,
+    ) -> Result<ConfirmEmailResponse> {
         self.execute::<OperationConfirmEmail>(req, (id,), None)
     }
 }
@@ -284,7 +288,10 @@ impl Operation for OperationDeleteStale {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{id}", id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn delete_stale(&self, id: &Uuid) -> Result<()> {
@@ -306,7 +313,10 @@ impl Operation for OperationDeleteUser {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users")
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn delete_user(&self) -> Result<()> {
@@ -328,7 +338,10 @@ impl Operation for OperationDeleteUserAccount {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{id}/accounts", id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn delete_user_account(&self, id: &Uuid) -> Result<()> {
@@ -372,7 +385,10 @@ impl Operation for OperationGenerateRecoveryCodes {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/generate_recovery_codes")
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn generate_recovery_codes(&self) -> Result<RecoveryCodes> {
@@ -394,7 +410,10 @@ impl Operation for OperationGetUser {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{id}", id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn get_user(&self, id: &Uuid) -> Result<User> {
@@ -408,7 +427,7 @@ impl Operation for OperationGetUserAccounts {
     type PathParams = ();
     type QueryParams = ();
     type Body = ();
-    type Output = HashMap<Uuid,UserAccountFlags>;
+    type Output = HashMap<Uuid, UserAccountFlags>;
 
     fn method() -> Method {
         Method::GET
@@ -416,10 +435,13 @@ impl Operation for OperationGetUserAccounts {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/accounts")
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
-    pub fn get_user_accounts(&self) -> Result<HashMap<Uuid,UserAccountFlags>> {
+    pub fn get_user_accounts(&self) -> Result<HashMap<Uuid, UserAccountFlags>> {
         self.execute::<OperationGetUserAccounts>(&(), (), None)
     }
 }
@@ -460,7 +482,10 @@ impl Operation for OperationListUsers {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users?{q}", q = q.encode())
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn list_users(&self, query_params: Option<&ListUsersParams>) -> Result<Vec<User>> {
@@ -504,7 +529,10 @@ impl Operation for OperationResendConfirmEmail {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/resend_confirm_email")
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn resend_confirm_email(&self) -> Result<()> {
@@ -526,7 +554,10 @@ impl Operation for OperationResendInvite {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{id}/resend_invite", id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn resend_invite(&self, id: &Uuid) -> Result<()> {
@@ -617,8 +648,11 @@ impl Operation for OperationValidateToken {
 }
 
 impl SdkmsClient {
-    pub fn validate_token(&self, id: &Uuid, req: &ValidateTokenRequest) -> Result<ValidateTokenResponse> {
+    pub fn validate_token(
+        &self,
+        id: &Uuid,
+        req: &ValidateTokenRequest,
+    ) -> Result<ValidateTokenResponse> {
         self.execute::<OperationValidateToken>(req, (id,), None)
     }
 }
-

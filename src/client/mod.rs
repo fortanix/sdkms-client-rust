@@ -2,4 +2,4 @@ mod common;
 
 pub mod impl_blocking;
 
-pub use self::common::{SdkmsClientBuilder, SdkmsClient, PendingApproval, Result};
+pub use self::common::{PendingApproval, Result, SdkmsClient, SdkmsClientBuilder};

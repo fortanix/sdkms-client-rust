@@ -55,14 +55,14 @@ pub enum AwskmsRegion {
     #[serde(rename = "us-gov-east-1")]
     UsGovEast1,
     #[serde(rename = "us-gov-west-1")]
-    UsGovWest1
+    UsGovWest1,
 }
 
 #[derive(PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "kebab-case")]
 pub enum AwskmsService {
     Kms,
-    KmsFips
+    KmsFips,
 }
 
 #[derive(Debug, Eq, PartialEq, Copy, Hash, Serialize, Deserialize, Clone)]
@@ -70,14 +70,14 @@ pub enum AwskmsService {
 pub enum AzureKeyVaultType {
     Standard,
     Premium,
-    Managed
+    Managed,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CheckHmgRequest {
     /// The ID of the hmg configuration in the group.
     pub id: Option<Uuid>,
-    pub config: Option<HmgConfig>
+    pub config: Option<HmgConfig>,
 }
 
 #[derive(PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone)]
@@ -86,7 +86,7 @@ pub struct GcpKeyRingConfig {
     pub project_id: String,
     pub location: String,
     pub key_ring: Option<String>,
-    pub private_key: Option<Blob>
+    pub private_key: Option<Blob>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -102,12 +102,12 @@ pub struct Group {
     #[serde(default)]
     pub custodian_policy: Option<QuorumPolicy>,
     #[serde(default)]
-    pub custom_metadata: Option<HashMap<String,String>>,
+    pub custom_metadata: Option<HashMap<String, String>>,
     #[serde(default)]
     pub description: Option<String>,
     pub group_id: Uuid,
     #[serde(default)]
-    pub hmg: Option<HashMap<Uuid,HmgConfig>>,
+    pub hmg: Option<HashMap<Uuid, HmgConfig>>,
     #[serde(default)]
     pub hmg_redundancy: Option<HmgRedundancyScheme>,
     #[serde(default)]
@@ -118,7 +118,7 @@ pub struct Group {
     pub key_history_policy: Option<KeyHistoryPolicy>,
     #[serde(default)]
     pub key_metadata_policy: Option<KeyMetadataPolicy>,
-    pub name: String
+    pub name: String,
 }
 
 /// Group approval policy.
@@ -129,7 +129,7 @@ pub struct GroupApprovalPolicy {
     /// When this is true, manage operations on security objects require approval.
     pub protect_manage_operations: Option<bool>,
     /// When this is true, cryptographic operations on security objects require approval.
-    pub protect_crypto_operations: Option<bool>
+    pub protect_crypto_operations: Option<bool>,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
@@ -145,7 +145,7 @@ pub struct GroupRequest {
     #[serde(default)]
     pub custodian_policy: Option<QuorumPolicy>,
     #[serde(default)]
-    pub custom_metadata: Option<HashMap<String,String>>,
+    pub custom_metadata: Option<HashMap<String, String>>,
     #[serde(default)]
     pub del_hmg: Option<HashSet<Uuid>>,
     #[serde(default)]
@@ -161,9 +161,9 @@ pub struct GroupRequest {
     #[serde(default)]
     pub key_metadata_policy: Option<Option<KeyMetadataPolicy>>,
     #[serde(default)]
-    pub mod_hmg: Option<HashMap<Uuid,HmgConfig>>,
+    pub mod_hmg: Option<HashMap<Uuid, HmgConfig>>,
     #[serde(default)]
-    pub name: Option<String>
+    pub name: Option<String>,
 }
 
 #[derive(PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone)]
@@ -176,7 +176,7 @@ pub enum HmgConfig {
         #[serde(default)]
         pin: Option<String>,
         #[serde(default)]
-        hsm_order: Option<i32>
+        hsm_order: Option<i32>,
     },
     Safenet {
         url: String,
@@ -185,7 +185,7 @@ pub enum HmgConfig {
         #[serde(default)]
         pin: Option<String>,
         #[serde(default)]
-        hsm_order: Option<i32>
+        hsm_order: Option<i32>,
     },
     AwsCloudHsm {
         url: String,
@@ -194,7 +194,7 @@ pub enum HmgConfig {
         #[serde(default)]
         pin: Option<String>,
         #[serde(default)]
-        hsm_order: Option<i32>
+        hsm_order: Option<i32>,
     },
     AwsKms {
         url: String,
@@ -206,19 +206,19 @@ pub enum HmgConfig {
         #[serde(default)]
         region: Option<AwskmsRegion>,
         #[serde(default)]
-        service: Option<AwskmsService>
+        service: Option<AwskmsService>,
     },
     Fortanix {
         url: String,
         tls: TlsConfig,
         #[serde(default)]
-        pin: Option<String>
+        pin: Option<String>,
     },
     FortanixFipsCluster {
         url: String,
         tls: TlsConfig,
         #[serde(default)]
-        pin: Option<String>
+        pin: Option<String>,
     },
     AzureKeyVault {
         url: String,
@@ -229,16 +229,14 @@ pub enum HmgConfig {
         client_id: Uuid,
         subscription_id: Uuid,
         #[serde(default)]
-        key_vault_type: Option<AzureKeyVaultType>
+        key_vault_type: Option<AzureKeyVaultType>,
     },
-    GcpKeyRing (
-        GcpKeyRingConfig
-    )
+    GcpKeyRing(GcpKeyRingConfig),
 }
 
 #[derive(Eq, Debug, PartialEq, Hash, Copy, Serialize, Deserialize, Clone)]
 pub enum HmgRedundancyScheme {
-    PriorityFailover
+    PriorityFailover,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -248,15 +246,15 @@ pub struct KeyVault {
     pub vault_type: AzureKeyVaultType,
     pub location: String,
     #[serde(default)]
-    pub tags: Option<HashMap<String,String>>,
+    pub tags: Option<HashMap<String, String>>,
     #[serde(default)]
     pub retention: Option<u32>,
-    pub uri: String
+    pub uri: String,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ScanHmgRequest {
-    pub config: Option<HmgConfig>
+    pub config: Option<HmgConfig>,
 }
 
 pub struct OperationCheckHmg;
@@ -339,7 +337,10 @@ impl Operation for OperationDeleteGroup {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups/{id}", id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn delete_group(&self, id: &Uuid) -> Result<()> {
@@ -383,7 +384,10 @@ impl Operation for OperationGetGroup {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups/{id}", id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn get_group(&self, id: &Uuid) -> Result<Group> {
@@ -427,7 +431,10 @@ impl Operation for OperationListGroups {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups")
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn list_groups(&self) -> Result<Vec<Group>> {
@@ -478,9 +485,11 @@ impl SdkmsClient {
         self.execute::<OperationUpdateGroup>(req, (id,), None)
     }
     pub fn request_approval_to_update_group(
-        &self, id: &Uuid, req: &GroupRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationUpdateGroup>> {
+        &self,
+        id: &Uuid,
+        req: &GroupRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationUpdateGroup>> {
         self.request_approval::<OperationUpdateGroup>(req, (id,), None, description)
     }
 }
-

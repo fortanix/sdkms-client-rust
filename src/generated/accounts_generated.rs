@@ -26,9 +26,9 @@ pub struct Account {
     #[serde(default)]
     pub custom_logo: Option<Blob>,
     #[serde(default)]
-    pub custom_metadata: Option<HashMap<String,String>>,
+    pub custom_metadata: Option<HashMap<String, String>>,
     #[serde(default)]
-    pub custom_metadata_attributes: Option<HashMap<String,CustomAttributeSearchMetadata>>,
+    pub custom_metadata_attributes: Option<HashMap<String, CustomAttributeSearchMetadata>>,
     #[serde(default)]
     pub description: Option<String>,
     #[serde(default)]
@@ -42,7 +42,7 @@ pub struct Account {
     pub key_metadata_policy: Option<KeyMetadataPolicy>,
     #[serde(default)]
     pub log_bad_requests: Option<bool>,
-    pub logging_configs: HashMap<Uuid,LoggingConfig>,
+    pub logging_configs: HashMap<Uuid, LoggingConfig>,
     #[serde(default)]
     pub max_app: Option<u32>,
     #[serde(default)]
@@ -74,7 +74,7 @@ pub struct Account {
     #[serde(default)]
     pub trial_expires_at: Option<Time>,
     #[serde(default)]
-    pub workspace_cse_config: Option<WorkspaceCseConfig>
+    pub workspace_cse_config: Option<WorkspaceCseConfig>,
 }
 
 /// Account approval policy.
@@ -87,7 +87,7 @@ pub struct AccountApprovalPolicy {
     /// When this is true, changes to the account cryptographic policy requires approval.
     pub protect_cryptographic_policy: Option<bool>,
     /// When this is true, changes to logging configuration require approval.
-    pub protect_logging_config: Option<bool>
+    pub protect_logging_config: Option<bool>,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
@@ -111,9 +111,9 @@ pub struct AccountRequest {
     #[serde(default)]
     pub custom_logo: Option<Blob>,
     #[serde(default)]
-    pub custom_metadata: Option<HashMap<String,String>>,
+    pub custom_metadata: Option<HashMap<String, String>>,
     #[serde(default)]
-    pub custom_metadata_attributes: Option<HashMap<String,CustomAttributeSearchMetadata>>,
+    pub custom_metadata_attributes: Option<HashMap<String, CustomAttributeSearchMetadata>>,
     #[serde(default)]
     pub del_ldap: Option<HashSet<Uuid>>,
     #[serde(default)]
@@ -129,9 +129,9 @@ pub struct AccountRequest {
     #[serde(default)]
     pub log_bad_requests: Option<bool>,
     #[serde(default)]
-    pub mod_ldap: Option<HashMap<Uuid,AuthConfigLdap>>,
+    pub mod_ldap: Option<HashMap<Uuid, AuthConfigLdap>>,
     #[serde(default)]
-    pub mod_logging_configs: Option<HashMap<Uuid,LoggingConfigRequest>>,
+    pub mod_logging_configs: Option<HashMap<Uuid, LoggingConfigRequest>>,
     #[serde(default)]
     pub name: Option<String>,
     #[serde(default)]
@@ -149,7 +149,7 @@ pub struct AccountRequest {
     #[serde(default)]
     pub subscription: Option<Subscription>,
     #[serde(default)]
-    pub workspace_cse_config: Option<Option<WorkspaceCseConfig>>
+    pub workspace_cse_config: Option<Option<WorkspaceCseConfig>>,
 }
 
 #[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone)]
@@ -160,7 +160,7 @@ pub struct AppCreditsUsage {
     pub accelerator: u32,
     pub secrets_management: u32,
     pub aws_cloud_accounts: u32,
-    pub azure_cloud_accounts: u32
+    pub azure_cloud_accounts: u32,
 }
 
 /// Account authentication settings.
@@ -173,11 +173,11 @@ pub struct AuthConfig {
     #[serde(default)]
     pub oauth: Option<AuthConfigOauth>,
     #[serde(default)]
-    pub ldap: HashMap<Uuid,AuthConfigLdap>,
+    pub ldap: HashMap<Uuid, AuthConfigLdap>,
     #[serde(default)]
     pub signed_jwt: Option<AuthConfigSignedJwt>,
     #[serde(default)]
-    pub vcd: Option<AuthConfigVcd>
+    pub vcd: Option<AuthConfigVcd>,
 }
 
 /// OAuth single sign-on authentication settings.
@@ -192,21 +192,21 @@ pub struct AuthConfigOauth {
     pub idp_requires_basic_auth: bool,
     pub tls: TlsConfig,
     pub client_id: String,
-    pub client_secret: String
+    pub client_secret: String,
 }
 
 /// Password authentication settings.
 #[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone)]
 pub struct AuthConfigPassword {
     pub require_2fa: bool,
-    pub administrators_only: bool
+    pub administrators_only: bool,
 }
 
 /// Signed JWT authentication settings.
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct AuthConfigSignedJwt {
     pub valid_issuers: HashSet<String>,
-    pub signing_keys: JwtSigningKeys
+    pub signing_keys: JwtSigningKeys,
 }
 
 /// Vcd single sign-on authentication settings.
@@ -215,7 +215,7 @@ pub struct AuthConfigVcd {
     pub idp_name: String,
     pub idp_authorization_endpoint: String,
     pub org: String,
-    pub tls: TlsConfig
+    pub tls: TlsConfig,
 }
 
 #[derive(Serialize, Deserialize, Clone, Default)]
@@ -223,7 +223,7 @@ pub struct CountParams {
     pub range_from: Option<u64>,
     pub range_to: Option<u64>,
     pub detailed_usage: Option<bool>,
-    pub saas_full_usage: Option<bool>
+    pub saas_full_usage: Option<bool>,
 }
 
 impl UrlEncode for CountParams {
@@ -245,7 +245,7 @@ impl UrlEncode for CountParams {
 
 #[derive(Debug, Eq, PartialEq, Copy, Serialize, Deserialize, Clone)]
 pub struct CustomAttributeSearchMetadata {
-    pub suggest: bool
+    pub suggest: bool,
 }
 
 /// Custom subscription type
@@ -260,7 +260,7 @@ pub struct CustomSubscriptionType {
     pub count_transient_ops: Option<bool>,
     pub package_name: Option<String>,
     pub features: Option<SubscriptionFeatures>,
-    pub add_ons: Option<HashMap<String,String>>
+    pub add_ons: Option<HashMap<String, String>>,
 }
 
 #[derive(Eq, PartialEq, Debug, Serialize, Deserialize, Clone)]
@@ -270,12 +270,12 @@ pub struct FreemiumSubscriptionType {
     pub max_hsmg: Option<u32>,
     pub max_operation: Option<u64>,
     pub max_tokenization_operation: Option<u64>,
-    pub max_plugin: Option<u32>
+    pub max_plugin: Option<u32>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Default)]
 pub struct GetAccountParams {
-    pub with_totals: bool
+    pub with_totals: bool,
 }
 
 impl UrlEncode for GetAccountParams {
@@ -312,9 +312,9 @@ pub struct GetUsageResponse {
     #[serde(default)]
     pub hsm_gateway: Option<u32>,
     #[serde(default)]
-    pub operation_top_app: Option<HashMap<String,u64>>,
+    pub operation_top_app: Option<HashMap<String, u64>>,
     #[serde(default)]
-    pub operation_top_sobject: Option<HashMap<String,u64>>
+    pub operation_top_sobject: Option<HashMap<String, u64>>,
 }
 
 /// A Google service account key object. See https://cloud.google.com/video-intelligence/docs/common/auth.
@@ -326,35 +326,23 @@ pub struct GoogleServiceAccountKey {
     pub private_key_id: String,
     #[serde(default)]
     pub private_key: Option<String>,
-    pub client_email: String
+    pub client_email: String,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum LoggingConfig {
-    Splunk (
-        SplunkLoggingConfig
-    ),
-    Stackdriver (
-        StackdriverLoggingConfig
-    ),
-    Syslog (
-        SyslogLoggingConfig
-    )
+    Splunk(SplunkLoggingConfig),
+    Stackdriver(StackdriverLoggingConfig),
+    Syslog(SyslogLoggingConfig),
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum LoggingConfigRequest {
-    Splunk (
-        SplunkLoggingConfigRequest
-    ),
-    Stackdriver (
-        StackdriverLoggingConfigRequest
-    ),
-    Syslog (
-        SyslogLoggingConfigRequest
-    )
+    Splunk(SplunkLoggingConfigRequest),
+    Stackdriver(StackdriverLoggingConfigRequest),
+    Syslog(SyslogLoggingConfigRequest),
 }
 
 /// Notification preferences.
@@ -363,7 +351,7 @@ pub enum NotificationPref {
     None,
     Email,
     Phone,
-    Both
+    Both,
 }
 
 /// Counts of objects of various types in an account.
@@ -374,7 +362,7 @@ pub struct ObjectCounts {
     pub users: u64,
     pub plugins: u64,
     pub sobjects: u64,
-    pub child_accounts: u64
+    pub child_accounts: u64,
 }
 
 /// Reseller subscription type
@@ -388,8 +376,8 @@ pub struct ResellerSubscriptionType {
     pub max_tenant_operation: Option<u64>,
     pub package_name: Option<String>,
     pub features: Option<SubscriptionFeatures>,
-    pub add_ons: Option<HashMap<String,String>>,
-    pub tenant_features: Option<SubscriptionFeatures>
+    pub add_ons: Option<HashMap<String, String>>,
+    pub tenant_features: Option<SubscriptionFeatures>,
 }
 
 /// Splunk logging configuration.
@@ -399,7 +387,7 @@ pub struct SplunkLoggingConfig {
     pub host: String,
     pub port: u16,
     pub index: String,
-    pub tls: TlsConfig
+    pub tls: TlsConfig,
 }
 
 #[derive(Default, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -417,7 +405,7 @@ pub struct SplunkLoggingConfigRequest {
     #[serde(default)]
     pub token: Option<String>,
     #[serde(default)]
-    pub tls: Option<TlsConfig>
+    pub tls: Option<TlsConfig>,
 }
 
 /// Stackdriver logging configuration.
@@ -426,7 +414,7 @@ pub struct StackdriverLoggingConfig {
     pub enabled: bool,
     /// The log ID that will recieve the log items (see https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry).
     pub log_id: String,
-    pub service_account_key: GoogleServiceAccountKey
+    pub service_account_key: GoogleServiceAccountKey,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -434,7 +422,7 @@ pub struct StackdriverLoggingConfigRequest {
     pub enabled: Option<bool>,
     /// The log ID that will recieve the log items (see https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry).
     pub log_id: Option<String>,
-    pub service_account_key: Option<GoogleServiceAccountKey>
+    pub service_account_key: Option<GoogleServiceAccountKey>,
 }
 
 #[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone)]
@@ -442,7 +430,7 @@ pub struct Subscription {
     #[serde(default)]
     pub memo: Option<String>,
     #[serde(flatten)]
-    pub subscription_type: SubscriptionType
+    pub subscription_type: SubscriptionType,
 }
 
 /// A request to update subscription type.
@@ -452,13 +440,13 @@ pub struct SubscriptionChangeRequest {
     #[serde(default)]
     pub contact: Option<String>,
     #[serde(default)]
-    pub comment: Option<String>
+    pub comment: Option<String>,
 }
 
 /// Features in subscription
 pub use self::subscription_features::SubscriptionFeatures;
 pub mod subscription_features {
-    bitflags_set!{
+    bitflags_set! {
         pub struct SubscriptionFeatures: u64 {
             const TOKENIZATION = 0x0000000000000001;
             const HMG = 0x0000000000000002;
@@ -473,27 +461,13 @@ pub mod subscription_features {
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum SubscriptionType {
-    Trial {
-        expires_at: Option<Time>
-    },
-    Standard {
-
-    },
-    Enterprise {
-
-    },
-    Custom (
-        Box<CustomSubscriptionType>
-    ),
-    Freemium (
-        Box<FreemiumSubscriptionType>
-    ),
-    OnPrem {
-
-    },
-    Reseller (
-        Box<ResellerSubscriptionType>
-    )
+    Trial { expires_at: Option<Time> },
+    Standard {},
+    Enterprise {},
+    Custom(Box<CustomSubscriptionType>),
+    Freemium(Box<FreemiumSubscriptionType>),
+    OnPrem {},
+    Reseller(Box<ResellerSubscriptionType>),
 }
 
 #[derive(Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize, Clone)]
@@ -506,7 +480,7 @@ pub enum SyslogFacility {
     Local4,
     Local5,
     Local6,
-    Local7
+    Local7,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -515,7 +489,7 @@ pub struct SyslogLoggingConfig {
     pub host: String,
     pub port: u16,
     pub tls: TlsConfig,
-    pub facility: SyslogFacility
+    pub facility: SyslogFacility,
 }
 
 #[derive(Default, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -529,7 +503,7 @@ pub struct SyslogLoggingConfigRequest {
     #[serde(default)]
     pub tls: Option<TlsConfig>,
     #[serde(default)]
-    pub facility: Option<SyslogFacility>
+    pub facility: Option<SyslogFacility>,
 }
 
 /// These settings will allow the service to validate the Google-issued
@@ -553,7 +527,7 @@ pub struct WorkspaceCseAuthorizationProvider {
     pub valid_issuers: HashSet<String>,
     /// Acceptable values for the `aud` (audience) field used in Google's
     /// authorization tokens
-    pub valid_audiences: HashSet<String>
+    pub valid_audiences: HashSet<String>,
 }
 
 /// Workspace CSE API settings. Specifying these settings enables the CSE APIs
@@ -568,7 +542,7 @@ pub struct WorkspaceCseConfig {
     /// One or more authorization providers used to validate authorization
     /// tokens. Different Workspace applications might require different
     /// authorization settings.
-    pub authorization_providers: Vec<WorkspaceCseAuthorizationProvider>
+    pub authorization_providers: Vec<WorkspaceCseAuthorizationProvider>,
 }
 
 /// An identity provider trusted to authenticate users for Workspace CSE APIs
@@ -583,7 +557,7 @@ pub struct WorkspaceCseIdentityProvider {
     pub valid_issuers: HashSet<String>,
     /// Acceptable values for the `aud` (audience) field used in authentication
     /// tokens
-    pub valid_audiences: HashSet<String>
+    pub valid_audiences: HashSet<String>,
 }
 
 pub struct OperationAccountUsage;
@@ -600,10 +574,17 @@ impl Operation for OperationAccountUsage {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{id}/usage?{q}", id = p.0, q = q.encode())
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
-    pub fn account_usage(&self, id: &Uuid, query_params: Option<&CountParams>) -> Result<GetUsageResponse> {
+    pub fn account_usage(
+        &self,
+        id: &Uuid,
+        query_params: Option<&CountParams>,
+    ) -> Result<GetUsageResponse> {
         self.execute::<OperationAccountUsage>(&(), (id,), query_params)
     }
 }
@@ -629,8 +610,10 @@ impl SdkmsClient {
         self.execute::<OperationCreateAccount>(req, (), None)
     }
     pub fn request_approval_to_create_account(
-        &self, req: &AccountRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationCreateAccount>> {
+        &self,
+        req: &AccountRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationCreateAccount>> {
         self.request_approval::<OperationCreateAccount>(req, (), None, description)
     }
 }
@@ -649,7 +632,10 @@ impl Operation for OperationDeleteAccount {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{id}", id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn delete_account(&self, id: &Uuid) -> Result<()> {
@@ -671,10 +657,17 @@ impl Operation for OperationGetAccount {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{id}?{q}", id = p.0, q = q.encode())
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
-    pub fn get_account(&self, id: &Uuid, query_params: Option<&GetAccountParams>) -> Result<Account> {
+    pub fn get_account(
+        &self,
+        id: &Uuid,
+        query_params: Option<&GetAccountParams>,
+    ) -> Result<Account> {
         self.execute::<OperationGetAccount>(&(), (id,), query_params)
     }
 }
@@ -693,7 +686,10 @@ impl Operation for OperationListAccounts {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts?{q}", q = q.encode())
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn list_accounts(&self, query_params: Option<&GetAccountParams>) -> Result<Vec<Account>> {
@@ -722,9 +718,11 @@ impl SdkmsClient {
         self.execute::<OperationUpdateAccount>(req, (id,), None)
     }
     pub fn request_approval_to_update_account(
-        &self, id: &Uuid, req: &AccountRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationUpdateAccount>> {
+        &self,
+        id: &Uuid,
+        req: &AccountRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationUpdateAccount>> {
         self.request_approval::<OperationUpdateAccount>(req, (id,), None, description)
     }
 }
-

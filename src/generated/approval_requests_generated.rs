@@ -28,7 +28,7 @@ pub struct ApprovalRequest {
     pub reviewers: Option<Vec<Reviewer>>,
     pub status: ApprovalStatus,
     #[serde(default)]
-    pub subjects: Option<HashSet<ApprovalSubject>>
+    pub subjects: Option<HashSet<ApprovalSubject>>,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
@@ -40,7 +40,7 @@ pub struct ApprovalRequestRequest {
     #[serde(default)]
     pub method: Option<String>,
     #[serde(default)]
-    pub operation: Option<String>
+    pub operation: Option<String>,
 }
 
 /// Approval request status.
@@ -50,29 +50,19 @@ pub enum ApprovalStatus {
     Pending,
     Approved,
     Denied,
-    Failed
+    Failed,
 }
 
 /// Identifies an object acted upon by an approval request.
 #[derive(Copy, Eq, PartialEq, Hash, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum ApprovalSubject {
-    Group (
-        Uuid
-    ),
-    Sobject (
-        Uuid
-    ),
-    App (
-        Uuid
-    ),
-    Plugin (
-        Uuid
-    ),
-    Account (
-        Uuid
-    ),
-    NewAccount
+    Group(Uuid),
+    Sobject(Uuid),
+    App(Uuid),
+    Plugin(Uuid),
+    Account(Uuid),
+    NewAccount,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
@@ -83,12 +73,12 @@ pub struct ApproveRequest {
     pub u2f: Option<U2fAuthRequest>,
     /// Data associated with the approval
     #[serde(default)]
-    pub body: Option<serde_json::Value>
+    pub body: Option<serde_json::Value>,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct DenyRequest {
-    pub reason: Option<String>
+    pub reason: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Default)]
@@ -96,7 +86,7 @@ pub struct ListApprovalRequestsParams {
     pub requester: Option<Uuid>,
     pub reviewer: Option<Uuid>,
     pub subject: Option<Uuid>,
-    pub status: Option<ApprovalStatus>
+    pub status: Option<ApprovalStatus>,
 }
 
 impl UrlEncode for ListApprovalRequestsParams {
@@ -124,19 +114,15 @@ pub struct Reviewer {
     #[serde(default)]
     pub requires_password: bool,
     #[serde(default)]
-    pub requires_2fa: bool
+    pub requires_2fa: bool,
 }
 
 /// A Principal who can approve or deny an approval request.
 #[derive(Copy, PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum ReviewerPrincipal {
-    App (
-        Uuid
-    ),
-    User (
-        Uuid
-    )
+    App(Uuid),
+    User(Uuid),
 }
 
 pub struct OperationApproveRequest;
@@ -197,7 +183,10 @@ impl Operation for OperationDeleteApprovalRequest {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{id}", id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn delete_approval_request(&self, id: &Uuid) -> Result<()> {
@@ -241,7 +230,10 @@ impl Operation for OperationGetApprovalRequest {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{id}", id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn get_approval_request(&self, id: &Uuid) -> Result<ApprovalRequest> {
@@ -263,7 +255,10 @@ impl Operation for OperationGetApprovalRequestResult {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{id}/result", id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn get_approval_request_result(&self, id: &Uuid) -> Result<ApprovableResult> {
@@ -285,10 +280,16 @@ impl Operation for OperationListApprovalRequests {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests?{q}", q = q.encode())
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
-    pub fn list_approval_requests(&self, query_params: Option<&ListApprovalRequestsParams>) -> Result<Vec<ApprovalRequest>> {
+    pub fn list_approval_requests(
+        &self,
+        query_params: Option<&ListApprovalRequestsParams>,
+    ) -> Result<Vec<ApprovalRequest>> {
         self.execute::<OperationListApprovalRequests>(&(), (), query_params)
     }
 }
@@ -307,11 +308,13 @@ impl Operation for OperationMfaChallenge {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{id}/challenge", id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn mfa_challenge(&self, id: &Uuid) -> Result<MfaChallengeResponse> {
         self.execute::<OperationMfaChallenge>(&(), (id,), None)
     }
 }
-

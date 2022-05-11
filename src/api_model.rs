@@ -6,6 +6,8 @@
 
 use serde::de::Error as DeserializeError;
 use serde::ser::Error as SerializeError;
+use serde::ser::SerializeSeq;
+use serde::ser::SerializeStruct;
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use simple_hyper_client::StatusCode;
 use std::collections::{HashMap, HashSet};
@@ -20,8 +22,6 @@ use time::{OffsetDateTime, PrimitiveDateTime};
 #[cfg(feature = "native-tls")]
 use tokio_native_tls::native_tls;
 use uuid::Uuid;
-use serde::ser::SerializeStruct;
-use serde::ser::SerializeSeq;
 
 pub use crate::generated::*;
 use crate::operations::UrlEncode;
@@ -103,7 +103,7 @@ impl AsRef<[u8]> for Blob {
 
 impl ToString for Blob {
     fn to_string(&self) -> String {
-        String::from_utf8(self.0.clone()).unwrap()
+        base64::encode(&self.0)
     }
 }
 
@@ -501,7 +501,7 @@ mod tests {
 #[derive(Copy, Clone, PartialEq, Eq, Debug, Hash)]
 pub struct PluginVersion {
     pub major: u32,
-    pub minor: u32
+    pub minor: u32,
 }
 
 impl Serialize for PluginVersion {
@@ -515,14 +515,17 @@ impl<'de> Deserialize<'de> for PluginVersion {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         let version: String = Deserialize::deserialize(deserializer)?;
         let mut components = version.split(".");
-        let major = components.next().ok_or_else(|| D::Error::custom("no major version found"))?
-            .parse::<u32>().map_err(D::Error::custom)?;
-        let minor = components.next().ok_or_else(|| D::Error::custom("no minor version found"))?
-            .parse::<u32>().map_err(D::Error::custom)?;
-        Ok(PluginVersion {
-            major,
-            minor
-        })
+        let major = components
+            .next()
+            .ok_or_else(|| D::Error::custom("no major version found"))?
+            .parse::<u32>()
+            .map_err(D::Error::custom)?;
+        let minor = components
+            .next()
+            .ok_or_else(|| D::Error::custom("no minor version found"))?
+            .parse::<u32>()
+            .map_err(D::Error::custom)?;
+        Ok(PluginVersion { major, minor })
     }
 }
 
@@ -537,7 +540,10 @@ pub struct CustomMetadata(pub HashMap<String, String>);
 
 impl Serialize for CustomMetadata {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        self.0.iter().map(|(k, v)| (format!("custom_metadata.{}", k), v)).collect::<HashMap<_, _>>()
+        self.0
+            .iter()
+            .map(|(k, v)| (format!("custom_metadata.{}", k), v))
+            .collect::<HashMap<_, _>>()
             .serialize(serializer)
     }
 }
@@ -612,21 +618,24 @@ mod custom_metadata_params_de {
 impl UrlEncode for CustomMetadata {
     fn url_encode(&self, m: &mut HashMap<String, String>) {
         // m.extend(self.0.clone().iter()));
-        for (key,value) in self.0.clone().into_iter() {
+        for (key, value) in self.0.clone().into_iter() {
             m.insert(key, value);
         }
     }
 }
 #[derive(Clone, Debug, Default)]
 pub struct GetAllResponse {
-    pub metadata : Option<Metadata>,
-    pub items: Vec<Sobject>
+    pub metadata: Option<Metadata>,
+    pub items: Vec<Sobject>,
 }
 
 impl GetAllResponse {
     pub fn new(is_with_metadata: bool, total_cnt: usize, items: Vec<Sobject>) -> Self {
         let metadata = if is_with_metadata {
-            Some(Metadata {total_count: total_cnt, filtered_count: items.len()})
+            Some(Metadata {
+                total_count: total_cnt,
+                filtered_count: items.len(),
+            })
         } else {
             None
         };
@@ -647,7 +656,10 @@ impl Serialize for GetAllResponse {
     {
         if self.metadata.is_some() {
             let mut state = serializer.serialize_struct("GetAllResponse", 2)?;
-            state.serialize_field("metadata", &self.metadata.as_ref().expect("expected metadta"))?;
+            state.serialize_field(
+                "metadata",
+                &self.metadata.as_ref().expect("expected metadta"),
+            )?;
             state.serialize_field("items", &self.items)?;
             return state.end();
         } else {
@@ -688,7 +700,10 @@ impl<'de> Deserialize<'de> for GetAllResponse {
                         break;
                     }
                 }
-                Ok(GetAllResponse{metadata: None, items})
+                Ok(GetAllResponse {
+                    metadata: None,
+                    items,
+                })
             }
 
             fn visit_map<V>(self, mut map: V) -> Result<GetAllResponse, V::Error>
@@ -702,14 +717,22 @@ impl<'de> Deserialize<'de> for GetAllResponse {
                         match key.as_str() {
                             "metadata" => metadata = map.next_value()?,
                             "items" => items = map.next_value()?,
-                            other => return Err(serde::de::Error::invalid_value(serde::de::Unexpected::Str(&format!("unexpected key {}", other)), &self)),
+                            other => {
+                                return Err(serde::de::Error::invalid_value(
+                                    serde::de::Unexpected::Str(&format!(
+                                        "unexpected key {}",
+                                        other
+                                    )),
+                                    &self,
+                                ))
+                            }
                         }
                     } else {
-                        break
+                        break;
                     }
                 }
 
-                Ok(GetAllResponse {items, metadata })
+                Ok(GetAllResponse { items, metadata })
             }
         }
 
@@ -723,61 +746,5 @@ impl std::iter::IntoIterator for GetAllResponse {
 
     fn into_iter(self) -> Self::IntoIter {
         self.items.into_iter()
-    }
-}
-
-impl AppRole {
-    pub fn as_str(&self) -> &str {
-        match *self {
-            AppRole::Admin => "admin",
-            AppRole::Crypto => "app",
-        }
-    }
-
-    pub fn account_role(&self) -> AccountRole {
-        match *self {
-            AppRole::Admin => AccountRole::AdminApp,
-            AppRole::Crypto => AccountRole::CryptoApp,
-        }
-    }
-}
-
-impl Default for AppRole {
-    fn default() -> Self {
-        AppRole::Crypto
-    }
-}
-
-impl ToString for AppRole {
-    fn to_string(&self) -> String {
-        self.as_str().to_string()
-    }
-}
-
-impl ToString for ObjectType {
-    fn to_string(&self) -> String {
-        match *self {
-            ObjectType::Aes => "AES".to_string(),
-            ObjectType::Des => "DES".to_string(),
-            ObjectType::Des3 => "DES3".to_string(),
-            ObjectType::Rsa => "RSA".to_string(),
-            ObjectType::Dsa => "DSA".to_string(),
-            ObjectType::Ec => "EC".to_string(),
-            ObjectType::Opaque => "OPAQUE".to_string(),
-            ObjectType::Hmac => "HMAC".to_string(),
-            ObjectType::Secret => "SECRET".to_string(),
-            ObjectType::Seed => "SEED".to_string(),
-            ObjectType::Round5Beta => "ROUND5BETA".to_string(),
-            ObjectType::LedaBeta => "LEDABETA".to_string(),
-            ObjectType::Lms => "LMS".to_string(),
-            ObjectType::Certificate => "CERTIFICATE".to_string(),
-            ObjectType::Pbe => "PBE".to_string()
-        }
-    }
-}
-
-impl Default for SubscriptionType {
-    fn default() -> SubscriptionType {
-        SubscriptionType::Trial { expires_at: None }
     }
 }

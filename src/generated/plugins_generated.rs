@@ -10,7 +10,7 @@ use super::*;
 #[derive(Debug, Eq, PartialEq, Copy, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum Language {
-    Lua
+    Lua,
 }
 
 #[derive(Serialize, Deserialize, Clone, Default)]
@@ -19,7 +19,7 @@ pub struct ListPluginsParams {
     pub limit: Option<usize>,
     pub offset: Option<usize>,
     #[serde(flatten)]
-    pub sort: PluginSort
+    pub sort: PluginSort,
 }
 
 impl UrlEncode for ListPluginsParams {
@@ -54,7 +54,7 @@ pub struct Plugin {
     pub plugin_id: Uuid,
     pub plugin_type: PluginType,
     pub source: PluginSource,
-    pub groups: HashSet<Uuid>
+    pub groups: HashSet<Uuid>,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
@@ -73,21 +73,21 @@ pub struct PluginRequest {
     pub source_req: Option<PluginSourceRequest>,
     pub add_groups: Option<HashSet<Uuid>>,
     pub del_groups: Option<HashSet<Uuid>>,
-    pub mod_groups: Option<HashSet<Uuid>>
+    pub mod_groups: Option<HashSet<Uuid>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum PluginSort {
-    ByPluginId {
-        order: Order,
-        start: Option<Uuid>
-    }
+    ByPluginId { order: Order, start: Option<Uuid> },
 }
 
 impl UrlEncode for PluginSort {
     fn url_encode(&self, m: &mut HashMap<String, String>) {
         match *self {
-            PluginSort::ByPluginId{ ref order, ref start } => {
+            PluginSort::ByPluginId {
+                ref order,
+                ref start,
+            } => {
                 m.insert("sort".to_string(), format!("plugin_id:{}", order));
                 if let Some(v) = start {
                     m.insert("start".to_string(), v.to_string());
@@ -106,12 +106,12 @@ pub enum PluginSource {
         name: String,
         version: PluginVersion,
         language: Language,
-        code: String
+        code: String,
     },
     Inline {
         language: Language,
-        code: String
-    }
+        code: String,
+    },
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -120,12 +120,12 @@ pub enum PluginSourceRequest {
     FromRepo {
         repo_url: String,
         plugin_name: String,
-        version: PluginVersion
+        version: PluginVersion,
     },
     Inline {
         language: Language,
-        code: String
-    }
+        code: String,
+    },
 }
 
 /// Type of a plugin.
@@ -134,7 +134,7 @@ pub enum PluginSourceRequest {
 pub enum PluginType {
     Standard,
     Impersonating,
-    CustomAlgorithm
+    CustomAlgorithm,
 }
 
 pub struct OperationCreatePlugin;
@@ -158,8 +158,10 @@ impl SdkmsClient {
         self.execute::<OperationCreatePlugin>(req, (), None)
     }
     pub fn request_approval_to_create_plugin(
-        &self, req: &PluginRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationCreatePlugin>> {
+        &self,
+        req: &PluginRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationCreatePlugin>> {
         self.request_approval::<OperationCreatePlugin>(req, (), None, description)
     }
 }
@@ -178,7 +180,10 @@ impl Operation for OperationDeletePlugin {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/plugins/{id}", id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn delete_plugin(&self, id: &Uuid) -> Result<()> {
@@ -200,7 +205,10 @@ impl Operation for OperationGetPlugin {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/plugins/{id}", id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn get_plugin(&self, id: &Uuid) -> Result<Plugin> {
@@ -229,8 +237,11 @@ impl SdkmsClient {
         self.execute::<OperationInvokePlugin>(req, (id,), None)
     }
     pub fn request_approval_to_invoke_plugin(
-        &self, id: &Uuid, req: &serde_json::Value,
-        description: Option<String>) -> Result<PendingApproval<OperationInvokePlugin>> {
+        &self,
+        id: &Uuid,
+        req: &serde_json::Value,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationInvokePlugin>> {
         self.request_approval::<OperationInvokePlugin>(req, (id,), None, description)
     }
 }
@@ -249,7 +260,10 @@ impl Operation for OperationListPlugins {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/plugins?{q}", q = q.encode())
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn list_plugins(&self, query_params: Option<&ListPluginsParams>) -> Result<Vec<Plugin>> {
@@ -278,9 +292,11 @@ impl SdkmsClient {
         self.execute::<OperationUpdatePlugin>(req, (id,), None)
     }
     pub fn request_approval_to_update_plugin(
-        &self, id: &Uuid, req: &PluginRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationUpdatePlugin>> {
+        &self,
+        id: &Uuid,
+        req: &PluginRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationUpdatePlugin>> {
         self.request_approval::<OperationUpdatePlugin>(req, (id,), None, description)
     }
 }
-

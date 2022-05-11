@@ -10,7 +10,7 @@ use super::*;
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum AgreeKeyMechanism {
-    DiffieHellman
+    DiffieHellman,
 }
 
 /// Request to perform key agreement.
@@ -41,7 +41,7 @@ pub struct AgreeKeyRequest {
     pub description: Option<String>,
     /// User-defined metadata for this key stored as key-value pairs.
     #[serde(default)]
-    pub custom_metadata: Option<HashMap<String,String>>,
+    pub custom_metadata: Option<HashMap<String, String>>,
     /// Optional array of key operations to be enabled for this security object. If not
     /// provided the service will provide a default set of key operations. Note that if you
     /// provide an empty array, all key operations will be disabled.
@@ -50,7 +50,7 @@ pub struct AgreeKeyRequest {
     #[serde(default)]
     pub state: Option<SobjectState>,
     /// If set to true, the resulting key will be transient.
-    pub transient: bool
+    pub transient: bool,
 }
 
 /// Finalize a multi-part decryption.
@@ -61,13 +61,13 @@ pub struct DecryptFinalRequest {
     pub state: Blob,
     /// Tag is only applicable when using GCM mode.
     #[serde(default)]
-    pub tag: Option<Blob>
+    pub tag: Option<Blob>,
 }
 
 /// Final result of a multi-part decryption.
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
 pub struct DecryptFinalResponse {
-    pub plain: Blob
+    pub plain: Blob,
 }
 
 /// Initialize multi-part decryption.
@@ -85,7 +85,7 @@ pub struct DecryptInitRequest {
     pub iv: Option<Blob>,
     /// Authenticated data is only applicable when using GCM mode.
     #[serde(default)]
-    pub ad: Option<Blob>
+    pub ad: Option<Blob>,
 }
 
 /// Result of initializing multi-part decryption.
@@ -95,7 +95,7 @@ pub struct DecryptInitResponse {
     #[serde(default)]
     pub kid: Option<Uuid>,
     /// Opaque data, not to be interpreted or modified by the client and must be provided with next request.
-    pub state: Blob
+    pub state: Blob,
 }
 
 /// A request to decrypt data using a symmetric or asymmetric key.
@@ -123,7 +123,7 @@ pub struct DecryptRequest {
     /// this flag.
     /// With `MASKDECRYPT` permission, this flag is ignored.
     #[serde(default)]
-    pub masked: Option<bool>
+    pub masked: Option<bool>,
 }
 
 /// Result of a decryption.
@@ -132,7 +132,7 @@ pub struct DecryptResponse {
     /// The key id of the key used to decrypt. Returned for non-transient keys.
     #[serde(default)]
     pub kid: Option<Uuid>,
-    pub plain: Blob
+    pub plain: Blob,
 }
 
 /// Multi-part decryption request.
@@ -141,7 +141,7 @@ pub struct DecryptUpdateRequest {
     #[serde(default)]
     pub key: Option<SobjectDescriptor>,
     pub cipher: Blob,
-    pub state: Blob
+    pub state: Blob,
 }
 
 /// Result of multi-part decryption.
@@ -149,7 +149,7 @@ pub struct DecryptUpdateRequest {
 pub struct DecryptUpdateResponse {
     pub plain: Blob,
     /// Opaque data, not to be interpreted or modified by the client and must be provided with next request.
-    pub state: Blob
+    pub state: Blob,
 }
 
 /// Encodes the mechanism to be used when deriving a new key from an existing key.
@@ -158,9 +158,7 @@ pub struct DecryptUpdateResponse {
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum DeriveKeyMechanism {
-    EncryptData (
-        EncryptRequest
-    )
+    EncryptData(EncryptRequest),
 }
 
 /// Request to derive a key.
@@ -192,7 +190,7 @@ pub struct DeriveKeyRequest {
     pub description: Option<String>,
     /// User-defined metadata for this key stored as key-value pairs.
     #[serde(default)]
-    pub custom_metadata: Option<HashMap<String,String>>,
+    pub custom_metadata: Option<HashMap<String, String>>,
     /// Optional array of key operations to be enabled for this security object. If not
     /// provided the service will provide a default set of key operations. Note that if you
     /// provide an empty array, all key operations will be disabled.
@@ -202,20 +200,20 @@ pub struct DeriveKeyRequest {
     pub state: Option<SobjectState>,
     /// If set to true, the derived key will be transient.
     #[serde(default)]
-    pub transient: Option<bool>
+    pub transient: Option<bool>,
 }
 
 /// Request to compute the hash of arbitrary data.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DigestRequest {
     pub alg: DigestAlgorithm,
-    pub data: Blob
+    pub data: Blob,
 }
 
 /// Result of a hash operation.
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
 pub struct DigestResponse {
-    pub digest: Blob
+    pub digest: Blob,
 }
 
 /// Finalize a multi-part encryption.
@@ -226,7 +224,7 @@ pub struct EncryptFinalRequest {
     pub state: Blob,
     /// Tag length is only applicable when using GCM mode.
     #[serde(default)]
-    pub tag_len: Option<usize>
+    pub tag_len: Option<usize>,
 }
 
 /// Final result of a multi-part encryption.
@@ -235,7 +233,7 @@ pub struct EncryptFinalResponse {
     pub cipher: Blob,
     /// Tag is only returned for symmetric encryption with GCM mode.
     #[serde(default)]
-    pub tag: Option<Blob>
+    pub tag: Option<Blob>,
 }
 
 /// Initialize multi-part encryption.
@@ -251,7 +249,7 @@ pub struct EncryptInitRequest {
     pub iv: Option<Blob>,
     /// Authenticated data is only applicable when using GCM mode.
     #[serde(default)]
-    pub ad: Option<Blob>
+    pub ad: Option<Blob>,
 }
 
 /// Result of initializing multi-part encryption.
@@ -264,7 +262,7 @@ pub struct EncryptInitResponse {
     #[serde(default)]
     pub iv: Option<Blob>,
     /// Opaque data, not to be interpreted or modified by the client and must be provided with next request.
-    pub state: Blob
+    pub state: Blob,
 }
 
 /// A request to encrypt data using a symmetric or asymmetric key.
@@ -285,7 +283,7 @@ pub struct EncryptRequest {
     pub ad: Option<Blob>,
     /// Tag length is only applicable when using GCM mode.
     #[serde(default)]
-    pub tag_len: Option<usize>
+    pub tag_len: Option<usize>,
 }
 
 /// Result of an encryption.
@@ -300,7 +298,7 @@ pub struct EncryptResponse {
     pub iv: Option<Blob>,
     /// Tag is only returned for symmetric encryption with GCM mode.
     #[serde(default)]
-    pub tag: Option<Blob>
+    pub tag: Option<Blob>,
 }
 
 /// Multi-part encryption request.
@@ -309,7 +307,7 @@ pub struct EncryptUpdateRequest {
     #[serde(default)]
     pub key: Option<SobjectDescriptor>,
     pub plain: Blob,
-    pub state: Blob
+    pub state: Blob,
 }
 
 /// Result of multi-part encryption.
@@ -317,14 +315,14 @@ pub struct EncryptUpdateRequest {
 pub struct EncryptUpdateResponse {
     pub cipher: Blob,
     /// Opaque data, not to be interpreted or modified by the client and must be provided with next request.
-    pub state: Blob
+    pub state: Blob,
 }
 
 /// Key Format
 #[derive(Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub enum KeyFormat {
     Default,
-    Pkcs8
+    Pkcs8,
 }
 
 /// Request for HMAC or CMAC operation.
@@ -334,7 +332,7 @@ pub struct MacRequest {
     pub key: Option<SobjectDescriptor>,
     #[serde(default)]
     pub alg: Option<DigestAlgorithm>,
-    pub data: Blob
+    pub data: Blob,
 }
 
 /// Result of HMAC or CMAC operation.
@@ -346,7 +344,7 @@ pub struct MacResponse {
     #[serde(default)]
     pub digest: Option<Blob>,
     /// The MAC generated for the input data.
-    pub mac: Blob
+    pub mac: Blob,
 }
 
 /// Request to perform key unwrapping.
@@ -386,7 +384,7 @@ pub struct UnwrapKeyRequest {
     pub description: Option<String>,
     /// User-defined metadata for the resulting key stored as key-value pairs.
     #[serde(default)]
-    pub custom_metadata: Option<HashMap<String,String>>,
+    pub custom_metadata: Option<HashMap<String, String>>,
     /// Optional array of key operations to be enabled for the resulting security object. If not
     /// provided the service will provide a default set of key operations. Note that if you provide
     /// an empty array, all key operations will be disabled.
@@ -395,7 +393,7 @@ pub struct UnwrapKeyRequest {
     #[serde(default)]
     pub transient: Option<bool>,
     #[serde(default)]
-    pub kcv: Option<String>
+    pub kcv: Option<String>,
 }
 
 /// Rquest to verify a MAC value.
@@ -412,7 +410,7 @@ pub struct VerifyMacRequest {
     pub digest: Option<Blob>,
     /// Either `digest` or `mac` should be specified.
     #[serde(default)]
-    pub mac: Option<Blob>
+    pub mac: Option<Blob>,
 }
 
 /// Request to perform key wrapping.
@@ -440,7 +438,7 @@ pub struct WrapKeyRequest {
     #[serde(default)]
     pub tag_len: Option<usize>,
     #[serde(default)]
-    pub key_format: Option<KeyFormat>
+    pub key_format: Option<KeyFormat>,
 }
 
 /// Result of key wrapping operation.
@@ -452,7 +450,7 @@ pub struct WrapKeyResponse {
     pub iv: Option<Blob>,
     /// Tag is only returned for symmetric algorithm with GCM mode.
     #[serde(default)]
-    pub tag: Option<Blob>
+    pub tag: Option<Blob>,
 }
 
 pub struct OperationAgree;
@@ -476,8 +474,10 @@ impl SdkmsClient {
         self.execute::<OperationAgree>(req, (), None)
     }
     pub fn request_approval_to_agree(
-        &self, req: &AgreeKeyRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationAgree>> {
+        &self,
+        req: &AgreeKeyRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationAgree>> {
         self.request_approval::<OperationAgree>(req, (), None, description)
     }
 }
@@ -525,8 +525,10 @@ impl SdkmsClient {
         self.execute::<OperationDecrypt>(req, (), None)
     }
     pub fn request_approval_to_decrypt(
-        &self, req: &DecryptRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationDecrypt>> {
+        &self,
+        req: &DecryptRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationDecrypt>> {
         self.request_approval::<OperationDecrypt>(req, (), None, description)
     }
 }
@@ -618,8 +620,10 @@ impl SdkmsClient {
         self.execute::<OperationDerive>(req, (), None)
     }
     pub fn request_approval_to_derive(
-        &self, req: &DeriveKeyRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationDerive>> {
+        &self,
+        req: &DeriveKeyRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationDerive>> {
         self.request_approval::<OperationDerive>(req, (), None, description)
     }
 }
@@ -645,8 +649,10 @@ impl SdkmsClient {
         self.execute::<OperationEncrypt>(req, (), None)
     }
     pub fn request_approval_to_encrypt(
-        &self, req: &EncryptRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationEncrypt>> {
+        &self,
+        req: &EncryptRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationEncrypt>> {
         self.request_approval::<OperationEncrypt>(req, (), None, description)
     }
 }
@@ -738,8 +744,10 @@ impl SdkmsClient {
         self.execute::<OperationMac>(req, (), None)
     }
     pub fn request_approval_to_mac(
-        &self, req: &MacRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationMac>> {
+        &self,
+        req: &MacRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationMac>> {
         self.request_approval::<OperationMac>(req, (), None, description)
     }
 }
@@ -787,8 +795,10 @@ impl SdkmsClient {
         self.execute::<OperationSign>(req, (), None)
     }
     pub fn request_approval_to_sign(
-        &self, req: &SignRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationSign>> {
+        &self,
+        req: &SignRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationSign>> {
         self.request_approval::<OperationSign>(req, (), None, description)
     }
 }
@@ -814,8 +824,10 @@ impl SdkmsClient {
         self.execute::<OperationUnwrap>(req, (), None)
     }
     pub fn request_approval_to_unwrap(
-        &self, req: &UnwrapKeyRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationUnwrap>> {
+        &self,
+        req: &UnwrapKeyRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationUnwrap>> {
         self.request_approval::<OperationUnwrap>(req, (), None, description)
     }
 }
@@ -863,9 +875,10 @@ impl SdkmsClient {
         self.execute::<OperationWrap>(req, (), None)
     }
     pub fn request_approval_to_wrap(
-        &self, req: &WrapKeyRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationWrap>> {
+        &self,
+        req: &WrapKeyRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationWrap>> {
         self.request_approval::<OperationWrap>(req, (), None, description)
     }
 }
-

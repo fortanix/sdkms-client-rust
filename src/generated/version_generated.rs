@@ -10,7 +10,7 @@ use super::*;
 #[derive(Copy, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub enum ServerMode {
     Software,
-    Sgx
+    Sgx,
 }
 
 /// Information about the service version.
@@ -24,7 +24,7 @@ pub struct VersionResponse {
     /// FIPS level at which the service in running. If this field is absent, then the service is
     /// not running in FIPS compliant mode.
     #[serde(default)]
-    pub fips_level: Option<u8>
+    pub fips_level: Option<u8>,
 }
 
 pub struct OperationVersion;
@@ -41,11 +41,13 @@ impl Operation for OperationVersion {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/version")
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn version(&self) -> Result<VersionResponse> {
         self.execute::<OperationVersion>(&(), (), None)
     }
 }
-

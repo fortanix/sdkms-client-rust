@@ -10,7 +10,7 @@ const MY_ACCT_ID: &'static str = "b6080ec0-df2e-...";
 fn main() -> Result<(), SdkmsError> {
     env_logger::init();
 
-    let mut client = SdkmsClient::builder()
+    let client = SdkmsClient::builder()
         .with_api_endpoint("https://sdkms.fortanix.com")
         .build()?
         .authenticate_user(MY_USERNAME, MY_PASSWORD)?;

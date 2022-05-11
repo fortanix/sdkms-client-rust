@@ -1,17 +1,16 @@
 use crate::api_model::*;
 use crate::operations::*;
 
-use super::SdkmsClient;
 use super::common::*;
+use super::SdkmsClient;
 use headers::{ContentType, HeaderMap, HeaderMapExt};
-use simple_hyper_client::hyper::header::AUTHORIZATION;
-use simple_hyper_client::blocking::Client as HttpClient;
 use serde::{Deserialize, Serialize};
-use simple_hyper_client::{Method};
+use simple_hyper_client::blocking::Client as HttpClient;
+use simple_hyper_client::hyper::header::AUTHORIZATION;
+use simple_hyper_client::Method;
+use std::io::Read;
 use std::sync::atomic::{AtomicU64, Ordering};
 use uuid::Uuid;
-use std::io::Read;
-
 
 impl SdkmsClient {
     fn authenticate_client(&self, auth: Option<&Auth>) -> Result<Self> {
@@ -31,27 +30,27 @@ impl SdkmsClient {
             auth_response: Some(auth_response),
         })
     }
-    
+
     pub fn authenticate_with_api_key(&self, api_key: &str) -> Result<Self> {
         self.authenticate_client(Some(Auth::from_api_key(api_key)).as_ref())
     }
-    
+
     pub fn authenticate_with_cert(&self, app_id: Option<&Uuid>) -> Result<Self> {
         self.authenticate_client(app_id.map(|id| Auth::from_user_pass(id, "")).as_ref())
     }
-    
+
     pub fn authenticate_app(&self, app_id: &Uuid, app_secret: &str) -> Result<Self> {
         self.authenticate_client(Some(Auth::from_user_pass(app_id, app_secret)).as_ref())
     }
-    
+
     pub fn authenticate_user(&self, email: &str, password: &str) -> Result<Self> {
         self.authenticate_client(Some(Auth::from_user_pass(email, password)).as_ref())
     }
-    
+
     fn json_request<E, D>(&self, method: Method, uri: &str, req: Option<&E>) -> Result<D>
-        where
-            E: Serialize,
-            D: for<'de> Deserialize<'de>,
+    where
+        E: Serialize,
+        D: for<'de> Deserialize<'de>,
     {
         let Self {
             ref client,
@@ -63,7 +62,7 @@ impl SdkmsClient {
         self.last_used.store(now().0, Ordering::Relaxed);
         Ok(result)
     }
-    
+
     pub fn terminate_client(&mut self) -> Result<()> {
         if let Some(Auth::Bearer(_)) = self.auth {
             self.json_request(Method::POST, "/sys/v1/session/terminate", None::<&()>)?;
@@ -71,7 +70,7 @@ impl SdkmsClient {
         }
         Ok(())
     }
-    
+
     pub fn invoke_plugin_nice<I, O>(&self, id: &Uuid, req: &I) -> Result<O>
     where
         I: Serialize,
@@ -81,7 +80,7 @@ impl SdkmsClient {
         let output = self.execute::<OperationInvokePlugin>(&req, (id,), None)?;
         Ok(serde_json::from_value(output)?)
     }
-    
+
     pub fn execute<O: Operation>(
         &self,
         body: &O::Body,
@@ -90,7 +89,7 @@ impl SdkmsClient {
     ) -> Result<O::Output> {
         self.json_request(O::method(), &O::path(p, q), O::to_body(body).as_ref())
     }
-    
+
     pub fn request_approval<O: Operation>(
         &self,
         body: &O::Body,

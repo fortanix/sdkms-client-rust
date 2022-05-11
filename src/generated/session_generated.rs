@@ -8,7 +8,7 @@ use super::*;
 
 #[derive(Serialize, Deserialize, Clone, Default)]
 pub struct AuthDiscoverParams {
-    pub acct_id: Option<Uuid>
+    pub acct_id: Option<Uuid>,
 }
 
 impl UrlEncode for AuthDiscoverParams {
@@ -21,7 +21,7 @@ impl UrlEncode for AuthDiscoverParams {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AuthDiscoverRequest {
-    pub user_email: Option<String>
+    pub user_email: Option<String>,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
@@ -34,7 +34,7 @@ pub enum AuthMethod {
         id: String,
         binding_url: String,
         authn_request: String,
-        idp_id: Blob
+        idp_id: Blob,
     },
     OauthAuthCodeGrant {
         name: String,
@@ -43,18 +43,18 @@ pub enum AuthMethod {
         client_id: String,
         redirect_uri: String,
         state: String,
-        idp_id: Blob
+        idp_id: Blob,
     },
     LdapPassword {
         name: String,
         icon_url: String,
-        idp_id: Blob
+        idp_id: Blob,
     },
     Vcd {
         name: String,
         authorization_url: String,
-        idp_id: Blob
-    }
+        idp_id: Blob,
+    },
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -63,29 +63,25 @@ pub enum AuthRequest {
     SamlResponse {
         #[serde(default)]
         id: Option<String>,
-        response: String
+        response: String,
     },
-    OauthAuthCode (
-        OauthCodeData
-    ),
+    OauthAuthCode(OauthCodeData),
     LdapBasicAuth {
         idp_id: Blob,
         email: String,
-        password: String
+        password: String,
     },
     AuthByAppName {
         acct_id: Uuid,
         name: String,
-        password: String
+        password: String,
     },
-    VcdAuthCode (
-        VcdCodeData
-    ),
+    VcdAuthCode(VcdCodeData),
     AwsIam {
         acct_id: Uuid,
         region: String,
-        headers: HashMap<String,String>
-    }
+        headers: HashMap<String, String>,
+    },
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -95,51 +91,49 @@ pub struct AuthResponse {
     pub access_token: String,
     pub entity_id: Uuid,
     #[serde(default)]
-    pub challenge: Option<MfaChallengeResponse>
+    pub challenge: Option<MfaChallengeResponse>,
 }
 
 #[derive(PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone)]
 pub struct AwsTemporaryCredentials {
     pub access_key: String,
     pub secret_key: String,
-    pub session_token: String
+    pub session_token: String,
 }
 
 /// Request to start configuring U2F.
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct Config2faAuthRequest {
-    pub password: String
+    pub password: String,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
-pub struct Config2faAuthResponse {
-
-}
+pub struct Config2faAuthResponse {}
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct OauthCodeData {
     pub idp_id: Blob,
     pub code: String,
-    pub email: String
+    pub email: String,
 }
 
 /// Request to authenticate using U2F recovery code.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RecoveryCodeAuthRequest {
-    pub recovery_code: String
+    pub recovery_code: String,
 }
 
 /// Request to select an account.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct SelectAccountRequest {
-    pub acct_id: Uuid
+    pub acct_id: Uuid,
 }
 
 /// Response to select account request.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct SelectAccountResponse {
     #[serde(default)]
-    pub cookie: Option<String>
+    pub cookie: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -147,7 +141,7 @@ pub struct VcdCodeData {
     pub idp_id: Blob,
     pub token: String,
     pub email: String,
-    pub org: String
+    pub org: String,
 }
 
 pub struct OperationAuthDiscover;
@@ -167,7 +161,11 @@ impl Operation for OperationAuthDiscover {
 }
 
 impl SdkmsClient {
-    pub fn auth_discover(&self, query_params: Option<&AuthDiscoverParams>, req: &AuthDiscoverRequest) -> Result<Vec<AuthMethod>> {
+    pub fn auth_discover(
+        &self,
+        query_params: Option<&AuthDiscoverParams>,
+        req: &AuthDiscoverRequest,
+    ) -> Result<Vec<AuthMethod>> {
         self.execute::<OperationAuthDiscover>(req, (), query_params)
     }
 }
@@ -230,7 +228,10 @@ impl Operation for OperationConfig2faTerminate {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/config_2fa/terminate")
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn config_2fa_terminate(&self) -> Result<()> {
@@ -252,7 +253,10 @@ impl Operation for OperationReauthenticate {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/reauth")
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn reauthenticate(&self) -> Result<AuthResponse> {
@@ -296,7 +300,10 @@ impl Operation for OperationRefresh {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/refresh")
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn refresh(&self) -> Result<()> {
@@ -362,7 +369,10 @@ impl Operation for OperationTerminate {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/terminate")
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn terminate(&self) -> Result<()> {
@@ -406,11 +416,13 @@ impl Operation for OperationU2fNewChallenge {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/config_2fa/new_challenge")
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn u2f_new_challenge(&self) -> Result<MfaChallengeResponse> {
         self.execute::<OperationU2fNewChallenge>(&(), (), None)
     }
 }
-

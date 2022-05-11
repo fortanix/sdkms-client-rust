@@ -41,6 +41,7 @@
 //!         alg: None,
 //!         ad: None,
 //!         tag: None,
+//!         masked: None,
 //!     })?;
 //!
 //!     let plain = String::from_utf8(decrypt_resp.plain.into()).expect("valid utf8");

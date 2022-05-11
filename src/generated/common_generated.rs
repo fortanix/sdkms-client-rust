@@ -14,7 +14,7 @@ pub enum AccountRole {
     MemberUser,
     AuditorUser,
     AdminApp,
-    CryptoApp
+    CryptoApp,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -24,7 +24,7 @@ pub struct AesOptions {
     pub tag_length: Option<i32>,
     pub cipher_mode: Option<CipherMode>,
     pub random_iv: Option<bool>,
-    pub iv_length: Option<i32>
+    pub iv_length: Option<i32>,
 }
 
 /// A cryptographic algorithm.
@@ -42,7 +42,7 @@ pub enum Algorithm {
     Hmac,
     LedaBeta,
     Round5Beta,
-    Pbe
+    Pbe,
 }
 
 /// A helper enum with a single variant, All, which indicates that something should apply to an
@@ -50,13 +50,13 @@ pub enum Algorithm {
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum All {
-    All
+    All,
 }
 
 /// Operations allowed to be performed by an app.
 pub use self::app_permissions::AppPermissions;
 pub mod app_permissions {
-    bitflags_set!{
+    bitflags_set! {
         pub struct AppPermissions: u64 {
             const SIGN = 0x0000000000000001;
             const VERIFY = 0x0000000000000002;
@@ -80,7 +80,7 @@ pub mod app_permissions {
 #[derive(Copy, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct ApprovalAuthConfig {
     pub require_password: bool,
-    pub require_2fa: bool
+    pub require_2fa: bool,
 }
 
 /// LDAP authentication settings.
@@ -98,32 +98,26 @@ pub struct AuthConfigLdap {
     #[serde(default)]
     pub service_account: Option<LdapServiceAccount>,
     #[serde(default)]
-    pub authorization: Option<LdapAuthorizationConfig>
+    pub authorization: Option<LdapAuthorizationConfig>,
 }
 
 /// CA settings.
 #[derive(PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum CaConfig {
-    CaSet (
-        CaSet
-    ),
-    Pinned (
-        Vec<Blob>
-    )
+    CaSet(CaSet),
+    Pinned(Vec<Blob>),
 }
 
 /// Predefined CA sets.
 #[derive(PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum CaSet {
-    GlobalRoots
+    GlobalRoots,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
-pub struct CertificateOptions {
-
-}
+pub struct CertificateOptions {}
 
 /// Cipher mode used for symmetric key algorithms.
 #[derive(Debug, Eq, PartialEq, Copy, Serialize, Deserialize, Clone)]
@@ -139,7 +133,7 @@ pub enum CipherMode {
     Ccm,
     Kw,
     Kwp,
-    Ff1
+    Ff1,
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -150,23 +144,21 @@ pub struct ClientConfigurations {
     #[serde(default)]
     pub pkcs11: Option<Pkcs11ClientConfig>,
     #[serde(default)]
-    pub kmip: Option<KmipClientConfig>
+    pub kmip: Option<KmipClientConfig>,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct ClientConfigurationsRequest {
     pub common: Option<Option<CommonClientConfig>>,
     pub pkcs11: Option<Option<Pkcs11ClientConfig>>,
-    pub kmip: Option<Option<KmipClientConfig>>
+    pub kmip: Option<Option<KmipClientConfig>>,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case", tag = "mode")]
 pub enum ClientFileLogging {
-    Enabled (
-        ClientFileLoggingConfig
-    ),
-    Disabled
+    Enabled(ClientFileLoggingConfig),
+    Disabled,
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -176,7 +168,7 @@ pub struct ClientFileLoggingConfig {
     #[serde(default)]
     pub file_size_kb: Option<u64>,
     #[serde(default)]
-    pub max_files: Option<u32>
+    pub max_files: Option<u32>,
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -186,7 +178,7 @@ pub struct ClientLogConfig {
     #[serde(default)]
     pub file: Option<ClientFileLogging>,
     #[serde(default)]
-    pub level: Option<String>
+    pub level: Option<String>,
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -196,22 +188,16 @@ pub struct CommonClientConfig {
     #[serde(default)]
     pub log: Option<ClientLogConfig>,
     #[serde(default)]
-    pub h2_num_connections: Option<usize>
+    pub h2_num_connections: Option<usize>,
 }
 
 /// `CipherMode` or `RsaEncryptionPadding`, depending on the encryption algorithm.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(untagged)]
 pub enum CryptMode {
-    Symmetric (
-        CipherMode
-    ),
-    Rsa (
-        RsaEncryptionPadding
-    ),
-    Pkcs8Mode (
-        Pkcs8Mode
-    )
+    Symmetric(CipherMode),
+    Rsa(RsaEncryptionPadding),
+    Pkcs8Mode(Pkcs8Mode),
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -228,7 +214,7 @@ pub struct CryptographicPolicy {
     pub secret: Option<SecretOptions>,
     pub certificate: Option<CertificateOptions>,
     pub key_ops: Option<KeyOperations>,
-    pub legacy_policy: Option<LegacyKeyPolicy>
+    pub legacy_policy: Option<LegacyKeyPolicy>,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -236,13 +222,13 @@ pub struct Des3Options {
     pub key_sizes: Option<Vec<u32>>,
     pub cipher_mode: Option<CipherMode>,
     pub random_iv: Option<bool>,
-    pub iv_length: Option<i32>
+    pub iv_length: Option<i32>,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct DesOptions {
     pub cipher_mode: Option<CipherMode>,
-    pub random_iv: Option<bool>
+    pub random_iv: Option<bool>,
 }
 
 /// A hash algorithm.
@@ -265,17 +251,17 @@ pub enum DigestAlgorithm {
     Sha3_224,
     Sha3_256,
     Sha3_384,
-    Sha3_512
+    Sha3_512,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct DsaOptions {
-    pub subgroup_size: Option<u32>
+    pub subgroup_size: Option<u32>,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct EcOptions {
-    pub elliptic_curves: Option<Vec<EllipticCurve>>
+    pub elliptic_curves: Option<Vec<EllipticCurve>>,
 }
 
 /// Identifies a standardized elliptic curve.
@@ -292,34 +278,18 @@ pub enum EllipticCurve {
     NistP256,
     NistP384,
     NistP521,
-    Gost256A
+    Gost256A,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(untagged)]
 pub enum ExternalKeyId {
-    Pkcs11 {
-        id: Blob,
-        label: Blob
-    },
-    Fortanix {
-        id: Uuid
-    },
-    AwsKms {
-        key_arn: String,
-        key_id: String
-    },
-    AzureKeyVault {
-        version: Uuid,
-        label: String
-    },
-    GcpKeyRing {
-        version: u32,
-        label: String
-    },
-    Wrapped {
-
-    }
+    Pkcs11 { id: Blob, label: Blob },
+    Fortanix { id: Uuid },
+    AwsKms { key_arn: String, key_id: String },
+    AzureKeyVault { version: Uuid, label: String },
+    GcpKeyRing { version: u32, label: String },
+    Wrapped {},
 }
 
 /// This describes an external object. Virtual keys in SDKMS store this information instead of the key material.
@@ -328,7 +298,7 @@ pub struct ExternalSobjectInfo {
     /// The ID of the external object in the external HSM.
     pub id: ExternalKeyId,
     /// The group which corresponds to the external HSM.
-    pub hsm_group_id: Uuid
+    pub hsm_group_id: Uuid,
 }
 
 /// The character set to use for an encrypted portion of a complex tokenization data type.
@@ -372,7 +342,7 @@ pub enum FpeCompoundPart {
         min_length: Option<u32>,
         /// The maximum allowed length for this part (in chars).
         #[serde(default)]
-        max_length: Option<u32>
+        max_length: Option<u32>,
     },
     /// Represents a concatenation of multiple structures (in a particular order).
     Concat {
@@ -394,7 +364,7 @@ pub enum FpeCompoundPart {
         min_length: Option<u32>,
         /// The maximum allowed length for this part (in chars).
         #[serde(default)]
-        max_length: Option<u32>
+        max_length: Option<u32>,
     },
     /// Indicates a part that is possibly repeated multiple times.
     Multiple {
@@ -422,8 +392,8 @@ pub enum FpeCompoundPart {
         min_length: Option<u32>,
         /// The maximum allowed length for this part (in chars).
         #[serde(default)]
-        max_length: Option<u32>
-    }
+        max_length: Option<u32>,
+    },
 }
 
 /// Constraints on a portion of a complex tokenization data type.
@@ -456,7 +426,7 @@ pub struct FpeConstraints {
     pub date: Option<FpeDateConstraint>,
     /// The subparts to apply the constaints to. If not specified, the constraints will be
     /// applied to all subparts (recursively).
-    pub applies_to: FpeConstraintsApplicability
+    pub applies_to: FpeConstraintsApplicability,
 }
 
 /// A structure indicating which subparts to which to apply a set of constraints.
@@ -466,9 +436,7 @@ pub enum FpeConstraintsApplicability {
     /// Indicates that the constraints apply to the entire part (i.e., all of its subparts),
     /// including any descendants. This is the default value for this enum and the only option
     /// available for FpeEncryptedPart, literal, and OR subparts.
-    Simple (
-        All
-    ),
+    Simple(All),
     /// An object representing the individual subparts that the constraints should apply to. This
     /// is a BTreeMap where for each key-value pair, the key represents the "index" of the subpart
     /// (with the first subpart having index 0), and the value is an FpeConstraintsApplicability
@@ -477,25 +445,19 @@ pub enum FpeConstraintsApplicability {
     ///
     /// This cannot be used with OR parts; instead, specify constraints individually on each
     /// relevant subpart.
-    BySubparts (
-        HashMap<FpeSubpartIndex,FpeConstraintsApplicability>
-    )
+    BySubparts(HashMap<FpeSubpartIndex, FpeConstraintsApplicability>),
 }
 
 /// Structure for specifying (part of) a complex tokenization data type.
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(untagged)]
 pub enum FpeDataPart {
-    Encrypted (
-        FpeEncryptedPart
-    ),
+    Encrypted(FpeEncryptedPart),
     Literal {
         /// The list of possible strings that make up this literal portion of the token.
-        literal: Vec<String>
+        literal: Vec<String>,
     },
-    Compound (
-        FpeCompoundPart
-    )
+    Compound(FpeCompoundPart),
 }
 
 /// A structure for specifying a token part representing a date that occurs after a specified date
@@ -512,7 +474,7 @@ pub enum FpeDate {
         #[serde(default)]
         before: Option<FpeDayMonthYearDate>,
         #[serde(default)]
-        after: Option<FpeDayMonthYearDate>
+        after: Option<FpeDayMonthYearDate>,
     },
     /// Represents a date that consists of a Month subpart and a Day subpart. It is an error to
     /// preserve only the Month part or the Day part.
@@ -521,7 +483,7 @@ pub enum FpeDate {
         #[serde(default)]
         before: Option<FpeDayMonthDate>,
         #[serde(default)]
-        after: Option<FpeDayMonthDate>
+        after: Option<FpeDayMonthDate>,
     },
     /// Represents a date that consists of a Month subpart and a Year subpart. The Year part is
     /// allowed to be preserved; however, the Month part cannot be preserved by itself.
@@ -530,8 +492,8 @@ pub enum FpeDate {
         #[serde(default)]
         before: Option<FpeMonthYearDate>,
         #[serde(default)]
-        after: Option<FpeMonthYearDate>
-    }
+        after: Option<FpeMonthYearDate>,
+    },
 }
 
 /// Possible date-related constraint types for a portion of a complex tokenization data type.
@@ -553,16 +515,12 @@ pub enum FpeDateConstraint {
     /// exact rules depend on the FpeDate variant.
     ///
     /// It is an error to "share" Day, Month, or Year parts across multiple dates.
-    Date (
-        FpeDate
-    ),
+    Date(FpeDate),
     /// Used to indicate that a token part represents a month, day, or year (either as part of a
     /// date, or independently). The part should be a numeric encrypted part that is guaranteed
     /// to either preserve all of its digits or preserve none of them, and cannot be involved in
     /// any Luhn-check constraints.
-    DatePart (
-        FpeDatePart
-    )
+    DatePart(FpeDatePart),
 }
 
 /// Possible date-related constraint types that do not form a complete date (by themselves) for a
@@ -583,7 +541,7 @@ pub enum FpeDatePart {
     Day,
     /// Used to indicate that a token part represents a year, with any zero value being treated as
     /// a leap year. The part should be a two to five digit number.
-    Year
+    Year,
 }
 
 /// A structure for specifying a particular date consisting of a day and a month, for use in an
@@ -594,7 +552,7 @@ pub struct FpeDayMonthDate {
     pub month: u8,
     /// The day, which should be a number from 1 to either 29, 30, or 31, depending on the month
     /// and year. Here, February is treated as having 29 days.
-    pub day: u8
+    pub day: u8,
 }
 
 /// A structure for specifying a particular date consisting of a day, month, and year, for use in
@@ -607,7 +565,7 @@ pub struct FpeDayMonthYearDate {
     pub month: u8,
     /// The day, which should be a number from 1 to either 28, 29, 30, or 31, depending on the
     /// month and year.
-    pub day: u8
+    pub day: u8,
 }
 
 /// Structure of a tokenized portion of a complex tokenization data type.
@@ -627,7 +585,7 @@ pub struct FpeEncryptedPart {
     pub preserve: Option<FpePreserveMask>,
     /// The characters to be masked while performing masked decryption.
     #[serde(default)]
-    pub mask: Option<FpePreserveMask>
+    pub mask: Option<FpePreserveMask>,
 }
 
 /// A structure for specifying a particular date consisting of a month and a year, for use in an
@@ -637,7 +595,7 @@ pub struct FpeMonthYearDate {
     /// The year, which should be a number less than 100000. Zero is treated as a leap year.
     pub year: u32,
     /// The month, which should be a number from 1 to 12.
-    pub month: u8
+    pub month: u8,
 }
 
 /// FPE-specific options.
@@ -645,15 +603,13 @@ pub struct FpeMonthYearDate {
 #[serde(untagged)]
 pub enum FpeOptions {
     /// For specifying basic tokens
-    Basic (
-        FpeOptionsBasic
-    ),
+    Basic(FpeOptionsBasic),
     Advanced {
         /// The structure of the data type.
         format: FpeDataPart,
         /// The user-friendly name for the data type that represents the input data.
-        description: Option<String>
-    }
+        description: Option<String>,
+    },
 }
 
 /// Basic FPE-specific options.
@@ -672,7 +628,7 @@ pub struct FpeOptionsBasic {
     /// Whether encrypted/decrypted data should satisfy LUHN checksum formula.
     pub luhn_check: Option<bool>,
     /// The user-friendly name for the data type that represents the input data.
-    pub name: Option<String>
+    pub name: Option<String>,
 }
 
 /// A structure indicating which indices in an encrypted part to mask or preserve.
@@ -680,16 +636,12 @@ pub struct FpeOptionsBasic {
 #[serde(untagged)]
 pub enum FpePreserveMask {
     /// Indicates that the entire encrypted part is to be preserved or masked.
-    Entire (
-        All
-    ),
+    Entire(All),
     /// Indicates that only certain characters are to be preserved or masked. Indices are
     /// Python-like; i.e., negative indices index from the back of the token portion, with
     /// index -1 being the end of the array. (Indicating that nothing should be preserved
     /// or masked can be done via an empty list, which is the default value for this enum.)
-    ByChars (
-        Vec<isize>
-    )
+    ByChars(Vec<isize>),
 }
 
 /// An index for listing subparts of a compound part to which certain constraints are to be applied.
@@ -709,14 +661,14 @@ pub enum GoogleAccessReason {
     CustomerInitiatedAccess = 5,
     GoogleInitiatedSystemOperation = 6,
     ReasonNotExpected = 7,
-    ModifiedCustomerInitiatedAccess = 8
+    ModifiedCustomerInitiatedAccess = 8,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub struct GoogleAccessReasonPolicy {
     pub allow: HashSet<GoogleAccessReason>,
-    pub allow_missing_reason: bool
+    pub allow_missing_reason: bool,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -724,7 +676,7 @@ pub struct HistoryItem {
     pub id: Uuid,
     pub state: HistoryItemState,
     pub created_at: Time,
-    pub expiry: Time
+    pub expiry: Time,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -745,12 +697,12 @@ pub struct HistoryItemState {
     pub has_key: bool,
     pub rotation_policy: Option<RotationPolicy>,
     #[serde(default)]
-    pub group_id: Option<Uuid>
+    pub group_id: Option<Uuid>,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct HmacOptions {
-    pub minimum_key_length: Option<u32>
+    pub minimum_key_length: Option<u32>,
 }
 
 /// Signing keys used to validate signed JWT tokens.
@@ -759,18 +711,18 @@ pub struct HmacOptions {
 pub enum JwtSigningKeys {
     Stored {
         /// Mapping key ids to DER-encoded public key.
-        keys: HashMap<String,Blob>
+        keys: HashMap<String, Blob>,
     },
     Fetched {
         url: String,
         /// Number of seconds that the service is allowed to cache the fetched keys.
-        cache_duration: u64
-    }
+        cache_duration: u64,
+    },
 }
 
 #[derive(Copy, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct KeyHistoryPolicy {
-    pub undo_time_window: Secs
+    pub undo_time_window: Secs,
 }
 
 /// Linked security objects.
@@ -788,7 +740,7 @@ pub struct KeyLinks {
     #[serde(default)]
     pub subkeys: Vec<Uuid>,
     #[serde(default)]
-    pub parent: Option<Uuid>
+    pub parent: Option<Uuid>,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -796,57 +748,57 @@ pub struct KeyMetadataPolicy {
     /// Applies to all objects.
     pub base: MetadataPolicyItem,
     /// Each entry in this map fully overrides `base` for a particular object type.
-    pub for_obj_type: HashMap<ObjectType,MetadataPolicyItem>,
+    pub for_obj_type: HashMap<ObjectType, MetadataPolicyItem>,
     /// What to do with legacy objects that are not compliant with this policy.
     /// Note that objects are not allowed to be created/updated if the result is
     /// not compliant with the policy. Non-compliant legacy objects can only be
     /// updated to comply with the policy (e.g. by adding missing required metadata).
-    pub legacy_objects: LegacyKeyPolicy
+    pub legacy_objects: LegacyKeyPolicy,
 }
 
 /// Operations allowed to be performed on a given key.
 pub use self::key_operations::KeyOperations;
 pub mod key_operations {
-    bitflags_set!{
+    bitflags_set! {
         pub struct KeyOperations: u64 {
-            // If this is set, the key can be used to for signing.
+            ///  If this is set, the key can be used to for signing.
             const SIGN = 0x0000000000000001;
-            //  If this is set, the key can used for verifying a signature.
+            ///  If this is set, the key can used for verifying a signature.
             const VERIFY = 0x0000000000000002;
-            //  If this is set, the key can be used for encryption.
+            ///  If this is set, the key can be used for encryption.
             const ENCRYPT = 0x0000000000000004;
-            //  If this is set, the key can be used for decryption.
+            ///  If this is set, the key can be used for decryption.
             const DECRYPT = 0x0000000000000008;
-            //  If this is set, the key can be used wrapping other keys.
-            //  The key being wrapped must have the EXPORT operation enabled.
+            ///  If this is set, the key can be used wrapping other keys.
+            ///  The key being wrapped must have the EXPORT operation enabled.
             const WRAPKEY = 0x0000000000000010;
-            //  If this is set, the key can be used to unwrap a wrapped key.
+            ///  If this is set, the key can be used to unwrap a wrapped key.
             const UNWRAPKEY = 0x0000000000000020;
-            //  If this is set, the key can be used to derive another key.
+            ///  If this is set, the key can be used to derive another key.
             const DERIVEKEY = 0x0000000000000040;
-            //  If this is set, the key can be used to compute a cryptographic
-            //  Message Authentication Code (MAC) on a message.
+            ///  If this is set, the key can be used to compute a cryptographic
+            ///  Message Authentication Code (MAC) on a message.
             const MACGENERATE = 0x0000000000000080;
-            //  If they is set, the key can be used to verify a MAC.
+            ///  If they is set, the key can be used to verify a MAC.
             const MACVERIFY = 0x0000000000000100;
-            //  If this is set, the value of the key can be retrieved
-            //  with an authenticated request. This shouldn't be set unless
-            //  required. It is more secure to keep the key's value inside DSM only.
+            ///  If this is set, the value of the key can be retrieved
+            ///  with an authenticated request. This shouldn't be set unless
+            ///  required. It is more secure to keep the key's value inside DSM only.
             const EXPORT = 0x0000000000000200;
-            //  Without this operation, management operations like delete, destroy,
-            //  rotate, activate, restore, revoke, revert, update, remove_private, etc.
-            //  cannot be performed by a crypto App.
-            //  A user with access or admin app can still perform these operations.
-            //  This option is only relevant for crypto apps.
+            ///  Without this operation, management operations like delete, destroy,
+            ///  rotate, activate, restore, revoke, revert, update, remove_private, etc.
+            ///  cannot be performed by a crypto App.
+            ///  A user with access or admin app can still perform these operations.
+            ///  This option is only relevant for crypto apps.
             const APPMANAGEABLE = 0x0000000000000400;
-            //  If this is set, audit logs will not be recorded for the key.
-            //   High volume here tries to signify a key that is being used a lot
-            //   and will produce lots of logs. Setting this operation disables
-            //   audit logs for the key.
+            ///  If this is set, audit logs will not be recorded for the key.
+            ///   High volume here tries to signify a key that is being used a lot
+            ///   and will produce lots of logs. Setting this operation disables
+            ///   audit logs for the key.
             const HIGHVOLUME = 0x0000000000000800;
-            //  If this is set, the key can be used for key agreement.
-            //  Both the private and public key should have this option enabled
-            //  to perform an agree operation.
+            ///  If this is set, the key can be used for key agreement.
+            ///  Both the private and public key should have this option enabled
+            ///  to perform an agree operation.
             const AGREEKEY = 0x0000000000001000;
         }
     }
@@ -855,7 +807,7 @@ pub mod key_operations {
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct KmipClientConfig {
     #[serde(default)]
-    pub ignore_unknown_key_ops_for_secrets: Option<bool>
+    pub ignore_unknown_key_ops_for_secrets: Option<bool>,
 }
 
 /// LDAP authorization settings.
@@ -866,7 +818,7 @@ pub struct LdapAuthorizationConfig {
     /// A map from account roles to distinguished names of LDAP groups.
     /// If a DN is specified for an account role, entities with that role
     /// must be a member of the specified LDAP group.
-    pub require_role: HashMap<AccountRole,String>
+    pub require_role: HashMap<AccountRole, String>,
 }
 
 /// Distinguished Name (DN) resolution method. Given a user's email address, a DN resolution method
@@ -877,21 +829,21 @@ pub enum LdapDnResolution {
     /// Transform the user email through a pattern to derive the DN.
     Construct {
         /// For example: "example.com" => "uid={},ou=users,dc=example,dc=com".
-        domain_format: HashMap<String,String>
+        domain_format: HashMap<String, String>,
     },
     /// Search the directory using the LDAP `mail` attribute matching user's email.
     SearchByMail,
     /// Use email in place of DN. This method works with Active Directory if the userPrincipalName
     /// attribute is set for the user. https://docs.microsoft.com/en-us/windows/desktop/ad/naming-properties
     #[serde(rename = "upn")]
-    UserPrincipalName
+    UserPrincipalName,
 }
 
 /// Credentials used by the service to authenticate itself to an LDAP server.
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct LdapServiceAccount {
     pub dn: String,
-    pub password: String
+    pub password: String,
 }
 
 #[derive(Copy, Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
@@ -906,7 +858,7 @@ pub enum LegacyKeyPolicy {
     /// - VERIFY
     /// - MACVERIFY
     /// - UNWRAPKEY
-    UnprotectOnly
+    UnprotectOnly,
 }
 
 /// LMS specific options
@@ -917,15 +869,13 @@ pub struct LmsOptions {
     /// The height of the secondary tree
     pub l2_height: u32,
     /// The hash function to use
-    pub digest: Option<DigestAlgorithm>
+    pub digest: Option<DigestAlgorithm>,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum MetadataDurationConstraint {
-    Forbidden {
-
-    },
+    Forbidden {},
     Required {
         /// If specified, the value (typically a date) is restricted to be in a
         /// range expressed in terms of duration with respect to some known point
@@ -933,13 +883,13 @@ pub enum MetadataDurationConstraint {
         /// for `deactivation_date`, then the user must specify a deactivation date
         /// that is within 30 and 180 days of security object's creation time.
         #[serde(default)]
-        allowed_values: RestrictedDuration
-    }
+        allowed_values: RestrictedDuration,
+    },
 }
 
 #[derive(Debug, PartialEq, Eq, Default, Serialize, Deserialize, Clone)]
 pub struct MetadataPolicyItem {
-    pub custom_metadata: HashMap<String,MetadataStringConstraint>,
+    pub custom_metadata: HashMap<String, MetadataStringConstraint>,
     pub description: Option<MetadataStringConstraint>,
     /// If a restricted duration is specified, it is enforced w.r.t object creation time.
     pub deactivation_date: Option<MetadataDurationConstraint>,
@@ -947,47 +897,41 @@ pub struct MetadataPolicyItem {
     /// NOTE: Specifying a minimum duration for this field may not be a good
     /// idea since it would not be possible to create a key and start using it
     /// immediately in the affected group(s).
-    pub activation_date: Option<MetadataDurationConstraint>
+    pub activation_date: Option<MetadataDurationConstraint>,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum MetadataStringConstraint {
-    Forbidden {
-
-    },
+    Forbidden {},
     Required {
         /// If set to `true`, the value must have a length > 0 after trimming
         /// leading and trailing whitespace characters.
         non_empty_after_trim: bool,
         /// If not specified or empty, it will not impose any restrictions on the value.
-        allowed_values: HashSet<String>
-    }
+        allowed_values: HashSet<String>,
+    },
 }
 
 /// A challenge used for multi-factor authentication.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MfaChallengeResponse {
     pub u2f_challenge: String,
-    pub u2f_keys: Vec<U2fRegisteredKey>
+    pub u2f_keys: Vec<U2fRegisteredKey>,
 }
 
 /// Specifies the Mask Generating Function (MGF) to use.
 #[derive(Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum Mgf {
-    Mgf1 {
-        hash: DigestAlgorithm
-    }
+    Mgf1 { hash: DigestAlgorithm },
 }
 
 /// MGF policy.
 #[derive(Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum MgfPolicy {
-    Mgf1 {
-        hash: Option<DigestAlgorithm>
-    }
+    Mgf1 { hash: Option<DigestAlgorithm> },
 }
 
 /// OAuth scope.
@@ -997,7 +941,7 @@ pub enum OauthScope {
     App,
     OpenID,
     Email,
-    Profile
+    Profile,
 }
 
 /// The origin of a security object - where it was created / generated.
@@ -1005,7 +949,7 @@ pub enum OauthScope {
 pub enum ObjectOrigin {
     FortanixHSM,
     Transient,
-    External
+    External,
 }
 
 /// Type of security object.
@@ -1026,13 +970,11 @@ pub enum ObjectType {
     Seed,
     Lms,
     Certificate,
-    Pbe
+    Pbe,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
-pub struct OpaqueOptions {
-
-}
+pub struct OpaqueOptions {}
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct Pkcs11ClientConfig {
@@ -1047,7 +989,7 @@ pub struct Pkcs11ClientConfig {
     #[serde(default)]
     pub opaque_objects_are_not_certificates: Option<bool>,
     #[serde(default)]
-    pub max_concurrent_requests_per_slot: Option<usize>
+    pub max_concurrent_requests_per_slot: Option<usize>,
 }
 
 #[derive(Debug, Eq, PartialEq, Copy, Serialize, Deserialize, Clone)]
@@ -1057,27 +999,21 @@ pub enum Pkcs8Mode {
     PbeWithSHAAnd3KeyTripleDesCbc,
     PbeWithSHAAnd2KeyTripleDesCbc,
     Pbes2WithPBKDF2AndKeyDes,
-    Pbes2WithPBKDF2AndKeyTripleDes
+    Pbes2WithPBKDF2AndKeyTripleDes,
 }
 
 /// A security principal.
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum Principal {
-    App (
-        Uuid
-    ),
-    User (
-        Uuid
-    ),
-    Plugin (
-        Uuid
-    ),
+    App(Uuid),
+    User(Uuid),
+    Plugin(Uuid),
     /// UserViaApp signifies a user authorizing some app to act on its behalf through OAuth.
     UserViaApp {
         user_id: Uuid,
-        scopes: HashSet<OauthScope>
-    }
+        scopes: HashSet<OauthScope>,
+    },
 }
 
 /// If enabled, the public key will be available publicly (without authentication) through the GetPublicKey API.
@@ -1086,9 +1022,9 @@ pub enum Principal {
 pub enum PublishPublicKeyConfig {
     Enabled {
         /// Additionally list the previous version of the key if not compromised.
-        list_previous_version: bool
+        list_previous_version: bool,
     },
-    Disabled
+    Disabled,
 }
 
 /// Quorum approval policy.
@@ -1097,7 +1033,7 @@ pub struct Quorum {
     pub n: usize,
     pub members: Vec<QuorumPolicy>,
     #[serde(flatten)]
-    pub config: ApprovalAuthConfig
+    pub config: ApprovalAuthConfig,
 }
 
 /// Approval policy.
@@ -1108,13 +1044,13 @@ pub struct QuorumPolicy {
     #[serde(default)]
     pub user: Option<Uuid>,
     #[serde(default)]
-    pub app: Option<Uuid>
+    pub app: Option<Uuid>,
 }
 
 #[derive(Debug, PartialEq, Eq, Default, Serialize, Deserialize, Clone)]
 pub struct RestrictedDuration {
     pub min: Option<TimeSpan>,
-    pub max: Option<TimeSpan>
+    pub max: Option<TimeSpan>,
 }
 
 /// Reason for revoking a key.
@@ -1124,7 +1060,7 @@ pub struct RevocationReason {
     /// Message is used exclusively for audit trail/logging purposes and MAY contain additional
     /// information about why the object was revoked.
     pub message: Option<String>,
-    pub compromise_occurance_date: Option<Time>
+    pub compromise_occurance_date: Option<Time>,
 }
 
 /// Reasons to revoke a security object.
@@ -1136,18 +1072,14 @@ pub enum RevocationReasonCode {
     AffiliationChanged,
     Superseded,
     CessationOfOperation,
-    PrivilegeWithdrawn
+    PrivilegeWithdrawn,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum RotationInterval {
-    IntervalDays (
-        u32
-    ),
-    IntervalMonths (
-        u32
-    )
+    IntervalDays(u32),
+    IntervalMonths(u32),
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -1156,7 +1088,7 @@ pub struct RotationPolicy {
     pub interval: Option<RotationInterval>,
     #[serde(default)]
     pub effective_at: Option<Time>,
-    pub deactivate_rotated_key: bool
+    pub deactivate_rotated_key: bool,
 }
 
 /// Type of padding to use for RSA encryption. The use of PKCS#1 v1.5 padding is strongly
@@ -1168,36 +1100,26 @@ pub struct RotationPolicy {
 pub enum RsaEncryptionPadding {
     /// Optimal Asymmetric Encryption Padding (PKCS#1 v2.1).
     Oaep {
-        mgf: Mgf
+        mgf: Mgf,
     },
     /// PKCS#1 v1.5 padding.
-    Pkcs1V15 {
-
-    },
-    RawDecrypt {
-
-    }
+    Pkcs1V15 {},
+    RawDecrypt {},
 }
 
 /// RSA encryption padding policy.
 #[derive(Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum RsaEncryptionPaddingPolicy {
-    Oaep {
-        mgf: Option<MgfPolicy>
-    },
-    Pkcs1V15 {
-
-    },
-    RawDecrypt {
-
-    }
+    Oaep { mgf: Option<MgfPolicy> },
+    Pkcs1V15 {},
+    RawDecrypt {},
 }
 
 /// Constraints on RSA encryption parameters. In general, if a constraint is not specified, anything is allowed.
 #[derive(Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct RsaEncryptionPolicy {
-    pub padding: Option<RsaEncryptionPaddingPolicy>
+    pub padding: Option<RsaEncryptionPaddingPolicy>,
 }
 
 /// RSA-specific options.
@@ -1224,7 +1146,7 @@ pub struct RsaOptions {
     /// If (part of) a constraint is not specified, anything is allowed for that constraint.
     pub signature_policy: Vec<RsaSignaturePolicy>,
     #[serde(default)]
-    pub minimum_key_length: Option<u32>
+    pub minimum_key_length: Option<u32>,
 }
 
 /// Type of padding to use for RSA signatures. The padding specified must adhere to the key's
@@ -1233,44 +1155,34 @@ pub struct RsaOptions {
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum RsaSignaturePadding {
     /// Probabilistic Signature Scheme (PKCS#1 v2.1).
-    Pss {
-        mgf: Mgf
-    },
+    Pss { mgf: Mgf },
     /// PKCS#1 v1.5 padding.
-    Pkcs1V15 {
-
-    }
+    Pkcs1V15 {},
 }
 
 /// RSA signature padding policy.
 #[derive(Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum RsaSignaturePaddingPolicy {
-    Pss {
-        mgf: Option<MgfPolicy>
-    },
-    Pkcs1V15 {
-
-    }
+    Pss { mgf: Option<MgfPolicy> },
+    Pkcs1V15 {},
 }
 
 /// Constraints on RSA signature parameters. In general, if a constraint is not specified, anything is allowed.
 #[derive(Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct RsaSignaturePolicy {
-    pub padding: Option<RsaSignaturePaddingPolicy>
+    pub padding: Option<RsaSignaturePaddingPolicy>,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
-pub struct SecretOptions {
-
-}
+pub struct SecretOptions {}
 
 pub type Secs = u64;
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct SeedOptions {
     pub cipher_mode: Option<CipherMode>,
-    pub random_iv: Option<bool>
+    pub random_iv: Option<bool>,
 }
 
 /// A request to sign data (or hash value) using an asymmetric key.
@@ -1285,7 +1197,7 @@ pub struct SignRequest {
     /// To reduce request size and avoid reaching the request size limit, prefer `hash`.
     pub data: Option<Blob>,
     pub mode: Option<SignatureMode>,
-    pub deterministic_signature: Option<bool>
+    pub deterministic_signature: Option<bool>,
 }
 
 /// Result of sign operation.
@@ -1294,16 +1206,14 @@ pub struct SignResponse {
     /// Key id is returned for non-transient keys.
     #[serde(default)]
     pub kid: Option<Uuid>,
-    pub signature: Blob
+    pub signature: Blob,
 }
 
 /// Signature mode.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(untagged)]
 pub enum SignatureMode {
-    Rsa (
-        RsaSignaturePadding
-    )
+    Rsa(RsaSignaturePadding),
 }
 
 #[derive(Eq, PartialEq, Debug, Serialize, Deserialize, Clone)]
@@ -1320,7 +1230,7 @@ pub struct Sobject {
     pub created_at: Time,
     pub creator: Principal,
     #[serde(default)]
-    pub custom_metadata: Option<HashMap<String,String>>,
+    pub custom_metadata: Option<HashMap<String, String>>,
     #[serde(default)]
     pub deactivation_date: Option<Time>,
     #[serde(default)]
@@ -1389,26 +1299,17 @@ pub struct Sobject {
     #[serde(default)]
     pub value: Option<Blob>,
     #[serde(default)]
-    pub group_id: Option<Uuid>
+    pub group_id: Option<Uuid>,
 }
 
 /// Uniquely identifies a persisted or transient sobject.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum SobjectDescriptor {
-    Kid (
-        Uuid
-    ),
-    Name (
-        String
-    ),
-    TransientKey (
-        Blob
-    ),
-    Inline {
-        value: Blob,
-        obj_type: ObjectType
-    }
+    Kid(Uuid),
+    Name(String),
+    TransientKey(Blob),
+    Inline { value: Blob, obj_type: ObjectType },
 }
 
 #[derive(Debug, Eq, PartialEq, Copy, Serialize, Deserialize, Clone)]
@@ -1418,24 +1319,16 @@ pub enum SobjectState {
     Deactivated,
     Compromised,
     Destroyed,
-    Deleted
+    Deleted,
 }
 
 #[derive(Debug, Copy, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum TimeSpan {
-    Seconds (
-        u32
-    ),
-    Minutes (
-        u32
-    ),
-    Hours (
-        u32
-    ),
-    Days (
-        u32
-    )
+    Seconds(u32),
+    Minutes(u32),
+    Hours(u32),
+    Days(u32),
 }
 
 /// TLS settings.
@@ -1448,8 +1341,8 @@ pub enum TlsConfig {
         validate_hostname: bool,
         ca: CaConfig,
         client_key: Option<Blob>,
-        client_cert: Option<Blob>
-    }
+        client_cert: Option<Blob>,
+    },
 }
 
 /// Request for second factor authentication with a U2f device.
@@ -1458,7 +1351,7 @@ pub enum TlsConfig {
 pub struct U2fAuthRequest {
     pub key_handle: Blob,
     pub signature_data: Blob,
-    pub client_data: Blob
+    pub client_data: Blob,
 }
 
 /// Description of a registered U2F device.
@@ -1466,10 +1359,10 @@ pub struct U2fAuthRequest {
 #[serde(rename_all = "camelCase")]
 pub struct U2fRegisteredKey {
     pub key_handle: String,
-    pub version: String
+    pub version: String,
 }
 
-singleton_backcompat!{
+singleton_backcompat! {
     /// User's role in a group.
     #[derive(Debug, Eq, PartialEq, Copy, Clone)]
     #[serde(rename_all = "UPPERCASE")]
@@ -1494,7 +1387,7 @@ pub struct VerifyRequest {
     pub data: Option<Blob>,
     pub mode: Option<SignatureMode>,
     /// The signature to verify.
-    pub signature: Blob
+    pub signature: Blob,
 }
 
 /// Result of verifying a signature or MAC.
@@ -1504,6 +1397,5 @@ pub struct VerifyResponse {
     #[serde(default)]
     pub kid: Option<Uuid>,
     /// True if the signature verified and false if it did not.
-    pub result: bool
+    pub result: bool,
 }
-

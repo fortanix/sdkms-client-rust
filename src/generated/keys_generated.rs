@@ -11,7 +11,7 @@ use super::*;
 pub struct CopySobjectRequest {
     pub key: SobjectDescriptor,
     #[serde(flatten)]
-    pub dest: SobjectRequest
+    pub dest: SobjectRequest,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
@@ -20,7 +20,7 @@ pub struct ExportComponentsResponse {
     pub iv: Option<Blob>,
     pub tag: Option<Blob>,
     pub key_kcv: Option<String>,
-    pub description: Option<String>
+    pub description: Option<String>,
 }
 
 /// Request to Export a Sobject by components
@@ -33,19 +33,7 @@ pub struct ExportSobjectComponentsRequest {
     #[serde(default)]
     pub method: Option<SplittingMethod>,
     #[serde(default)]
-    pub description: Option<String>
-}
-
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, Default)]
-pub struct FilterList {
-    #[serde(flatten)]
-    pub head: Box<CustomMetadata>
-}
-
-impl UrlEncode for FilterList {
-    fn url_encode(&self, m: &mut HashMap<String, String>) {
-        self.head.url_encode(m);
-    }
+    pub description: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Default)]
@@ -54,13 +42,16 @@ pub struct GetSobjectParams {
     pub show_destroyed: bool,
     pub show_deleted: bool,
     pub show_value: bool,
-    pub show_pub_key: bool
+    pub show_pub_key: bool,
 }
 
 impl UrlEncode for GetSobjectParams {
     fn url_encode(&self, m: &mut HashMap<String, String>) {
         m.insert("view".to_string(), self.view.to_string());
-        m.insert("show_destroyed".to_string(), self.show_destroyed.to_string());
+        m.insert(
+            "show_destroyed".to_string(),
+            self.show_destroyed.to_string(),
+        );
         m.insert("show_deleted".to_string(), self.show_deleted.to_string());
         m.insert("show_value".to_string(), self.show_value.to_string());
         m.insert("show_pub_key".to_string(), self.show_pub_key.to_string());
@@ -79,7 +70,7 @@ pub struct ImportSobjectComponentsRequest {
     #[serde(default)]
     pub method: Option<SplittingMethod>,
     #[serde(default)]
-    pub auth_config: Option<ApprovalAuthConfig>
+    pub auth_config: Option<ApprovalAuthConfig>,
 }
 
 /// KCV of a key
@@ -87,7 +78,7 @@ pub struct ImportSobjectComponentsRequest {
 pub struct KeyCheckValueResponse {
     #[serde(default)]
     pub kid: Option<Uuid>,
-    pub kcv: String
+    pub kcv: String,
 }
 
 #[derive(PartialEq, Debug, Serialize, Deserialize, Clone, Default)]
@@ -111,7 +102,7 @@ pub struct ListSobjectsParams {
     pub show_value: bool,
     pub show_pub_key: bool,
     #[serde(default)]
-    pub filter: Option<FilterList>
+    pub filter: Option<String>,
 }
 
 impl UrlEncode for ListSobjectsParams {
@@ -148,12 +139,15 @@ impl UrlEncode for ListSobjectsParams {
         if let Some(ref v) = self.with_metadata {
             m.insert("with_metadata".to_string(), v.to_string());
         }
-        m.insert("show_destroyed".to_string(), self.show_destroyed.to_string());
+        m.insert(
+            "show_destroyed".to_string(),
+            self.show_destroyed.to_string(),
+        );
         m.insert("show_deleted".to_string(), self.show_deleted.to_string());
         m.insert("show_value".to_string(), self.show_value.to_string());
         m.insert("show_pub_key".to_string(), self.show_pub_key.to_string());
         if let Some(ref v) = self.filter {
-            m.insert("filter".to_string(), v.head.encode());
+            m.insert("filter".to_string(), v.to_string());
         }
     }
 }
@@ -161,14 +155,14 @@ impl UrlEncode for ListSobjectsParams {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Metadata {
     pub total_count: usize,
-    pub filtered_count: usize
+    pub filtered_count: usize,
 }
 
 /// Request to compute digest of a key.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ObjectDigestRequest {
     pub key: SobjectDescriptor,
-    pub alg: DigestAlgorithm
+    pub alg: DigestAlgorithm,
 }
 
 /// Digest of a key.
@@ -176,7 +170,7 @@ pub struct ObjectDigestRequest {
 pub struct ObjectDigestResponse {
     #[serde(default)]
     pub kid: Option<Uuid>,
-    pub digest: Blob
+    pub digest: Blob,
 }
 
 /// Request to persist a transient key.
@@ -192,7 +186,7 @@ pub struct PersistTransientKeyRequest {
     pub description: Option<String>,
     /// User-defined metadata for the persisted key stored as key-value pairs.
     #[serde(default)]
-    pub custom_metadata: Option<HashMap<String,String>>,
+    pub custom_metadata: Option<HashMap<String, String>>,
     /// Whether the new security object should be enabled. Disabled security objects may not perform cryptographic operations.
     #[serde(default)]
     pub enabled: Option<bool>,
@@ -204,12 +198,12 @@ pub struct PersistTransientKeyRequest {
     #[serde(default)]
     pub state: Option<SobjectState>,
     /// Transient key to persist.
-    pub transient_key: Blob
+    pub transient_key: Blob,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RevertRequest {
-    pub ids: Vec<Uuid>
+    pub ids: Vec<Uuid>,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
@@ -217,14 +211,14 @@ pub struct RevertRequest {
 pub struct SobjectComponent {
     pub component: Blob,
     pub component_kcv: Option<String>,
-    pub custodian: Principal
+    pub custodian: Principal,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum SobjectEncoding {
     Json,
-    Value
+    Value,
 }
 
 /// Request to rekey a security object
@@ -232,7 +226,7 @@ pub enum SobjectEncoding {
 pub struct SobjectRekeyRequest {
     pub deactivate_rotated_key: bool,
     #[serde(flatten)]
-    pub dest: SobjectRequest
+    pub dest: SobjectRequest,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
@@ -242,7 +236,7 @@ pub struct SobjectRequest {
     #[serde(default)]
     pub aes: Option<AesOptions>,
     #[serde(default)]
-    pub custom_metadata: Option<HashMap<String,String>>,
+    pub custom_metadata: Option<HashMap<String, String>>,
     #[serde(default)]
     pub deactivation_date: Option<Time>,
     #[serde(default)]
@@ -296,31 +290,31 @@ pub struct SobjectRequest {
     #[serde(default)]
     pub value: Option<Blob>,
     #[serde(default)]
-    pub group_id: Option<Uuid>
+    pub group_id: Option<Uuid>,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub enum SobjectSort {
-    ByKid {
-        order: Order,
-        start: Option<Uuid>
-    },
-    ByName {
-        order: Order,
-        start: Option<String>
-    }
+    ByKid { order: Order, start: Option<Uuid> },
+    ByName { order: Order, start: Option<String> },
 }
 
 impl UrlEncode for SobjectSort {
     fn url_encode(&self, m: &mut HashMap<String, String>) {
         match *self {
-            SobjectSort::ByKid{ ref order, ref start } => {
+            SobjectSort::ByKid {
+                ref order,
+                ref start,
+            } => {
                 m.insert("sort".to_string(), format!("kid:{}", order));
                 if let Some(v) = start {
                     m.insert("start".to_string(), v.to_string());
                 }
             }
-            SobjectSort::ByName{ ref order, ref start } => {
+            SobjectSort::ByName {
+                ref order,
+                ref start,
+            } => {
                 m.insert("sort".to_string(), format!("name:{}", order));
                 if let Some(v) = start {
                     m.insert("start".to_string(), v.to_string());
@@ -332,7 +326,7 @@ impl UrlEncode for SobjectSort {
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub enum SplittingMethod {
-    XOR
+    XOR,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
@@ -350,7 +344,7 @@ pub struct UnwrapKeyParams {
     pub ad: Option<Blob>,
     /// Tag is required if mode is GCM.
     #[serde(default)]
-    pub tag: Option<Blob>
+    pub tag: Option<Blob>,
 }
 
 /// Verify KCV of a key
@@ -358,12 +352,12 @@ pub struct UnwrapKeyParams {
 pub struct VerifyKcvRequest {
     pub kcv: String,
     pub value: Blob,
-    pub obj_type: ObjectType
+    pub obj_type: ObjectType,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct VerifyKcvResponse {
-    pub verified: bool
+    pub verified: bool,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
@@ -381,7 +375,7 @@ pub struct WrapKeyParams {
     pub ad: Option<Blob>,
     /// Tag length is required when mode is GCM.
     #[serde(default)]
-    pub tag_len: Option<usize>
+    pub tag_len: Option<usize>,
 }
 
 pub struct OperationActivateSobject;
@@ -398,7 +392,10 @@ impl Operation for OperationActivateSobject {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{id}/activate", id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn activate_sobject(&self, id: &Uuid) -> Result<()> {
@@ -423,12 +420,17 @@ impl Operation for OperationBatchSign {
 }
 
 impl SdkmsClient {
-    pub fn batch_sign(&self, req: &Vec<SignRequest>) -> Result<Vec<BatchResponseItem<SignResponse>>> {
+    pub fn batch_sign(
+        &self,
+        req: &Vec<SignRequest>,
+    ) -> Result<Vec<BatchResponseItem<SignResponse>>> {
         self.execute::<OperationBatchSign>(req, (), None)
     }
     pub fn request_approval_to_batch_sign(
-        &self, req: &Vec<SignRequest>,
-        description: Option<String>) -> Result<PendingApproval<OperationBatchSign>> {
+        &self,
+        req: &Vec<SignRequest>,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationBatchSign>> {
         self.request_approval::<OperationBatchSign>(req, (), None, description)
     }
 }
@@ -450,7 +452,10 @@ impl Operation for OperationBatchVerify {
 }
 
 impl SdkmsClient {
-    pub fn batch_verify(&self, req: &Vec<VerifyRequest>) -> Result<Vec<BatchResponseItem<VerifyResponse>>> {
+    pub fn batch_verify(
+        &self,
+        req: &Vec<VerifyRequest>,
+    ) -> Result<Vec<BatchResponseItem<VerifyResponse>>> {
         self.execute::<OperationBatchVerify>(req, (), None)
     }
 }
@@ -476,8 +481,10 @@ impl SdkmsClient {
         self.execute::<OperationCopySobject>(req, (), None)
     }
     pub fn request_approval_to_copy_sobject(
-        &self, req: &CopySobjectRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationCopySobject>> {
+        &self,
+        req: &CopySobjectRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationCopySobject>> {
         self.request_approval::<OperationCopySobject>(req, (), None, description)
     }
 }
@@ -518,15 +525,20 @@ impl Operation for OperationDeleteSobject {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{id}", id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn delete_sobject(&self, id: &Uuid) -> Result<()> {
         self.execute::<OperationDeleteSobject>(&(), (id,), None)
     }
     pub fn request_approval_to_delete_sobject(
-        &self, id: &Uuid,
-        description: Option<String>) -> Result<PendingApproval<OperationDeleteSobject>> {
+        &self,
+        id: &Uuid,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationDeleteSobject>> {
         self.request_approval::<OperationDeleteSobject>(&(), (id,), None, description)
     }
 }
@@ -545,15 +557,20 @@ impl Operation for OperationDestroySobject {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{id}/destroy", id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn destroy_sobject(&self, id: &Uuid) -> Result<()> {
         self.execute::<OperationDestroySobject>(&(), (id,), None)
     }
     pub fn request_approval_to_destroy_sobject(
-        &self, id: &Uuid,
-        description: Option<String>) -> Result<PendingApproval<OperationDestroySobject>> {
+        &self,
+        id: &Uuid,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationDestroySobject>> {
         self.request_approval::<OperationDestroySobject>(&(), (id,), None, description)
     }
 }
@@ -601,8 +618,10 @@ impl SdkmsClient {
         self.execute::<OperationExportSobject>(req, (), None)
     }
     pub fn request_approval_to_export_sobject(
-        &self, req: &SobjectDescriptor,
-        description: Option<String>) -> Result<PendingApproval<OperationExportSobject>> {
+        &self,
+        req: &SobjectDescriptor,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationExportSobject>> {
         self.request_approval::<OperationExportSobject>(req, (), None, description)
     }
 }
@@ -624,12 +643,17 @@ impl Operation for OperationExportSobjectComponents {
 }
 
 impl SdkmsClient {
-    pub fn export_sobject_components(&self, req: &ExportSobjectComponentsRequest) -> Result<ExportComponentsResponse> {
+    pub fn export_sobject_components(
+        &self,
+        req: &ExportSobjectComponentsRequest,
+    ) -> Result<ExportComponentsResponse> {
         self.execute::<OperationExportSobjectComponents>(req, (), None)
     }
     pub fn request_approval_to_export_sobject_components(
-        &self, req: &ExportSobjectComponentsRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationExportSobjectComponents>> {
+        &self,
+        req: &ExportSobjectComponentsRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationExportSobjectComponents>> {
         self.request_approval::<OperationExportSobjectComponents>(req, (), None, description)
     }
 }
@@ -659,10 +683,10 @@ impl SdkmsClient {
 pub struct OperationGetPubkey;
 #[allow(unused)]
 impl Operation for OperationGetPubkey {
-    type PathParams = (Uuid, String,);
+    type PathParams = (Uuid, String);
     type QueryParams = ();
     type Body = ();
-    type Output = HashMap<String,Blob>;
+    type Output = HashMap<String, Blob>;
 
     fn method() -> Method {
         Method::GET
@@ -670,11 +694,14 @@ impl Operation for OperationGetPubkey {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/pubkey/{id}/{name}", id = p.0, name = p.1)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
-    pub fn get_pubkey(&self, id: &Uuid, name: &String) -> Result<HashMap<String,Blob>> {
-        self.execute::<OperationGetPubkey>(&(), (id, name,), None)
+    pub fn get_pubkey(&self, id: &Uuid, name: &String) -> Result<HashMap<String, Blob>> {
+        self.execute::<OperationGetPubkey>(&(), (id, name), None)
     }
 }
 
@@ -695,7 +722,11 @@ impl Operation for OperationGetSobject {
 }
 
 impl SdkmsClient {
-    pub fn get_sobject(&self, query_params: Option<&GetSobjectParams>, req: &SobjectDescriptor) -> Result<Sobject> {
+    pub fn get_sobject(
+        &self,
+        query_params: Option<&GetSobjectParams>,
+        req: &SobjectDescriptor,
+    ) -> Result<Sobject> {
         self.execute::<OperationGetSobject>(req, (), query_params)
     }
 }
@@ -739,12 +770,17 @@ impl Operation for OperationImportSobjectByComponents {
 }
 
 impl SdkmsClient {
-    pub fn import_sobject_by_components(&self, req: &ImportSobjectComponentsRequest) -> Result<Sobject> {
+    pub fn import_sobject_by_components(
+        &self,
+        req: &ImportSobjectComponentsRequest,
+    ) -> Result<Sobject> {
         self.execute::<OperationImportSobjectByComponents>(req, (), None)
     }
     pub fn request_approval_to_import_sobject_by_components(
-        &self, req: &ImportSobjectComponentsRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationImportSobjectByComponents>> {
+        &self,
+        req: &ImportSobjectComponentsRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationImportSobjectByComponents>> {
         self.request_approval::<OperationImportSobjectByComponents>(req, (), None, description)
     }
 }
@@ -763,10 +799,16 @@ impl Operation for OperationListSobjects {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys?{q}", q = q.encode())
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
-    pub fn list_sobjects(&self, query_params: Option<&ListSobjectsParams>) -> Result<GetAllResponse> {
+    pub fn list_sobjects(
+        &self,
+        query_params: Option<&ListSobjectsParams>,
+    ) -> Result<GetAllResponse> {
         self.execute::<OperationListSobjects>(&(), (), query_params)
     }
 }
@@ -807,15 +849,20 @@ impl Operation for OperationRemovePrivate {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{id}/private", id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn remove_private(&self, id: &Uuid) -> Result<()> {
         self.execute::<OperationRemovePrivate>(&(), (id,), None)
     }
     pub fn request_approval_to_remove_private(
-        &self, id: &Uuid,
-        description: Option<String>) -> Result<PendingApproval<OperationRemovePrivate>> {
+        &self,
+        id: &Uuid,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationRemovePrivate>> {
         self.request_approval::<OperationRemovePrivate>(&(), (id,), None, description)
     }
 }
@@ -841,8 +888,11 @@ impl SdkmsClient {
         self.execute::<OperationRevertPrevKeyOp>(req, (id,), None)
     }
     pub fn request_approval_to_revert_prev_key_op(
-        &self, id: &Uuid, req: &RevertRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationRevertPrevKeyOp>> {
+        &self,
+        id: &Uuid,
+        req: &RevertRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationRevertPrevKeyOp>> {
         self.request_approval::<OperationRevertPrevKeyOp>(req, (id,), None, description)
     }
 }
@@ -868,8 +918,11 @@ impl SdkmsClient {
         self.execute::<OperationRevokeSobject>(req, (id,), None)
     }
     pub fn request_approval_to_revoke_sobject(
-        &self, id: &Uuid, req: &RevocationReason,
-        description: Option<String>) -> Result<PendingApproval<OperationRevokeSobject>> {
+        &self,
+        id: &Uuid,
+        req: &RevocationReason,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationRevokeSobject>> {
         self.request_approval::<OperationRevokeSobject>(req, (id,), None, description)
     }
 }
@@ -895,8 +948,10 @@ impl SdkmsClient {
         self.execute::<OperationRotateSobject>(req, (), None)
     }
     pub fn request_approval_to_rotate_sobject(
-        &self, req: &SobjectRekeyRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationRotateSobject>> {
+        &self,
+        req: &SobjectRekeyRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationRotateSobject>> {
         self.request_approval::<OperationRotateSobject>(req, (), None, description)
     }
 }
@@ -922,8 +977,11 @@ impl SdkmsClient {
         self.execute::<OperationUpdateSobject>(req, (id,), None)
     }
     pub fn request_approval_to_update_sobject(
-        &self, id: &Uuid, req: &SobjectRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationUpdateSobject>> {
+        &self,
+        id: &Uuid,
+        req: &SobjectRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationUpdateSobject>> {
         self.request_approval::<OperationUpdateSobject>(req, (id,), None, description)
     }
 }
@@ -949,4 +1007,3 @@ impl SdkmsClient {
         self.execute::<OperationVerifyKcv>(req, (), None)
     }
 }
-

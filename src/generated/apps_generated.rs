@@ -34,7 +34,7 @@ pub struct App {
     pub name: String,
     #[serde(default)]
     pub oauth_config: Option<AppOauthConfig>,
-    pub role: AppRole
+    pub role: AppRole,
 }
 
 /// Authentication method of an app.
@@ -46,36 +46,26 @@ pub enum AppAuthType {
     GoogleServiceAccount,
     SignedJwt,
     Ldap,
-    AwsIam
+    AwsIam,
 }
 
 /// App authentication mechanisms.
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum AppCredential {
-    Secret (
-        String
-    ),
-    Certificate (
-        Blob
-    ),
-    TrustedCa (
-        TrustAnchor
-    ),
+    Secret(String),
+    Certificate(Blob),
+    TrustedCa(TrustAnchor),
     GoogleServiceAccount {
         #[serde(default)]
-        access_reason_policy: Option<GoogleAccessReasonPolicy>
+        access_reason_policy: Option<GoogleAccessReasonPolicy>,
     },
     SignedJwt {
         valid_issuers: HashSet<String>,
-        signing_keys: JwtSigningKeys
+        signing_keys: JwtSigningKeys,
     },
-    Ldap (
-        Uuid
-    ),
-    AwsIam {
-
-    }
+    Ldap(Uuid),
+    AwsIam {},
 }
 
 /// App credential response.
@@ -84,17 +74,15 @@ pub struct AppCredentialResponse {
     pub app_id: Uuid,
     pub credential: AppCredential,
     #[serde(default)]
-    pub previous_credential: Option<PreviousCredential>
+    pub previous_credential: Option<PreviousCredential>,
 }
 
 /// OAuth settings for an app. If enabled, an app can request to act on behalf of a user.
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case", tag = "state")]
 pub enum AppOauthConfig {
-    Enabled {
-        redirect_uris: Vec<String>
-    },
-    Disabled
+    Enabled { redirect_uris: Vec<String> },
+    Disabled,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
@@ -130,7 +118,7 @@ pub struct AppRequest {
     #[serde(default)]
     pub role: Option<AppRole>,
     #[serde(default)]
-    pub secret_size: Option<u32>
+    pub secret_size: Option<u32>,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
@@ -139,7 +127,7 @@ pub struct AppResetSecretRequest {
     #[serde(default)]
     pub secret_size: Option<u32>,
     #[serde(default)]
-    pub credential_migration_period: Option<u32>
+    pub credential_migration_period: Option<u32>,
 }
 
 /// App's role.
@@ -147,21 +135,21 @@ pub struct AppResetSecretRequest {
 #[serde(rename_all = "snake_case")]
 pub enum AppRole {
     Admin,
-    Crypto
+    Crypto,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum AppSort {
-    ByAppId {
-        order: Order,
-        start: Option<Uuid>
-    }
+    ByAppId { order: Order, start: Option<Uuid> },
 }
 
 impl UrlEncode for AppSort {
     fn url_encode(&self, m: &mut HashMap<String, String>) {
         match *self {
-            AppSort::ByAppId{ ref order, ref start } => {
+            AppSort::ByAppId {
+                ref order,
+                ref start,
+            } => {
                 m.insert("sort".to_string(), format!("app_id:{}", order));
                 if let Some(v) = start {
                     m.insert("start".to_string(), v.to_string());
@@ -174,12 +162,15 @@ impl UrlEncode for AppSort {
 #[derive(Serialize, Deserialize, Clone, Default)]
 pub struct GetAppParams {
     pub group_permissions: bool,
-    pub role: Option<String>
+    pub role: Option<String>,
 }
 
 impl UrlEncode for GetAppParams {
     fn url_encode(&self, m: &mut HashMap<String, String>) {
-        m.insert("group_permissions".to_string(), self.group_permissions.to_string());
+        m.insert(
+            "group_permissions".to_string(),
+            self.group_permissions.to_string(),
+        );
         if let Some(ref v) = self.role {
             m.insert("role".to_string(), v.to_string());
         }
@@ -190,9 +181,7 @@ impl UrlEncode for GetAppParams {
 #[serde(rename_all = "snake_case")]
 pub enum IpAddressPolicy {
     AllowAll,
-    Whitelist (
-        HashSet<String>
-    )
+    Whitelist(HashSet<String>),
 }
 
 #[derive(Copy, Debug, Default, Eq, PartialEq, Serialize, Deserialize, Clone)]
@@ -206,7 +195,7 @@ pub struct LastAppOperationTimestamp {
     #[serde(default)]
     pub accelerator: Option<u64>,
     #[serde(default)]
-    pub secrets_management: Option<u64>
+    pub secrets_management: Option<u64>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
@@ -217,7 +206,7 @@ pub struct ListAppsParams {
     #[serde(flatten)]
     pub sort: AppSort,
     pub group_permissions: bool,
-    pub role: Option<AppRole>
+    pub role: Option<AppRole>,
 }
 
 impl UrlEncode for ListAppsParams {
@@ -232,7 +221,10 @@ impl UrlEncode for ListAppsParams {
             m.insert("offset".to_string(), v.to_string());
         }
         self.sort.url_encode(m);
-        m.insert("group_permissions".to_string(), self.group_permissions.to_string());
+        m.insert(
+            "group_permissions".to_string(),
+            self.group_permissions.to_string(),
+        );
         if let Some(ref v) = self.role {
             m.insert("role".to_string(), v.to_string());
         }
@@ -243,21 +235,15 @@ impl UrlEncode for ListAppsParams {
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct PreviousCredential {
     pub credential: AppCredential,
-    pub valid_until: Time
+    pub valid_until: Time,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum SubjectGeneral {
-    DirectoryName (
-        Vec<[String; 2]>
-    ),
-    DnsName (
-        String
-    ),
-    IpAddress (
-        IpAddr
-    )
+    DirectoryName(Vec<[String; 2]>),
+    DnsName(String),
+    IpAddress(IpAddr),
 }
 
 /// A trusted CA for app authentication.
@@ -265,18 +251,14 @@ pub enum SubjectGeneral {
 pub struct TrustAnchor {
     #[serde(flatten)]
     pub subject: TrustAnchorSubject,
-    pub ca_certificate: Blob
+    pub ca_certificate: Blob,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum TrustAnchorSubject {
-    Subject (
-        Vec<[String; 2]>
-    ),
-    SubjectGeneral (
-        SubjectGeneral
-    )
+    Subject(Vec<[String; 2]>),
+    SubjectGeneral(SubjectGeneral),
 }
 
 pub struct OperationCreateApp;
@@ -315,7 +297,10 @@ impl Operation for OperationDeleteApp {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{id}", id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn delete_app(&self, id: &Uuid) -> Result<()> {
@@ -337,7 +322,10 @@ impl Operation for OperationGetApp {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{id}?{q}", id = p.0, q = q.encode())
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn get_app(&self, id: &Uuid, query_params: Option<&GetAppParams>) -> Result<App> {
@@ -359,15 +347,20 @@ impl Operation for OperationGetAppCredential {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{id}/credential", id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn get_app_credential(&self, id: &Uuid) -> Result<AppCredentialResponse> {
         self.execute::<OperationGetAppCredential>(&(), (id,), None)
     }
     pub fn request_approval_to_get_app_credential(
-        &self, id: &Uuid,
-        description: Option<String>) -> Result<PendingApproval<OperationGetAppCredential>> {
+        &self,
+        id: &Uuid,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationGetAppCredential>> {
         self.request_approval::<OperationGetAppCredential>(&(), (id,), None, description)
     }
 }
@@ -386,7 +379,10 @@ impl Operation for OperationGetClientConfigs {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/client_configs")
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn get_client_configs(&self) -> Result<ClientConfigurations> {
@@ -408,7 +404,10 @@ impl Operation for OperationListApps {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps?{q}", q = q.encode())
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn list_apps(&self, query_params: Option<&ListAppsParams>) -> Result<Vec<App>> {
@@ -428,17 +427,30 @@ impl Operation for OperationResetAppSecret {
         Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/apps/{id}/reset_secret?{q}", id = p.0, q = q.encode())
+        format!(
+            "/sys/v1/apps/{id}/reset_secret?{q}",
+            id = p.0,
+            q = q.encode()
+        )
     }
 }
 
 impl SdkmsClient {
-    pub fn reset_app_secret(&self, id: &Uuid, query_params: Option<&GetAppParams>, req: &AppResetSecretRequest) -> Result<App> {
+    pub fn reset_app_secret(
+        &self,
+        id: &Uuid,
+        query_params: Option<&GetAppParams>,
+        req: &AppResetSecretRequest,
+    ) -> Result<App> {
         self.execute::<OperationResetAppSecret>(req, (id,), query_params)
     }
     pub fn request_approval_to_reset_app_secret(
-        &self, id: &Uuid, query_params: Option<&GetAppParams>, req: &AppResetSecretRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationResetAppSecret>> {
+        &self,
+        id: &Uuid,
+        query_params: Option<&GetAppParams>,
+        req: &AppResetSecretRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationResetAppSecret>> {
         self.request_approval::<OperationResetAppSecret>(req, (id,), query_params, description)
     }
 }
@@ -460,13 +472,21 @@ impl Operation for OperationUpdateApp {
 }
 
 impl SdkmsClient {
-    pub fn update_app(&self, id: &Uuid, query_params: Option<&GetAppParams>, req: &AppRequest) -> Result<App> {
+    pub fn update_app(
+        &self,
+        id: &Uuid,
+        query_params: Option<&GetAppParams>,
+        req: &AppRequest,
+    ) -> Result<App> {
         self.execute::<OperationUpdateApp>(req, (id,), query_params)
     }
     pub fn request_approval_to_update_app(
-        &self, id: &Uuid, query_params: Option<&GetAppParams>, req: &AppRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationUpdateApp>> {
+        &self,
+        id: &Uuid,
+        query_params: Option<&GetAppParams>,
+        req: &AppRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationUpdateApp>> {
         self.request_approval::<OperationUpdateApp>(req, (id,), query_params, description)
     }
 }
-

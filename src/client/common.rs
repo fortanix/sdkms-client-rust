@@ -6,10 +6,10 @@
 
 use crate::api_model::*;
 use crate::operations::*;
-use headers::{HeaderValue};
-use simple_hyper_client::{Bytes, StatusCode};
+use headers::HeaderValue;
+use serde::Deserialize;
 use simple_hyper_client::blocking::Client as HttpClient;
-use serde::{Deserialize};
+use simple_hyper_client::{Bytes, StatusCode};
 use uuid::Uuid;
 
 use std::fmt;
@@ -240,7 +240,9 @@ impl<O: Operation> Clone for PendingApproval<O> {
     }
 }
 
-pub(super) fn json_decode_reader<R: Read, T: for<'de> Deserialize<'de>>(rdr: &mut R) -> serde_json::Result<T> {
+pub(super) fn json_decode_reader<R: Read, T: for<'de> Deserialize<'de>>(
+    rdr: &mut R,
+) -> serde_json::Result<T> {
     match serde_json::from_reader(rdr) {
         // When the body of the response is empty, attempt to deserialize null value instead
         Err(ref e) if e.is_eof() && e.line() == 1 && e.column() == 0 => {

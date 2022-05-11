@@ -7,7 +7,7 @@ const KEY_NAME: &'static str = "RSA Key 1";
 fn main() -> Result<(), SdkmsError> {
     env_logger::init();
 
-    let mut client = SdkmsClient::builder()
+    let client = SdkmsClient::builder()
         .with_api_endpoint("https://sdkms.fortanix.com")
         .build()?
         .authenticate_with_api_key(MY_API_KEY)?;

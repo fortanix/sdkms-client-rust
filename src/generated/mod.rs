@@ -5,11 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use crate::api_model::*;
-use crate::client::{PendingApproval, Result, SdkmsClient};
+use crate::client::*;
 use crate::operations::*;
+use serde::{Deserialize, Serialize};
 use simple_hyper_client::Method;
 use std::collections::{HashMap, HashSet};
 use std::fmt;
+use std::net::IpAddr;
+use strum::EnumIter;
 use uuid::Uuid;
 
 mod accounts_generated;
@@ -71,6 +74,38 @@ impl Default for RsaOptions {
             public_exponent: None,
             encryption_policy: Vec::new(),
             signature_policy: Vec::new(),
+            minimum_key_length: None,
+        }
+    }
+}
+
+impl ToString for AppRole {
+    fn to_string(&self) -> String {
+        match *self {
+            AppRole::Admin => "admin".to_string(),
+            AppRole::Crypto => "app".to_string(),
+        }
+    }
+}
+
+impl ToString for ObjectType {
+    fn to_string(&self) -> String {
+        match *self {
+            ObjectType::Aes => "AES".to_string(),
+            ObjectType::Des => "DES".to_string(),
+            ObjectType::Des3 => "DES3".to_string(),
+            ObjectType::Rsa => "RSA".to_string(),
+            ObjectType::Dsa => "DSA".to_string(),
+            ObjectType::Ec => "EC".to_string(),
+            ObjectType::Opaque => "OPAQUE".to_string(),
+            ObjectType::Hmac => "HMAC".to_string(),
+            ObjectType::Secret => "SECRET".to_string(),
+            ObjectType::Seed => "SEED".to_string(),
+            ObjectType::Round5Beta => "ROUND5BETA".to_string(),
+            ObjectType::LedaBeta => "LEDABETA".to_string(),
+            ObjectType::Lms => "LMS".to_string(),
+            ObjectType::Certificate => "CERTIFICATE".to_string(),
+            ObjectType::Pbe => "PBE".to_string(),
         }
     }
 }
@@ -128,5 +163,17 @@ impl Default for UserSort {
             order: Order::Ascending,
             start: None,
         }
+    }
+}
+
+impl Default for AppRole {
+    fn default() -> Self {
+        AppRole::Crypto
+    }
+}
+
+impl Default for SubscriptionType {
+    fn default() -> SubscriptionType {
+        SubscriptionType::Trial { expires_at: None }
     }
 }

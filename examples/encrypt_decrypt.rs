@@ -31,6 +31,7 @@ fn main() -> Result<(), SdkmsError> {
         alg: None,
         ad: None,
         tag: None,
+        masked: None,
     };
     let decrypt_resp = client.decrypt(&decrypt_req)?;
     let plain = String::from_utf8(decrypt_resp.plain.into()).expect("valid utf8");

@@ -5,7 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
-use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct ExternalRole {
+    pub external_role_id: Uuid,
+    pub groups: HashMap<Uuid, ExternalRoleMapping>,
+    pub kind: ExternalRoleKind,
+    pub last_synced: Time,
+    pub name: String,
+    pub source_id: Uuid,
+    pub acct_id: Uuid,
+}
 
 /// Type of an external role.
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -14,21 +24,18 @@ pub enum ExternalRoleKind {
     LdapGroup,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct ExternalRole {
-    pub external_role_id: Uuid,
-    pub groups: HashMap<Uuid, UserGroupRole>,
-    pub kind: ExternalRoleKind,
-    pub last_synced: Time,
-    pub name: String,
-    pub source_id: Uuid,
-    pub acct_id: Uuid,
+#[derive(Copy, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
+pub struct ExternalRoleMapping {
+    #[serde(default)]
+    pub users: Option<UserGroupRole>,
+    #[serde(default)]
+    pub apps: Option<AppPermissions>,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
 pub struct ExternalRoleRequest {
     #[serde(default)]
-    pub add_groups: Option<HashMap<Uuid, UserGroupRole>>,
+    pub add_groups: Option<HashMap<Uuid, ExternalRoleMapping>>,
     #[serde(default)]
     pub del_groups: Option<HashSet<Uuid>>,
     #[serde(default)]
@@ -36,7 +43,7 @@ pub struct ExternalRoleRequest {
     #[serde(default)]
     pub kind: Option<ExternalRoleKind>,
     #[serde(default)]
-    pub mod_groups: Option<HashMap<Uuid, UserGroupRole>>,
+    pub mod_groups: Option<HashMap<Uuid, ExternalRoleMapping>>,
     #[serde(default)]
     pub name: Option<String>,
     #[serde(default)]
@@ -49,26 +56,48 @@ pub struct ListExternalRolesParams {
 }
 
 impl UrlEncode for ListExternalRolesParams {
-    fn url_encode(&self, m: &mut HashMap<&'static str, String>) {
+    fn url_encode(&self, m: &mut HashMap<String, String>) {
         if let Some(ref v) = self.group_id {
-            m.insert("group_id", v.to_string());
+            m.insert("group_id".to_string(), v.to_string());
         }
     }
 }
 
-pub struct OperationListExternalRoles;
+pub struct OperationCreateExternalRole;
 #[allow(unused)]
-impl Operation for OperationListExternalRoles {
+impl Operation for OperationCreateExternalRole {
     type PathParams = ();
-    type QueryParams = ListExternalRolesParams;
-    type Body = ();
-    type Output = Vec<ExternalRole>;
+    type QueryParams = ();
+    type Body = ExternalRoleRequest;
+    type Output = ExternalRole;
 
     fn method() -> Method {
-        Method::GET
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/external_roles?{q}", q = q.encode())
+        format!("/sys/v1/external_roles")
+    }
+}
+
+impl SdkmsClient {
+    pub fn create_external_role(&self, req: &ExternalRoleRequest) -> Result<ExternalRole> {
+        self.execute::<OperationCreateExternalRole>(req, (), None)
+    }
+}
+
+pub struct OperationDeleteExternalRole;
+#[allow(unused)]
+impl Operation for OperationDeleteExternalRole {
+    type PathParams = (Uuid,);
+    type QueryParams = ();
+    type Body = ();
+    type Output = ();
+
+    fn method() -> Method {
+        Method::DELETE
+    }
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
+        format!("/sys/v1/external_roles/{id}", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
         None
@@ -76,11 +105,8 @@ impl Operation for OperationListExternalRoles {
 }
 
 impl SdkmsClient {
-    pub fn list_external_roles(
-        &self,
-        query_params: Option<&ListExternalRolesParams>,
-    ) -> Result<Vec<ExternalRole>> {
-        self.execute::<OperationListExternalRoles>(&(), (), query_params)
+    pub fn delete_external_role(&self, id: &Uuid) -> Result<()> {
+        self.execute::<OperationDeleteExternalRole>(&(), (id,), None)
     }
 }
 
@@ -109,25 +135,31 @@ impl SdkmsClient {
     }
 }
 
-pub struct OperationCreateExternalRole;
+pub struct OperationListExternalRoles;
 #[allow(unused)]
-impl Operation for OperationCreateExternalRole {
+impl Operation for OperationListExternalRoles {
     type PathParams = ();
-    type QueryParams = ();
-    type Body = ExternalRoleRequest;
-    type Output = ExternalRole;
+    type QueryParams = ListExternalRolesParams;
+    type Body = ();
+    type Output = Vec<ExternalRole>;
 
     fn method() -> Method {
-        Method::POST
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/external_roles")
+        format!("/sys/v1/external_roles?{q}", q = q.encode())
+    }
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
     }
 }
 
 impl SdkmsClient {
-    pub fn create_external_role(&self, req: &ExternalRoleRequest) -> Result<ExternalRole> {
-        self.execute::<OperationCreateExternalRole>(req, (), None)
+    pub fn list_external_roles(
+        &self,
+        query_params: Option<&ListExternalRolesParams>,
+    ) -> Result<Vec<ExternalRole>> {
+        self.execute::<OperationListExternalRoles>(&(), (), query_params)
     }
 }
 
@@ -179,30 +211,5 @@ impl SdkmsClient {
         req: &ExternalRoleRequest,
     ) -> Result<ExternalRole> {
         self.execute::<OperationUpdateExternalRole>(req, (id,), None)
-    }
-}
-
-pub struct OperationDeleteExternalRole;
-#[allow(unused)]
-impl Operation for OperationDeleteExternalRole {
-    type PathParams = (Uuid,);
-    type QueryParams = ();
-    type Body = ();
-    type Output = ();
-
-    fn method() -> Method {
-        Method::DELETE
-    }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/external_roles/{id}", id = p.0)
-    }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
-        None
-    }
-}
-
-impl SdkmsClient {
-    pub fn delete_external_role(&self, id: &Uuid) -> Result<()> {
-        self.execute::<OperationDeleteExternalRole>(&(), (id,), None)
     }
 }

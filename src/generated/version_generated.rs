@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
-use serde::{Deserialize, Serialize};
 
-/// Server mode.
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
+/// Server execution mode.
+#[derive(Copy, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub enum ServerMode {
     Software,
     Sgx,

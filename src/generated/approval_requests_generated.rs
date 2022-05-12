@@ -5,48 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
-use serde::{Deserialize, Serialize};
-
-/// A Principal who can approve or deny an approval request.
-#[derive(Copy, PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "lowercase")]
-pub enum ReviewerPrincipal {
-    App(Uuid),
-    User(Uuid),
-}
-
-/// Approval request status.
-#[derive(Debug, Eq, PartialEq, Copy, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "UPPERCASE")]
-pub enum ApprovalStatus {
-    Pending,
-    Approved,
-    Denied,
-    Failed,
-}
-
-/// Identifies an object acted upon by an approval request.
-#[derive(Copy, Eq, PartialEq, Hash, Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "lowercase")]
-pub enum ApprovalSubject {
-    Group(Uuid),
-    Sobject(Uuid),
-    App(Uuid),
-    Plugin(Uuid),
-    Account(Uuid),
-    NewAccount,
-}
-
-/// Reviewer of an approval request.
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
-pub struct Reviewer {
-    #[serde(flatten)]
-    pub entity: ReviewerPrincipal,
-    #[serde(default)]
-    pub requires_password: bool,
-    #[serde(default)]
-    pub requires_2fa: bool,
-}
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ApprovalRequest {
@@ -55,6 +13,8 @@ pub struct ApprovalRequest {
     #[serde(default)]
     pub body: Option<serde_json::Value>,
     pub created_at: Time,
+    #[serde(default)]
+    pub denial_reason: Option<String>,
     #[serde(default)]
     pub denier: Option<ReviewerPrincipal>,
     #[serde(default)]
@@ -83,6 +43,44 @@ pub struct ApprovalRequestRequest {
     pub operation: Option<String>,
 }
 
+/// Approval request status.
+#[derive(Debug, Eq, PartialEq, Copy, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "UPPERCASE")]
+pub enum ApprovalStatus {
+    Pending,
+    Approved,
+    Denied,
+    Failed,
+}
+
+/// Identifies an object acted upon by an approval request.
+#[derive(Copy, Eq, PartialEq, Hash, Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "lowercase")]
+pub enum ApprovalSubject {
+    Group(Uuid),
+    Sobject(Uuid),
+    App(Uuid),
+    Plugin(Uuid),
+    Account(Uuid),
+    NewAccount,
+}
+
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
+pub struct ApproveRequest {
+    /// Password is required if the approval policy requires password authentication.
+    pub password: Option<String>,
+    /// U2F is required if the approval policy requires two factor authentication.
+    pub u2f: Option<U2fAuthRequest>,
+    /// Data associated with the approval
+    #[serde(default)]
+    pub body: Option<serde_json::Value>,
+}
+
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
+pub struct DenyRequest {
+    pub reason: Option<String>,
+}
+
 #[derive(Serialize, Deserialize, Clone, Default)]
 pub struct ListApprovalRequestsParams {
     pub requester: Option<Uuid>,
@@ -92,28 +90,180 @@ pub struct ListApprovalRequestsParams {
 }
 
 impl UrlEncode for ListApprovalRequestsParams {
-    fn url_encode(&self, m: &mut HashMap<&'static str, String>) {
+    fn url_encode(&self, m: &mut HashMap<String, String>) {
         if let Some(ref v) = self.requester {
-            m.insert("requester", v.to_string());
+            m.insert("requester".to_string(), v.to_string());
         }
         if let Some(ref v) = self.reviewer {
-            m.insert("reviewer", v.to_string());
+            m.insert("reviewer".to_string(), v.to_string());
         }
         if let Some(ref v) = self.subject {
-            m.insert("subject", v.to_string());
+            m.insert("subject".to_string(), v.to_string());
         }
         if let Some(ref v) = self.status {
-            m.insert("status", v.to_string());
+            m.insert("status".to_string(), v.to_string());
         }
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Default, Serialize, Deserialize, Clone)]
-pub struct ApproveRequest {
-    /// Password is required if the approval policy requires password authentication.
-    pub password: Option<String>,
-    /// U2F is required if the approval policy requires two factor authentication.
-    pub u2f: Option<U2fAuthRequest>,
+/// Reviewer of an approval request.
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
+pub struct Reviewer {
+    #[serde(flatten)]
+    pub entity: ReviewerPrincipal,
+    #[serde(default)]
+    pub requires_password: bool,
+    #[serde(default)]
+    pub requires_2fa: bool,
+}
+
+/// A Principal who can approve or deny an approval request.
+#[derive(Copy, PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "lowercase")]
+pub enum ReviewerPrincipal {
+    App(Uuid),
+    User(Uuid),
+}
+
+pub struct OperationApproveRequest;
+#[allow(unused)]
+impl Operation for OperationApproveRequest {
+    type PathParams = (Uuid,);
+    type QueryParams = ();
+    type Body = ApproveRequest;
+    type Output = ApprovalRequest;
+
+    fn method() -> Method {
+        Method::POST
+    }
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
+        format!("/sys/v1/approval_requests/{id}/approve", id = p.0)
+    }
+}
+
+impl SdkmsClient {
+    pub fn approve_request(&self, id: &Uuid, req: &ApproveRequest) -> Result<ApprovalRequest> {
+        self.execute::<OperationApproveRequest>(req, (id,), None)
+    }
+}
+
+pub struct OperationCreateApprovalRequest;
+#[allow(unused)]
+impl Operation for OperationCreateApprovalRequest {
+    type PathParams = ();
+    type QueryParams = ();
+    type Body = ApprovalRequestRequest;
+    type Output = ApprovalRequest;
+
+    fn method() -> Method {
+        Method::POST
+    }
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
+        format!("/sys/v1/approval_requests")
+    }
+}
+
+impl SdkmsClient {
+    pub fn create_approval_request(&self, req: &ApprovalRequestRequest) -> Result<ApprovalRequest> {
+        self.execute::<OperationCreateApprovalRequest>(req, (), None)
+    }
+}
+
+pub struct OperationDeleteApprovalRequest;
+#[allow(unused)]
+impl Operation for OperationDeleteApprovalRequest {
+    type PathParams = (Uuid,);
+    type QueryParams = ();
+    type Body = ();
+    type Output = ();
+
+    fn method() -> Method {
+        Method::DELETE
+    }
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
+        format!("/sys/v1/approval_requests/{id}", id = p.0)
+    }
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
+
+impl SdkmsClient {
+    pub fn delete_approval_request(&self, id: &Uuid) -> Result<()> {
+        self.execute::<OperationDeleteApprovalRequest>(&(), (id,), None)
+    }
+}
+
+pub struct OperationDenyRequest;
+#[allow(unused)]
+impl Operation for OperationDenyRequest {
+    type PathParams = (Uuid,);
+    type QueryParams = ();
+    type Body = DenyRequest;
+    type Output = ApprovalRequest;
+
+    fn method() -> Method {
+        Method::POST
+    }
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
+        format!("/sys/v1/approval_requests/{id}/deny", id = p.0)
+    }
+}
+
+impl SdkmsClient {
+    pub fn deny_request(&self, id: &Uuid, req: &DenyRequest) -> Result<ApprovalRequest> {
+        self.execute::<OperationDenyRequest>(req, (id,), None)
+    }
+}
+
+pub struct OperationGetApprovalRequest;
+#[allow(unused)]
+impl Operation for OperationGetApprovalRequest {
+    type PathParams = (Uuid,);
+    type QueryParams = ();
+    type Body = ();
+    type Output = ApprovalRequest;
+
+    fn method() -> Method {
+        Method::GET
+    }
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
+        format!("/sys/v1/approval_requests/{id}", id = p.0)
+    }
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
+
+impl SdkmsClient {
+    pub fn get_approval_request(&self, id: &Uuid) -> Result<ApprovalRequest> {
+        self.execute::<OperationGetApprovalRequest>(&(), (id,), None)
+    }
+}
+
+pub struct OperationGetApprovalRequestResult;
+#[allow(unused)]
+impl Operation for OperationGetApprovalRequestResult {
+    type PathParams = (Uuid,);
+    type QueryParams = ();
+    type Body = ();
+    type Output = ApprovableResult;
+
+    fn method() -> Method {
+        Method::POST
+    }
+    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
+        format!("/sys/v1/approval_requests/{id}/result", id = p.0)
+    }
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
+
+impl SdkmsClient {
+    pub fn get_approval_request_result(&self, id: &Uuid) -> Result<ApprovableResult> {
+        self.execute::<OperationGetApprovalRequestResult>(&(), (id,), None)
+    }
 }
 
 pub struct OperationListApprovalRequests;
@@ -144,19 +294,19 @@ impl SdkmsClient {
     }
 }
 
-pub struct OperationGetApprovalRequest;
+pub struct OperationMfaChallenge;
 #[allow(unused)]
-impl Operation for OperationGetApprovalRequest {
+impl Operation for OperationMfaChallenge {
     type PathParams = (Uuid,);
     type QueryParams = ();
     type Body = ();
-    type Output = ApprovalRequest;
+    type Output = MfaChallengeResponse;
 
     fn method() -> Method {
-        Method::GET
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/approval_requests/{id}", id = p.0)
+        format!("/sys/v1/approval_requests/{id}/challenge", id = p.0)
     }
     fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
         None
@@ -164,126 +314,7 @@ impl Operation for OperationGetApprovalRequest {
 }
 
 impl SdkmsClient {
-    pub fn get_approval_request(&self, id: &Uuid) -> Result<ApprovalRequest> {
-        self.execute::<OperationGetApprovalRequest>(&(), (id,), None)
-    }
-}
-
-pub struct OperationCreateApprovalRequest;
-#[allow(unused)]
-impl Operation for OperationCreateApprovalRequest {
-    type PathParams = ();
-    type QueryParams = ();
-    type Body = ApprovalRequestRequest;
-    type Output = ApprovalRequest;
-
-    fn method() -> Method {
-        Method::POST
-    }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/approval_requests")
-    }
-}
-
-impl SdkmsClient {
-    pub fn create_approval_request(&self, req: &ApprovalRequestRequest) -> Result<ApprovalRequest> {
-        self.execute::<OperationCreateApprovalRequest>(req, (), None)
-    }
-}
-
-pub struct OperationApproveRequest;
-#[allow(unused)]
-impl Operation for OperationApproveRequest {
-    type PathParams = (Uuid,);
-    type QueryParams = ();
-    type Body = ApproveRequest;
-    type Output = ApprovalRequest;
-
-    fn method() -> Method {
-        Method::POST
-    }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/approval_requests/{id}/approve", id = p.0)
-    }
-}
-
-impl SdkmsClient {
-    pub fn approve_request(&self, id: &Uuid, req: &ApproveRequest) -> Result<ApprovalRequest> {
-        self.execute::<OperationApproveRequest>(req, (id,), None)
-    }
-}
-
-pub struct OperationDenyRequest;
-#[allow(unused)]
-impl Operation for OperationDenyRequest {
-    type PathParams = (Uuid,);
-    type QueryParams = ();
-    type Body = ();
-    type Output = ApprovalRequest;
-
-    fn method() -> Method {
-        Method::POST
-    }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/approval_requests/{id}/deny", id = p.0)
-    }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
-        None
-    }
-}
-
-impl SdkmsClient {
-    pub fn deny_request(&self, id: &Uuid) -> Result<ApprovalRequest> {
-        self.execute::<OperationDenyRequest>(&(), (id,), None)
-    }
-}
-
-pub struct OperationGetApprovalRequestResult;
-#[allow(unused)]
-impl Operation for OperationGetApprovalRequestResult {
-    type PathParams = (Uuid,);
-    type QueryParams = ();
-    type Body = ();
-    type Output = ApprovableResult;
-
-    fn method() -> Method {
-        Method::POST
-    }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/approval_requests/{id}/result", id = p.0)
-    }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
-        None
-    }
-}
-
-impl SdkmsClient {
-    pub fn get_approval_request_result(&self, id: &Uuid) -> Result<ApprovableResult> {
-        self.execute::<OperationGetApprovalRequestResult>(&(), (id,), None)
-    }
-}
-
-pub struct OperationDeleteApprovalRequest;
-#[allow(unused)]
-impl Operation for OperationDeleteApprovalRequest {
-    type PathParams = (Uuid,);
-    type QueryParams = ();
-    type Body = ();
-    type Output = ();
-
-    fn method() -> Method {
-        Method::DELETE
-    }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/approval_requests/{id}", id = p.0)
-    }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
-        None
-    }
-}
-
-impl SdkmsClient {
-    pub fn delete_approval_request(&self, id: &Uuid) -> Result<()> {
-        self.execute::<OperationDeleteApprovalRequest>(&(), (id,), None)
+    pub fn mfa_challenge(&self, id: &Uuid) -> Result<MfaChallengeResponse> {
+        self.execute::<OperationMfaChallenge>(&(), (id,), None)
     }
 }

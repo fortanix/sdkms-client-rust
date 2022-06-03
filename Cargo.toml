@@ -1,6 +1,6 @@
 [package]
 name = "sdkms"
-version = "0.4.0"
+version = "0.5.0"
 authors = ["Fortanix, Inc."]
 license = "MPL-2.0"
 description = """
@@ -28,7 +28,7 @@ simple-hyper-client = "0.1.0"
 time = { version = "0.3", features = ["formatting", "macros", "parsing"] }
 tokio-native-tls = { version = "0.3", optional = true }
 url = "1.7"
-uuid = { version = "0.8", features = ["serde", "v4"] }
+uuid = { version = "1.0", features = ["serde", "v4"] }
 
 [dev-dependencies]
 env_logger = "0.6"

@@ -12,7 +12,7 @@
 ///
 /// For example:
 ///
-/// ```
+/// ```rust,compile_fail
 /// bitflags_set! {
 ///     pub struct TestFlags: u8 {
 ///         const BIT_0 = 1;

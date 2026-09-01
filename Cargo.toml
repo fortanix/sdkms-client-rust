@@ -1,6 +1,6 @@
 [package]
 name = "sdkms"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["Fortanix, Inc."]
 license = "MPL-2.0"
 description = """
@@ -25,7 +25,6 @@ hyper = "0.10"
 uuid = { version = "0.8", features = ["serde", "v4"] }
 rustc-serialize = "0.3"
 bitflags = "1.0"
-url = "1.7"
 log = "0.4"
 
 [dev-dependencies]

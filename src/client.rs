@@ -242,7 +242,8 @@ impl Drop for SdkmsClient {
 impl SdkmsClient {
     pub fn terminate(&mut self) -> Result<()> {
         if let Some(Auth::Bearer(_)) = self.auth {
-            self.json_request(Method::POST, "/sys/v1/session/terminate", None::<&()>)?;
+            let _: () =
+                self.json_request(Method::POST, "/sys/v1/session/terminate", None::<&()>)?;
             self.auth = None;
         }
         Ok(())

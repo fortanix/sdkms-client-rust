@@ -91,7 +91,7 @@ pub enum LdapDnResolution {
     /// Search the directory using the LDAP `mail` attribute matching user's email.
     SearchByMail,
     /// Use email in place of DN. This method works with Active Directory if the userPrincipalName
-    /// attribute is set for the user. https://docs.microsoft.com/en-us/windows/desktop/ad/naming-properties
+    /// attribute is set for the user. <https://docs.microsoft.com/en-us/windows/desktop/ad/naming-properties>
     #[serde(rename = "upn")]
     UserPrincipalName,
 }
@@ -334,7 +334,7 @@ pub struct SplunkLoggingConfig {
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct StackdriverLoggingConfig {
     pub enabled: bool,
-    /// The log ID that will recieve the log items (see https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry).
+    /// The log ID that will recieve the log items (see <https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry>).
     pub log_id: String,
     pub service_account_key: GoogleServiceAccountKey,
 }
@@ -342,12 +342,12 @@ pub struct StackdriverLoggingConfig {
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct StackdriverLoggingConfigRequest {
     pub enabled: Option<bool>,
-    /// The log ID that will recieve the log items (see https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry).
+    /// The log ID that will recieve the log items (see <https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry>).
     pub log_id: Option<String>,
     pub service_account_key: Option<GoogleServiceAccountKey>,
 }
 
-/// A Google service account key object. See https://cloud.google.com/video-intelligence/docs/common/auth.
+/// A Google service account key object. See <https://cloud.google.com/video-intelligence/docs/common/auth>.
 #[derive(Default, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct GoogleServiceAccountKey {
     #[serde(rename = "type")]

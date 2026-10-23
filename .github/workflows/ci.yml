@@ -102,5 +102,11 @@ jobs:
       - name: Check unused dependencies on default features
         run: cargo udeps --all-targets
 
-      - name: Check unused dependencies on full features
-        run: cargo udeps --all-features --all-targets
+      # Passing --all-features to `cargo udeps` fails because
+      # when native-tls and rustls features are enabled together,
+      # native-tls has precedence and in this case rustls deps are unused.
+      - name: Check unused dependencies on native-tls feature
+        run: cargo udeps --no-default-features --features native-tls --all-targets
+
+      - name: Check unused dependencies on rusttls feature
+        run: cargo udeps --no-default-features --features rustls --all-targets

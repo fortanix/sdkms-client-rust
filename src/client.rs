@@ -83,17 +83,35 @@ impl SdkmsClientBuilder {
         let client = match self.client {
             Some(client) => client,
             None => {
-                #[cfg(feature = "native-tls")]
-                {
-                    use simple_hyper_client::HttpsConnector;
-                    use tokio_native_tls::native_tls::TlsConnector;
+                cfg_if::cfg_if! {
+                    if #[cfg(feature = "native-tls")]
+                    {
+                        #[cfg(feature = "rustls")]
+                        log::info!("rustls feature flag is also enabled; building native-tls client by default.");
 
-                    let ssl = TlsConnector::new()?;
-                    let connector = HttpsConnector::new(ssl.into());
-                    HttpClient::with_connector(connector)
+                        use simple_hyper_client_native_tls::HttpsConnector;
+                        use tokio_native_tls::native_tls::TlsConnector;
+
+                        let ssl = TlsConnector::new()?;
+                        let connector = HttpsConnector::new(ssl.into());
+                        HttpClient::with_connector(connector)
+                    } else if #[cfg(feature = "rustls")] {
+                        use simple_hyper_client_rustls::HttpsConnector;
+                        use tokio_rustls::TlsConnector;
+                        use tokio_rustls::rustls::{ClientConfig, RootCertStore};
+
+                        let mut roots = RootCertStore::empty();
+                        roots.extend(webpki_roots::TLS_SERVER_ROOTS.iter().cloned());
+                        let config = ClientConfig::builder()
+                            .with_root_certificates(roots)
+                            .with_no_client_auth();
+                        let ssl = TlsConnector::from(std::sync::Arc::new(config));
+                        let connector = HttpsConnector::new(ssl);
+                        HttpClient::with_connector(connector)
+                    } else {
+                        panic!("You should either provide an HTTP Client or compile this crate with native-tls or rustls feature");
+                    }
                 }
-                #[cfg(not(feature = "native-tls"))]
-                panic!("You should either provide an HTTP Client or compile this crate with native-tls feature");
             }
         };
 

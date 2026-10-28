@@ -126,7 +126,7 @@ impl Operation for OperationCreateRole {
     type Output = Role;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/roles".to_string()
@@ -148,7 +148,7 @@ impl Operation for OperationDeleteRole {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/roles/{custom_role_id}", custom_role_id = p.0)
@@ -170,7 +170,7 @@ impl Operation for OperationGetRole {
     type Output = Role;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/roles/{custom_role_id}", custom_role_id = p.0)
@@ -192,7 +192,7 @@ impl Operation for OperationListRoles {
     type Output = ListRolesResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/roles?{q}", q = q.encode())
@@ -214,7 +214,7 @@ impl Operation for OperationUpdateRole {
     type Output = Role;
 
     fn method() -> Method {
-        Method::Patch
+        Method::PATCH
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/roles/{custom_role_id}", custom_role_id = p.0)

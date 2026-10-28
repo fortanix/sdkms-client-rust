@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
+use serde::{Serialize, Deserialize};
+use std::collections::{BTreeSet, HashSet};
 
 /// This represents the authenticator's response to a client’s request
 /// for the creation of a new public key credential.
@@ -364,6 +366,12 @@ pub enum WithGroups {
     None
 }
 
+impl fmt::Display for WithGroups {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
 pub struct OperationChangeEmail;
 #[allow(unused)]
 impl Operation for OperationChangeEmail {
@@ -373,7 +381,7 @@ impl Operation for OperationChangeEmail {
     type Output = User;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/users/change_email".to_string()
@@ -395,7 +403,7 @@ impl Operation for OperationChangePassword {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/users/change_password".to_string()
@@ -417,7 +425,7 @@ impl Operation for OperationConfirmEmail {
     type Output = ConfirmEmailResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{user_id}/confirm_email", user_id = p.0)
@@ -439,7 +447,7 @@ impl Operation for OperationDeleteStale {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{user_id}", user_id = p.0)
@@ -461,7 +469,7 @@ impl Operation for OperationDeleteUser {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/users".to_string()
@@ -483,7 +491,7 @@ impl Operation for OperationDeleteUserAccount {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{user_id}/accounts", user_id = p.0)
@@ -505,7 +513,7 @@ impl Operation for OperationForgotPassword {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/users/forgot_password".to_string()
@@ -527,7 +535,7 @@ impl Operation for OperationGenerateRecoveryCodes {
     type Output = RecoveryCodes;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/users/generate_recovery_codes".to_string()
@@ -549,7 +557,7 @@ impl Operation for OperationGetUser {
     type Output = User;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{user_id}?{q}", user_id = p.0, q = q.encode())
@@ -571,7 +579,7 @@ impl Operation for OperationGetUserAccounts {
     type Output = HashMap<Uuid,UserAccountFlags>;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/users/accounts".to_string()
@@ -593,7 +601,7 @@ impl Operation for OperationGetUserPermissions {
     type Output = GetUserPermissionsResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/permissions?{q}", q = q.encode())
@@ -615,7 +623,7 @@ impl Operation for OperationInviteUser {
     type Output = User;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/users/invite".to_string()
@@ -637,7 +645,7 @@ impl Operation for OperationListUsers {
     type Output = Vec<User>;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users?{q}", q = q.encode())
@@ -659,7 +667,7 @@ impl Operation for OperationProcessInvite {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/users/process_invite".to_string()
@@ -681,7 +689,7 @@ impl Operation for OperationResendConfirmEmail {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/users/resend_confirm_email".to_string()
@@ -703,7 +711,7 @@ impl Operation for OperationResendInvite {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{user_id}/resend_invite", user_id = p.0)
@@ -725,7 +733,7 @@ impl Operation for OperationResetPassword {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{user_id}/reset_password", user_id = p.0)
@@ -747,7 +755,7 @@ impl Operation for OperationSignupUser {
     type Output = User;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/users".to_string()
@@ -769,7 +777,7 @@ impl Operation for OperationUpdateUser {
     type Output = User;
 
     fn method() -> Method {
-        Method::Patch
+        Method::PATCH
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{user_id}", user_id = p.0)
@@ -791,7 +799,7 @@ impl Operation for OperationValidateToken {
     type Output = ValidateTokenResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{user_id}/validate_token", user_id = p.0)

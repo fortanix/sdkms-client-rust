@@ -5,6 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
+use serde::{Serialize, Deserialize};
+use url::Url;
+use std::fmt::Debug;
 
 #[derive(Eq, PartialEq, Debug, Serialize, Deserialize, Clone)]
 pub struct Account {
@@ -330,6 +333,12 @@ pub struct AccountRequest {
 pub enum AccountSort {
     ByAcctId {
         order: Order
+    }
+}
+
+impl Default for AccountSort {
+    fn default() -> Self {
+        AccountSort::ByAcctId { order: Order::default() }
     }
 }
 
@@ -1179,6 +1188,12 @@ pub enum SubscriptionType {
     )
 }
 
+impl Default for SubscriptionType {
+    fn default() -> SubscriptionType {
+        SubscriptionType::Trial { expires_at: None }
+    }
+}
+
 #[derive(Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize, Clone)]
 pub enum SyslogFacility {
     User,
@@ -1310,6 +1325,12 @@ pub struct WorkspaceCseConfig {
     pub auth_method: Option<WorkspaceCseAuthMethod>
 }
 
+impl Described for WorkspaceCseConfig {
+    fn type_name() -> &'static str {
+        "WorkspaceCseConfig"
+    }
+}
+
 /// An identity provider trusted to authenticate users for Workspace CSE APIs
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct WorkspaceCseIdentityProvider {
@@ -1334,7 +1355,7 @@ impl Operation for OperationAccountUsage {
     type Output = GetUsageResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{acct_id}/usage?{q}", acct_id = p.0, q = q.encode())
@@ -1356,7 +1377,7 @@ impl Operation for OperationCreateAccount {
     type Output = Account;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/accounts".to_string()
@@ -1383,7 +1404,7 @@ impl Operation for OperationCreateReplicationCredential {
     type Output = ReplicationCredential;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{acct_id}/replication/credentials", acct_id = p.0)
@@ -1405,7 +1426,7 @@ impl Operation for OperationDeleteAccount {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{acct_id}", acct_id = p.0)
@@ -1427,7 +1448,7 @@ impl Operation for OperationDeleteReplicationCredential {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{acct_id}/replication/credentials/{credential_id}", acct_id = p.0, credential_id = p.1)
@@ -1449,7 +1470,7 @@ impl Operation for OperationGetAccount {
     type Output = Account;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{acct_id}?{q}", acct_id = p.0, q = q.encode())
@@ -1471,7 +1492,7 @@ impl Operation for OperationGetReplicationCredential {
     type Output = ReplicationCredential;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{acct_id}/replication/credentials/{credential_id}", acct_id = p.0, credential_id = p.1)
@@ -1493,7 +1514,7 @@ impl Operation for OperationListAccounts {
     type Output = Vec<Account>;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts?{q}", q = q.encode())
@@ -1515,7 +1536,7 @@ impl Operation for OperationListReplicationCredentials {
     type Output = ListReplicationCredentialsResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{acct_id}/replication/credentials", acct_id = p.0)
@@ -1537,7 +1558,7 @@ impl Operation for OperationRecentReplicationScanSummary {
     type Output = RecentScanSummary;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{acct_id}/replication/recent_scan_summary", acct_id = p.0)
@@ -1559,7 +1580,7 @@ impl Operation for OperationReplicationCredentialSelfSignedCert {
     type Output = ReplicationCredentialSelfSignedCertResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{acct_id}/replication/credentials/{credential_id}/self_sign", acct_id = p.0, credential_id = p.1)
@@ -1581,7 +1602,7 @@ impl Operation for OperationUpdateAccount {
     type Output = Account;
 
     fn method() -> Method {
-        Method::Patch
+        Method::PATCH
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{acct_id}", acct_id = p.0)
@@ -1608,7 +1629,7 @@ impl Operation for OperationUpdateReplicationCredential {
     type Output = ReplicationCredential;
 
     fn method() -> Method {
-        Method::Patch
+        Method::PATCH
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{acct_id}/replication/credentials/{credential_id}", acct_id = p.0, credential_id = p.1)
@@ -1620,4 +1641,3 @@ impl SdkmsClient {
         self.execute::<OperationUpdateReplicationCredential>(req, (acct_id, credential_id,), None)
     }
 }
-

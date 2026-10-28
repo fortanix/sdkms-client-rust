@@ -181,7 +181,8 @@ impl SdkmsClient {
         }
     }
 
-    fn authenticate(&self, auth: Option<&Auth>) -> Result<Self> {
+    // TODO replace the usage with generated authenticate method
+    fn legacy_authenticate(&self, auth: Option<&Auth>) -> Result<Self> {
         let auth_response: AuthResponse = json_request_with_auth(
             &self.client,
             &self.api_endpoint,
@@ -200,19 +201,19 @@ impl SdkmsClient {
     }
 
     pub fn authenticate_with_api_key(&self, api_key: &str) -> Result<Self> {
-        self.authenticate(Some(Auth::from_api_key(api_key)).as_ref())
+        self.legacy_authenticate(Some(Auth::from_api_key(api_key)).as_ref())
     }
 
     pub fn authenticate_with_cert(&self, app_id: Option<&Uuid>) -> Result<Self> {
-        self.authenticate(app_id.map(|id| Auth::from_user_pass(id, "")).as_ref())
+        self.legacy_authenticate(app_id.map(|id| Auth::from_user_pass(id, "")).as_ref())
     }
 
     pub fn authenticate_app(&self, app_id: &Uuid, app_secret: &str) -> Result<Self> {
-        self.authenticate(Some(Auth::from_user_pass(app_id, app_secret)).as_ref())
+        self.legacy_authenticate(Some(Auth::from_user_pass(app_id, app_secret)).as_ref())
     }
 
     pub fn authenticate_user(&self, email: &str, password: &str) -> Result<Self> {
-        self.authenticate(Some(Auth::from_user_pass(email, password)).as_ref())
+        self.legacy_authenticate(Some(Auth::from_user_pass(email, password)).as_ref())
     }
 
     pub fn api_endpoint(&self) -> &str {
@@ -258,14 +259,15 @@ impl Drop for SdkmsClient {
 }
 
 impl SdkmsClient {
-    pub fn terminate(&mut self) -> Result<()> {
-        if let Some(Auth::Bearer(_)) = self.auth {
-            let _: () =
-                self.json_request(Method::POST, "/sys/v1/session/terminate", None::<&()>)?;
-            self.auth = None;
-        }
-        Ok(())
-    }
+
+    // pub fn terminate(&mut self) -> Result<()> {
+    //     if let Some(Auth::Bearer(_)) = self.auth {
+    //         let _: () =
+    //             self.json_request(Method::POST, "/sys/v1/session/terminate", None::<&()>)?;
+    //         self.auth = None;
+    //     }
+    //     Ok(())
+    // }
 
     pub fn invoke_plugin_nice<I, O>(&self, id: &Uuid, req: &I) -> Result<O>
     where

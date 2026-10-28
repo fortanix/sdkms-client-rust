@@ -65,7 +65,7 @@ impl Operation for OperationCreateAccountExtension {
     type Output = AccountExtension;
 
     fn method() -> Method {
-        Method::Put
+        Method::PUT
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/account_extensions/{acct_id}", acct_id = p.0)
@@ -87,7 +87,7 @@ impl Operation for OperationGetAccountExtension {
     type Output = AccountExtension;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/account_extensions/{acct_id}", acct_id = p.0)
@@ -109,7 +109,7 @@ impl Operation for OperationUpdateAccountExtension {
     type Output = AccountExtension;
 
     fn method() -> Method {
-        Method::Patch
+        Method::PATCH
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/account_extensions/{acct_id}", acct_id = p.0)

@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
+use serde::{Serialize, Deserialize};
 
 #[derive(Copy, PartialEq, Eq, Debug, Hash, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
@@ -419,6 +420,12 @@ pub enum HmgRedundancyScheme {
     PriorityFailover
 }
 
+impl Described for HmgRedundancyScheme {
+    fn type_name() -> &'static str {
+        "HmgRedundancyScheme"
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct KeyVault {
     pub id: String,
@@ -575,7 +582,7 @@ impl Operation for OperationAsyncScanHmg {
     type Output = Scan;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups/{group_id}/hmg/scans", group_id = p.0)
@@ -597,7 +604,7 @@ impl Operation for OperationCheckHmg {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups/{group_id}/hmg/check", group_id = p.0)
@@ -619,7 +626,7 @@ impl Operation for OperationCheckHmgConfig {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/groups/hmg/check".to_string()
@@ -641,7 +648,7 @@ impl Operation for OperationCreateGroup {
     type Output = Group;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/groups".to_string()
@@ -668,7 +675,7 @@ impl Operation for OperationDeleteGroup {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups/{group_id}", group_id = p.0)
@@ -690,7 +697,7 @@ impl Operation for OperationGetAllHmgScans {
     type Output = GetAllHmgScansResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups/{group_id}/hmg/scans", group_id = p.0)
@@ -712,7 +719,7 @@ impl Operation for OperationGetGcpKeyRings {
     type Output = Vec<String>;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/groups/hmg/gcp_key_rings".to_string()
@@ -734,7 +741,7 @@ impl Operation for OperationGetGroup {
     type Output = Group;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups/{group_id}", group_id = p.0)
@@ -756,7 +763,7 @@ impl Operation for OperationGetScan {
     type Output = Scan;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups/{group_id}/hmg/scans/{scan_id}", group_id = p.0, scan_id = p.1)
@@ -778,7 +785,7 @@ impl Operation for OperationGetVaults {
     type Output = Vec<KeyVault>;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/groups/hmg/azure_vaults".to_string()
@@ -800,7 +807,7 @@ impl Operation for OperationListGroups {
     type Output = ListGroupsResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups?{q}", q = q.encode())
@@ -822,7 +829,7 @@ impl Operation for OperationListKeyCollections {
     type Output = HmgListKeyCollectionsResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/groups/hmg/scan_collections".to_string()
@@ -844,7 +851,7 @@ impl Operation for OperationScanHmg {
     type Output = Vec<Sobject>;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups/{group_id}/hmg/scan", group_id = p.0)
@@ -866,7 +873,7 @@ impl Operation for OperationUpdateGroup {
     type Output = Group;
 
     fn method() -> Method {
-        Method::Patch
+        Method::PATCH
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups/{group_id}", group_id = p.0)

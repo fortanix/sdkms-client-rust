@@ -18,7 +18,7 @@ fn main() -> Result<(), SdkmsError> {
     let acct_id = Uuid::from_str(MY_ACCT_ID).expect("valid uuid");
     client.select_account(&SelectAccountRequest { acct_id })?;
     let user_id = client.entity_id().unwrap();
-    let user = client.get_user(&user_id)?;
+    let user = client.get_user(&user_id, None)?;
     println!("User: {:#?}", user);
 
     client.terminate()?;

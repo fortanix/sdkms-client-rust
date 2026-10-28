@@ -28,9 +28,15 @@
 ///
 /// The output of `test_set` in JSON representation: `["BIT_0", "BIT_2"]`.
 macro_rules! bitflags_set {
-    (pub struct $n:ident: $t:ty {
-        $(const $f:ident = $v:expr);* $(;)*
-    }) => {
+    (
+        $(#[$struct_attr:meta])*
+        pub struct $n:ident: $t:ty {
+            $(
+                $(#[$flag_attr:meta])*
+                const $f:ident = $v:expr
+            );* $(;)*
+        }
+    ) => {
         bitflags! {
             pub struct $n: $t {
                 $(const $f = $v;)*

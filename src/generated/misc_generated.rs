@@ -204,7 +204,7 @@ impl Operation for OperationGetAllServices {
     type Output = GetAllServicesResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/services".to_string()
@@ -226,7 +226,7 @@ impl Operation for OperationGetHealth {
     type Output = ();
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/health?{q}", q = q.encode())
@@ -248,7 +248,7 @@ impl Operation for OperationGetService {
     type Output = Service;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/services/{name}", name = p.0)
@@ -270,7 +270,7 @@ impl Operation for OperationLdapSearch {
     type Output = Vec<LdapSearchResultEntry>;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/ldap/search/{ldap_id}", ldap_id = p.0)
@@ -292,7 +292,7 @@ impl Operation for OperationSamlSpMetadata {
     type Output = Vec<u8>;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/saml/metadata.xml".to_string()
@@ -314,7 +314,7 @@ impl Operation for OperationSystemInfo {
     type Output = SystemInfoResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/info?{q}", q = q.encode())
@@ -336,7 +336,7 @@ impl Operation for OperationTestLdapConfig {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/ldap/test".to_string()
@@ -358,7 +358,7 @@ impl Operation for OperationTlsCertsSpki {
     type Output = TlsCertsSpkiResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/tls_certificates".to_string()
@@ -380,7 +380,7 @@ impl Operation for OperationTlsPublicKeys {
     type Output = TlsPublicKeysResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/tls_public_keys".to_string()

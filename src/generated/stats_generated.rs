@@ -84,7 +84,7 @@ impl Operation for OperationGetAppAggregate {
     type Output = EsStatsCountQueryResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/stats/apps?{q}", q = q.encode())
@@ -106,7 +106,7 @@ impl Operation for OperationGetAppStats {
     type Output = EsStatsCountQueryResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/stats/{app_id}/app?{q}", app_id = p.0, q = q.encode())
@@ -128,7 +128,7 @@ impl Operation for OperationGetGroupAggregate {
     type Output = EsStatsCountQueryResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/stats/groups?{q}", q = q.encode())
@@ -150,7 +150,7 @@ impl Operation for OperationGetGroupStats {
     type Output = EsStatsCountQueryResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/stats/{group_id}/group?{q}", group_id = p.0, q = q.encode())
@@ -172,7 +172,7 @@ impl Operation for OperationGetSobjectStats {
     type Output = EsStatsCountQueryResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/stats/{key_id}/key?{q}", key_id = p.0, q = q.encode())

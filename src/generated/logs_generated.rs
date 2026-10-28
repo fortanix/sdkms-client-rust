@@ -157,7 +157,7 @@ impl Operation for OperationGetAllLogs {
     type Output = EsAuditQueryResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/logs?{q}", q = q.encode())

@@ -5,6 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
+use serde::{Serialize, Deserialize};
+use openapiv3::OpenAPI;
+use strum::EnumIter;
+
 
 pub use self::account_permissions::AccountPermissions;
 pub mod account_permissions {
@@ -556,6 +560,12 @@ pub struct AutoScanSettings {
     pub scan_interval_hours: u8
 }
 
+impl Described for AutoScanSettings {
+    fn type_name() -> &'static str {
+        "struct AutoScanSettings"
+    }
+}
+
 #[derive(PartialEq, Eq, Debug, Hash, Serialize, Deserialize, Clone)]
 pub struct AwsKeyMaterialId {
     /// key material ID reported by AWS KMS
@@ -796,6 +806,12 @@ pub struct CommonClientConfig {
     pub quorum_approval: Option<QuorumApprovalConfig>
 }
 
+impl Described for CommonClientConfig {
+    fn type_name() -> &'static str {
+        "struct CommonClientConfig"
+    }
+}
+
 /// An indicator of how accurate a count of objects is.
 #[derive(Copy, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(tag = "$type")]
@@ -874,6 +890,12 @@ pub struct CryptographicPolicy {
     pub secret: Option<SecretOptionsPolicy>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub certificate: Option<CertificateOptionsPolicy>
+}
+
+impl Described for CryptographicPolicy {
+    fn type_name() -> &'static str {
+        "struct CryptographicPolicy"
+    }
 }
 
 #[derive(Debug, Eq, PartialEq, Copy, Serialize, Deserialize, Clone)]
@@ -1889,6 +1911,12 @@ pub enum GoogleAccessReason {
     CustomerAuthorizedWorkflowServicing = 11
 }
 
+impl Described for GoogleAccessReasonPolicy {
+    fn type_name() -> &'static str {
+        "struct GoogleAccessReasonPolicy"
+    }
+}
+
 /// Policy specifying acceptable access reasons
 /// by Google Service Account at App or Sobject level.
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -2275,6 +2303,13 @@ pub struct KeyHistoryPolicy {
     pub undo_time_window: Secs
 }
 
+
+impl Described for KeyHistoryPolicy {
+    fn type_name() -> &'static str {
+        "struct KeyHistoryPolicy"
+    }
+}
+
 /// Linked security objects.
 #[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -2309,6 +2344,12 @@ pub struct KeyMetadataPolicy {
     /// not compliant with the policy. Non-compliant legacy objects can only be
     /// updated to comply with the policy (e.g. by adding missing required metadata).
     pub legacy_objects: LegacyKeyPolicy
+}
+
+impl Described for KeyMetadataPolicy {
+    fn type_name() -> &'static str {
+        "struct KeyMetadataPolicy"
+    }
 }
 
 /// Operations allowed to be performed on a given key.
@@ -2394,6 +2435,12 @@ pub struct KmipClientConfig {
     pub ignore_unknown_key_ops_for: Option<ObjectTypeFilter>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub key_ops_override: Option<KeyOpsOverride>
+}
+
+impl Described for KmipClientConfig {
+    fn type_name() -> &'static str {
+        "struct KmipClientConfig"
+    }
 }
 
 /// Role of a user or app in an account for the purpose of LDAP configurations.
@@ -2766,6 +2813,22 @@ pub enum MfaProtocol {
     Fido2
 }
 
+impl Default for MfaProtocol {
+    fn default() -> Self {
+        // for backcompat
+        MfaProtocol::U2f
+    }
+}
+
+impl fmt::Display for MfaProtocol {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            &MfaProtocol::Fido2 => write!(f, "fido2"),
+            &MfaProtocol::U2f => write!(f, "u2f"),
+        }
+    }
+}
+
 /// Specifies the Mask Generating Function (MGF) to use.
 #[derive(Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
@@ -2939,6 +3002,40 @@ pub enum ObjectType {
     Pbe
 }
 
+
+impl fmt::Display for ObjectType {
+    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str(match *self {
+            ObjectType::Aes => "AES",
+            ObjectType::Aria => "ARIA",
+            ObjectType::Des => "DES",
+            ObjectType::Des3 => "triple DES",
+            ObjectType::Seed => "SEED",
+            ObjectType::Rsa => "RSA",
+            ObjectType::Dsa => "DSA",
+            ObjectType::Kcdsa => "KCDSA",
+            ObjectType::Ec => "elliptic curve",
+            ObjectType::EcKcdsa => "EC-KCDSA",
+            ObjectType::Bip32 => "BIP32",
+            ObjectType::Slip10 => "SLIP10",
+            ObjectType::Bls => "BLS",
+            ObjectType::Opaque => "opaque",
+            ObjectType::Hmac => "HMAC",
+            ObjectType::Secret => "secret",
+            ObjectType::Round5Beta => "Round5 (beta)",
+            ObjectType::LedaBeta => "Leda (beta)",
+            ObjectType::Lms => "LMS",
+            ObjectType::Xmss => "XMSS",
+            ObjectType::MlDsa => "ML-DSA",
+            ObjectType::MlDsaBeta => "ML-DSA (beta)",
+            ObjectType::MlKem => "ML-KEM",
+            ObjectType::MlKemBeta => "ML-KEM (beta)",
+            ObjectType::Certificate => "certificate",
+            ObjectType::Pbe => "PKCS#8 passphrase",
+        })
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(tag = "$type")]
 pub enum ObjectTypeFilter {
@@ -2984,6 +3081,12 @@ pub struct Pkcs11ClientConfig {
     pub max_concurrent_requests_per_slot: Option<usize>
 }
 
+impl Described for Pkcs11ClientConfig {
+    fn type_name() -> &'static str {
+        "struct Pkcs11ClientConfig"
+    }
+}
+
 /// Plugin code signing policy.
 ///
 /// When a code signing policy is set, all requests to create new plugins or
@@ -2993,6 +3096,12 @@ pub struct Pkcs11ClientConfig {
 pub struct PluginCodeSigningPolicy {
     /// The public key(s) used to verify plugin code signatures.
     pub signing_keys: SigningKeys
+}
+
+impl Described for PluginCodeSigningPolicy {
+    fn type_name() -> &'static str {
+        "struct PluginCodeSigningPolicy"
+    }
 }
 
 /// A security principal.
@@ -3747,6 +3856,12 @@ pub struct TepClientConfig {
     pub key_map: TepKeyMapList
 }
 
+impl Described for TepClientConfig {
+    fn type_name() -> &'static str {
+        "struct TepClientConfig"
+    }
+}
+
 #[derive(Debug, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum TepKeyContext {
@@ -3770,6 +3885,8 @@ pub enum TepSchema {
         Box<OpenAPI>
     )
 }
+
+impl std::cmp::Eq for TepSchema {}
 
 #[derive(Debug, Copy, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]

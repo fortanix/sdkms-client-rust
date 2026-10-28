@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
-use serde::{Serialize, Deserialize};
-use url::Url;
+use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
+use url::Url;
 
 #[derive(Eq, PartialEq, Debug, Serialize, Deserialize, Clone)]
 pub struct Account {
@@ -30,9 +30,9 @@ pub struct Account {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_logo: Option<Blob>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub custom_metadata: Option<HashMap<String,String>>,
+    pub custom_metadata: Option<HashMap<String, String>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub custom_metadata_attributes: Option<HashMap<String,CustomAttributeSearchMetadata>>,
+    pub custom_metadata_attributes: Option<HashMap<String, CustomAttributeSearchMetadata>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -44,15 +44,15 @@ pub struct Account {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub key_expiry_alert_config: Option<KeyExpiryAlertConfig>,
     /// Account-wide key history policy (aka key undo policy).
-    /// 
+    ///
     /// Key history policies allow certain key management operations, normally irreversible,
     /// to be undoable within a configurable period of time. For more information about this
     /// feature, please see <https://support.fortanix.com/docs/users-guide-key-undo-policy>.
-    /// 
+    ///
     /// An account-wide key undo policy applies to all DSM-local or FIPS replication groups,
     /// unless the group in question already has a key undo policy of its own, in which case,
     /// the group-level policy takes precedence.
-    /// 
+    ///
     /// To remove an existing policy when updating the account, specify the string "remove"
     /// in the PATCH request.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -63,7 +63,7 @@ pub struct Account {
     pub log_bad_requests: Option<bool>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub log_retention_days: Option<u64>,
-    pub logging_configs: HashMap<Uuid,LoggingConfig>,
+    pub logging_configs: HashMap<Uuid, LoggingConfig>,
     /// Enable the user to opt out from the current behaviour of key being marked as disabled at time of deactivation.
     pub mark_key_disable_when_deactivated: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -95,7 +95,7 @@ pub struct Account {
     /// be added to the account. If a code signing policy is set, all requests to create new
     /// plugins or update existing plugins (if updating the code) would need to provide a
     /// valid signature.
-    /// 
+    ///
     /// NOTE: if the DSM cluster is running in FIPS mode, code signing is required for plugins.
     /// Therefore, if a plugin code signing policy is not set for an account, no plugins can be
     /// added in that account if the DSM cluster is running in FIPS mode.
@@ -104,9 +104,9 @@ pub struct Account {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub plugin_enabled: Option<bool>,
     /// The purpose of the account. Unless the account is meant for backup purposes (like disaster recovery), the account is a standard account, which is the default value. Additionally, on DSM SaaS, all accounts are standard accounts. Replication accounts are only available for onprem clusters.
-    /// 
+    ///
     /// A standard account cannot be changed to a replication account. A replication account can transition into a standard account, but doing so will sever the replication relationship between the source and destination accounts, and hence the two accounts are allowed to "diverge." Additionally, replication accounts are, for all practical purposes, read-only; in order to make one fully writeable, the account must first be converted to a standard account.
-    /// 
+    ///
     /// When creating or updating a replication account, the only fields allowed in the AccountRequest are the following:
     /// - this field itself, `purpose`
     /// - `enabled`
@@ -114,23 +114,23 @@ pub struct Account {
     /// - `auth_config`, plus `add_ldap`, `mod_ldap`, and `del_ldap`
     /// - `log_bad_requests`, `log_retention_days`, plus `add_logging_configs`, `mod_logging_configs`, and `del_logging_configs`
     /// The replication process would preserve most of the other fields from the source account.
-    /// 
+    ///
     /// For a given source account, a destination cluster can have at most one account that is either currently replicating or has previously replicated the source account. This means that if a customer wants to "start afresh" with a new replication account, simply converting their current account to a standard account does not help; the account needs to be deleted outright.
-    /// 
+    ///
     /// Note that this field is independent of the account's subscription, which controls the _features_ available for the account.
     pub purpose: AccountPurpose,
     pub subscription: Subscription,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub totals: Option<ObjectCounts>,
     /// The date when an account's trial expires.
-    /// 
+    ///
     /// It is recommended to rely on this field instead of looking at the account's subscription to determine the expiry date, since not all trial subscriptions have the expiry date explicitly indicated.
-    /// 
+    ///
     /// This field is read-only, and is not shown for non-trial accounts.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub trial_expires_at: Option<Time>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub workspace_cse_config: Option<WorkspaceCseConfig>
+    pub workspace_cse_config: Option<WorkspaceCseConfig>,
 }
 
 /// Account approval policy.
@@ -150,7 +150,7 @@ pub struct AccountApprovalPolicy {
     pub protect_logging_config: Option<bool>,
     /// When set to true, updating custom roles would require approval.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub protect_custom_role_updates: Option<bool>
+    pub protect_custom_role_updates: Option<bool>,
 }
 
 /// Describes the purpose of the account.
@@ -161,9 +161,7 @@ pub enum AccountPurpose {
     Standard,
     /// An account that replicates another account (e.g., for disaster
     /// recovery purposes). Replication settings are contained here.
-    AccountReplication (
-        AccountReplicationConfiguration
-    )
+    AccountReplication(AccountReplicationConfiguration),
 }
 
 /// The purpose of the account (minus any configuration-related details).
@@ -173,9 +171,7 @@ pub enum AccountPurposeType {
     /// An ordinary account.
     Standard,
     /// An account that replicates another account.
-    AccountReplication {
-
-    }
+    AccountReplication {},
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -184,7 +180,7 @@ pub struct AccountReplicationConfiguration {
     pub connection_settings: AccountReplicationConnection,
     /// Settings for how DSM should replicate objects from the source account, once a connection has
     /// been established.
-    pub scan_settings: AccountReplicationScanSettings
+    pub scan_settings: AccountReplicationScanSettings,
 }
 
 /// Settings for how a replication account should connect to a source cluster. This type does not
@@ -199,7 +195,7 @@ pub struct AccountReplicationConnection {
     /// done via a separate endpoint), and in Update requests, this field can be omitted if no change
     /// is desired for the field.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub active_replication_credential: Option<ReplicationCredentialId>
+    pub active_replication_credential: Option<ReplicationCredentialId>,
 }
 
 /// Settings for how DSM should go about replicating objects from the source account once a connection
@@ -211,13 +207,13 @@ pub struct AccountReplicationConnection {
 pub struct AccountReplicationScanSettings {
     /// Settings for configuring how DSM periodically fetches information from the source. Today, the
     /// only configurable setting is the frequency of scans.
-    pub auto_scan: AutoScanSettings
+    pub auto_scan: AutoScanSettings,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
 pub struct AccountRequest {
     /// LDAP integrations to add when creating or updating an account.
-    /// 
+    ///
     /// In order for this field to take effect during creation, it must be specified alongside the `auth_config` field.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub add_ldap: Option<Vec<AuthConfigLdap>>,
@@ -239,9 +235,9 @@ pub struct AccountRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_logo: Option<Blob>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub custom_metadata: Option<HashMap<String,String>>,
+    pub custom_metadata: Option<HashMap<String, String>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub custom_metadata_attributes: Option<HashMap<String,CustomAttributeSearchMetadata>>,
+    pub custom_metadata_attributes: Option<HashMap<String, CustomAttributeSearchMetadata>>,
     /// LDAP integrations to remove when updating an account. This field is a list of LDAP integration IDs. (DSM assigns each LDAP integration a UUID; refer to the `auth_config.ldap` field.)
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub del_ldap: Option<HashSet<Uuid>>,
@@ -255,15 +251,15 @@ pub struct AccountRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub key_expiry_alert_config: Option<KeyExpiryAlertConfigRequest>,
     /// Account-wide key history policy (aka key undo policy).
-    /// 
+    ///
     /// Key history policies allow certain key management operations, normally irreversible,
     /// to be undoable within a configurable period of time. For more information about this
     /// feature, please see <https://support.fortanix.com/docs/users-guide-key-undo-policy>.
-    /// 
+    ///
     /// An account-wide key undo policy applies to all DSM-local or FIPS replication groups,
     /// unless the group in question already has a key undo policy of its own, in which case,
     /// the group-level policy takes precedence.
-    /// 
+    ///
     /// To remove an existing policy when updating the account, specify the string "remove"
     /// in the PATCH request.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -279,9 +275,9 @@ pub struct AccountRequest {
     pub mark_key_disable_when_deactivated: Option<bool>,
     /// LDAP integrations to modify when updating an account. This field is a object, where the keys are LDAP integration IDs, and the values are LDAP auth configs. (DSM assigns each LDAP integration a UUID; check the `auth_config.ldap` field to see them.)
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub mod_ldap: Option<HashMap<Uuid,AuthConfigLdap>>,
+    pub mod_ldap: Option<HashMap<Uuid, AuthConfigLdap>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub mod_logging_configs: Option<HashMap<Uuid,LoggingConfigRequest>>,
+    pub mod_logging_configs: Option<HashMap<Uuid, LoggingConfigRequest>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -298,7 +294,7 @@ pub struct AccountRequest {
     /// be added to the account. If a code signing policy is set, all requests to create new
     /// plugins or update existing plugins (if updating the code) would need to provide a
     /// valid signature.
-    /// 
+    ///
     /// NOTE: if the DSM cluster is running in FIPS mode, code signing is required for plugins.
     /// Therefore, if a plugin code signing policy is not set for an account, no plugins can be
     /// added in that account if the DSM cluster is running in FIPS mode.
@@ -307,9 +303,9 @@ pub struct AccountRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub plugin_enabled: Option<bool>,
     /// The purpose of the account. Unless the account is meant for backup purposes (like disaster recovery), the account is a standard account, which is the default value. Additionally, on DSM SaaS, all accounts are standard accounts. Replication accounts are only available for onprem clusters.
-    /// 
+    ///
     /// A standard account cannot be changed to a replication account. A replication account can transition into a standard account, but doing so will sever the replication relationship between the source and destination accounts, and hence the two accounts are allowed to "diverge." Additionally, replication accounts are, for all practical purposes, read-only; in order to make one fully writeable, the account must first be converted to a standard account.
-    /// 
+    ///
     /// When creating or updating a replication account, the only fields allowed in the AccountRequest are the following:
     /// - this field itself, `purpose`
     /// - `enabled`
@@ -317,35 +313,35 @@ pub struct AccountRequest {
     /// - `auth_config`, plus `add_ldap`, `mod_ldap`, and `del_ldap`
     /// - `log_bad_requests`, `log_retention_days`, plus `add_logging_configs`, `mod_logging_configs`, and `del_logging_configs`
     /// The replication process would preserve most of the other fields from the source account.
-    /// 
+    ///
     /// For a given source account, a destination cluster can have at most one account that is either currently replicating or has previously replicated the source account. This means that if a customer wants to "start afresh" with a new replication account, simply converting their current account to a standard account does not help; the account needs to be deleted outright.
-    /// 
+    ///
     /// Note that this field is independent of the account's subscription, which controls the _features_ available for the account.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub purpose: Option<AccountPurpose>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub subscription: Option<Subscription>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub workspace_cse_config: Option<Removable<WorkspaceCseConfig>>
+    pub workspace_cse_config: Option<Removable<WorkspaceCseConfig>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum AccountSort {
-    ByAcctId {
-        order: Order
-    }
+    ByAcctId { order: Order },
 }
 
 impl Default for AccountSort {
     fn default() -> Self {
-        AccountSort::ByAcctId { order: Order::default() }
+        AccountSort::ByAcctId {
+            order: Order::default(),
+        }
     }
 }
 
 impl UrlEncode for AccountSort {
     fn url_encode(&self, m: &mut HashMap<String, String>) {
         match *self {
-            AccountSort::ByAcctId{ ref order } => {
+            AccountSort::ByAcctId { ref order } => {
                 m.insert("sort_by".to_string(), format!("acct_id:{}", order));
             }
         }
@@ -363,7 +359,7 @@ pub struct AppCreditsUsage {
     pub azure_cloud_accounts: u32,
     pub gcp_cloud_accounts: u32,
     pub google_ekm_projects: u32,
-    pub aws_xks_instances: u32
+    pub aws_xks_instances: u32,
 }
 
 /// Settings that apply to quorum approval requests.
@@ -414,7 +410,7 @@ pub struct ApprovalRequestSettings {
     /// approval request workflows are not broken. For new use cases, it is
     /// recommended to leave this setting enabled.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub check_access_for_sensitive_operation_results: Option<bool>
+    pub check_access_for_sensitive_operation_results: Option<bool>,
 }
 
 /// A request struct for modifying settings that apply to quorum approval requests.
@@ -469,7 +465,7 @@ pub struct ApprovalRequestSettingsRequest {
     /// approval request workflows are not broken. For new use cases, it is
     /// recommended to leave this setting enabled.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub check_access_for_sensitive_operation_results: Option<bool>
+    pub check_access_for_sensitive_operation_results: Option<bool>,
 }
 
 /// Account authentication settings for users.
@@ -497,7 +493,7 @@ pub struct AuthConfig {
     /// in responses; in requests, please utilize the `add_ldap`,
     /// `mod_ldap`, and `del_ldap` fields in an `AccountRequest`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub ldap: Option<HashMap<Uuid,AuthConfigLdap>>,
+    pub ldap: Option<HashMap<Uuid, AuthConfigLdap>>,
     /// Settings for JWT authentication. This field should only
     /// be used for child accounts (relevant to customers with
     /// reseller arrangements with Fortanix), and should be left
@@ -509,7 +505,7 @@ pub struct AuthConfig {
     /// Omitting this field, or setting it to null, will DISABLE
     /// VCD authentication for users.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub vcd: Option<AuthConfigVcd>
+    pub vcd: Option<AuthConfigVcd>,
 }
 
 /// OAuth single sign-on authentication settings.
@@ -527,7 +523,7 @@ pub struct AuthConfigOauth {
     pub client_secret: ZeroizedString,
     /// Parameters to set when calling `idp_authorization_endpoint`
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub auth_params: Option<OauthAuthenticationParameters>
+    pub auth_params: Option<OauthAuthenticationParameters>,
 }
 
 /// Password authentication settings.
@@ -540,14 +536,14 @@ pub struct AuthConfigPassword {
     /// Note: password login will be always allowed for all users
     /// if there are no alternative authentication methods for the
     /// account.
-    pub administrators_only: bool
+    pub administrators_only: bool,
 }
 
 /// Signed JWT authentication settings.
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct AuthConfigSignedJwt {
     pub valid_issuers: HashSet<String>,
-    pub signing_keys: SigningKeys
+    pub signing_keys: SigningKeys,
 }
 
 /// Vcd single sign-on authentication settings.
@@ -556,7 +552,7 @@ pub struct AuthConfigVcd {
     pub idp_name: String,
     pub idp_authorization_endpoint: String,
     pub org: String,
-    pub tls: TlsConfig
+    pub tls: TlsConfig,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Serialize, Deserialize, Clone)]
@@ -564,7 +560,7 @@ pub struct AzureLogAnalyticsLoggingConfig {
     pub enabled: bool,
     pub workspace_id: Uuid,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub shared_key: Option<ZeroizedBlob>
+    pub shared_key: Option<ZeroizedBlob>,
 }
 
 #[derive(Default, Debug, PartialEq, Eq, Hash, Serialize, Deserialize, Clone)]
@@ -574,7 +570,7 @@ pub struct AzureLogAnalyticsLoggingConfigRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub workspace_id: Option<Uuid>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub shared_key: Option<ZeroizedBlob>
+    pub shared_key: Option<ZeroizedBlob>,
 }
 
 /// Azure Monitor Log Ingestion API logging configuration (DCR-based).
@@ -594,7 +590,7 @@ pub struct AzureLogIngestionLoggingConfig {
     /// The stream name defined in the DCR (e.g. "Custom-DSMAuditLog").
     pub stream_name: String,
     /// Reference to an `IntegrationCredential` with `AzureCredentialAuth` details.
-    pub credential_id: CredentialId
+    pub credential_id: CredentialId,
 }
 
 /// Azure Monitor Log Ingestion API configuration (DCR-based) request.
@@ -609,7 +605,7 @@ pub struct AzureLogIngestionLoggingConfigRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub stream_name: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub credential_id: Option<CredentialId>
+    pub credential_id: Option<CredentialId>,
 }
 
 /// Details about a certificate-based admin app credential used for account replication.
@@ -624,7 +620,7 @@ pub struct CertificateReplicationCredential {
     /// certificates, starting from the leaf certificate, and can consist of a single certificate if
     /// no intermediate certificates are necessary when authenticating with the source cluster.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub certificate_chain: Option<Vec<ZeroizedBlob>>
+    pub certificate_chain: Option<Vec<ZeroizedBlob>>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Default)]
@@ -636,7 +632,7 @@ pub struct CountParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub detailed_usage: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub saas_full_usage: Option<bool>
+    pub saas_full_usage: Option<bool>,
 }
 
 impl UrlEncode for CountParams {
@@ -670,9 +666,7 @@ pub enum CreateReplicationCredentialRequest {
     ///
     /// The exact details of the private key (e.g., object type, key size)
     /// are an implementation detail, and may change between DSM versions.
-    Certificate {
-
-    }
+    Certificate {},
 }
 
 /// Custom subscription type
@@ -696,14 +690,14 @@ pub struct CustomSubscriptionType {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub features: Option<SubscriptionFeatures>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub add_ons: Option<HashMap<String,String>>,
+    pub add_ons: Option<HashMap<String, String>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub soft_ops_per_second_limit: Option<u32>
+    pub soft_ops_per_second_limit: Option<u32>,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct DaysAhead {
-    pub days: u16
+    pub days: u16,
 }
 
 #[derive(Eq, PartialEq, Debug, Serialize, Deserialize, Clone)]
@@ -718,7 +712,7 @@ pub struct FreemiumSubscriptionType {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub max_tokenization_operation: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub max_plugin: Option<u32>
+    pub max_plugin: Option<u32>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Default)]
@@ -730,7 +724,7 @@ pub struct GetAccountParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub limit: Option<usize>,
     #[serde(flatten)]
-    pub sort_by: AccountSort
+    pub sort_by: AccountSort,
 }
 
 impl UrlEncode for GetAccountParams {
@@ -804,9 +798,9 @@ pub struct GetUsageResponse {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hsm_gateway: Option<u32>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub operation_top_app: Option<HashMap<String,u64>>,
+    pub operation_top_app: Option<HashMap<String, u64>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub operation_top_sobject: Option<HashMap<String,u64>>
+    pub operation_top_sobject: Option<HashMap<String, u64>>,
 }
 
 /// A Google service account key object. See https://cloud.google.com/video-intelligence/docs/common/auth.
@@ -818,13 +812,13 @@ pub struct GoogleServiceAccountKey {
     pub private_key_id: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub private_key: Option<ZeroizedString>,
-    pub client_email: String
+    pub client_email: String,
 }
 
 #[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone)]
 pub struct KeyExpiryAlertConfig {
-    pub triggers: HashMap<Uuid,KeyExpiryAlertTrigger>,
-    pub siem_tool_configs: HashMap<Uuid,KeyExpiryAlertSiemToolConfig>
+    pub triggers: HashMap<Uuid, KeyExpiryAlertTrigger>,
+    pub siem_tool_configs: HashMap<Uuid, KeyExpiryAlertSiemToolConfig>,
 }
 
 #[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone)]
@@ -832,77 +826,55 @@ pub struct KeyExpiryAlertConfigRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub add_triggers: Option<Vec<KeyExpiryAlertTrigger>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub mod_triggers: Option<HashMap<Uuid,KeyExpiryAlertTrigger>>,
+    pub mod_triggers: Option<HashMap<Uuid, KeyExpiryAlertTrigger>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub del_triggers: Option<HashSet<Uuid>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub add_siem_tool_configs: Option<Vec<KeyExpiryAlertSiemToolConfig>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub mod_siem_tool_configs: Option<HashMap<Uuid,KeyExpiryAlertSiemToolConfig>>,
+    pub mod_siem_tool_configs: Option<HashMap<Uuid, KeyExpiryAlertSiemToolConfig>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub del_siem_tool_configs: Option<HashSet<Uuid>>
+    pub del_siem_tool_configs: Option<HashSet<Uuid>>,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct KeyExpiryAlertSiemToolConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub max_key_info_per_alert: Option<u16>,
-    pub config: LoggingConfig
+    pub config: LoggingConfig,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(tag = "$type")]
 pub enum KeyExpiryAlertTrigger {
-    DaysAhead (
-        DaysAhead
-    )
+    DaysAhead(DaysAhead),
 }
 
 /// Response body for a GET call to retrieve all replication credentials.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ListReplicationCredentialsResponse {
     /// The list of replication credentials.
-    pub items: Vec<ReplicationCredential>
+    pub items: Vec<ReplicationCredential>,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum LoggingConfig {
-    Splunk (
-        SplunkLoggingConfig
-    ),
-    Stackdriver (
-        StackdriverLoggingConfig
-    ),
-    Syslog (
-        SyslogLoggingConfig
-    ),
-    AzureLogAnalytics (
-        AzureLogAnalyticsLoggingConfig
-    ),
-    AzureLogIngestion (
-        AzureLogIngestionLoggingConfig
-    )
+    Splunk(SplunkLoggingConfig),
+    Stackdriver(StackdriverLoggingConfig),
+    Syslog(SyslogLoggingConfig),
+    AzureLogAnalytics(AzureLogAnalyticsLoggingConfig),
+    AzureLogIngestion(AzureLogIngestionLoggingConfig),
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum LoggingConfigRequest {
-    Splunk (
-        SplunkLoggingConfigRequest
-    ),
-    Stackdriver (
-        StackdriverLoggingConfigRequest
-    ),
-    Syslog (
-        SyslogLoggingConfigRequest
-    ),
-    AzureLogAnalytics (
-        AzureLogAnalyticsLoggingConfigRequest
-    ),
-    AzureLogIngestion (
-        AzureLogIngestionLoggingConfigRequest
-    )
+    Splunk(SplunkLoggingConfigRequest),
+    Stackdriver(StackdriverLoggingConfigRequest),
+    Syslog(SyslogLoggingConfigRequest),
+    AzureLogAnalytics(AzureLogAnalyticsLoggingConfigRequest),
+    AzureLogIngestion(AzureLogIngestionLoggingConfigRequest),
 }
 
 /// Notification preferences.
@@ -911,7 +883,7 @@ pub enum NotificationPref {
     None,
     Email,
     Phone,
-    Both
+    Both,
 }
 
 /// Counts of objects of various types in an account.
@@ -939,7 +911,7 @@ pub struct ObjectCounts {
     ///
     /// These rules are subject to change in the future.
     pub sobjects_accuracy: CountAccuracy,
-    pub child_accounts: u64
+    pub child_accounts: u64,
 }
 
 /// OnPrem subscription type
@@ -947,7 +919,7 @@ pub struct ObjectCounts {
 #[serde(rename_all = "snake_case")]
 pub struct OnPremSubscriptionType {
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub count_transient_ops: Option<bool>
+    pub count_transient_ops: Option<bool>,
 }
 
 /// A summary of the latest scans for a replication account.
@@ -963,7 +935,7 @@ pub struct RecentScanSummary {
     /// Information about the last finished scan on the account that finished
     /// successfully.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub last_successful: Option<ReplicationScan>
+    pub last_successful: Option<ReplicationScan>,
 }
 
 /// Details about the admin app credential used to replicate objects from the source account.
@@ -971,9 +943,7 @@ pub struct RecentScanSummary {
 #[serde(tag = "$type")]
 pub enum ReplicationCredential {
     /// A client certificate (or trusted CA) app credential. This is the only available option today.
-    Certificate (
-        CertificateReplicationCredential
-    )
+    Certificate(CertificateReplicationCredential),
 }
 
 /// The ID of a replication credential.
@@ -991,15 +961,13 @@ pub type ReplicationCredentialId = String;
 /// - No expiry (represented by 99991231235959Z as per RFC 5280)
 /// - There will not be a basic constraints extension
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
-pub struct ReplicationCredentialSelfSignedCertRequest {
-
-}
+pub struct ReplicationCredentialSelfSignedCertRequest {}
 
 /// Response from the endpoint to generate a new self-signed cert for a replication credential.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ReplicationCredentialSelfSignedCertResponse {
     /// The self-signed certificate generated by DSM.
-    pub certificate: ZeroizedBlob
+    pub certificate: ZeroizedBlob,
 }
 
 /// Information about a scan performed under a replication account.
@@ -1013,7 +981,7 @@ pub struct ReplicationScan {
     /// Any error message returned by the scan. If this field is empty, the
     /// scan is either ongoing, or returned successfully.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub error_message: Option<String>
+    pub error_message: Option<String>,
 }
 
 /// Reseller subscription type
@@ -1035,9 +1003,9 @@ pub struct ResellerSubscriptionType {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub features: Option<SubscriptionFeatures>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub add_ons: Option<HashMap<String,String>>,
+    pub add_ons: Option<HashMap<String, String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tenant_features: Option<SubscriptionFeatures>
+    pub tenant_features: Option<SubscriptionFeatures>,
 }
 
 /// Splunk logging configuration.
@@ -1055,7 +1023,7 @@ pub struct SplunkLoggingConfig {
     /// Defaults to `true` for newly created configs, but remains `false` when the
     /// field is omitted to preserve backward compatibility.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub use_fqdn_hostname: Option<bool>
+    pub use_fqdn_hostname: Option<bool>,
 }
 
 #[derive(Default, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -1076,7 +1044,7 @@ pub struct SplunkLoggingConfigRequest {
     pub tls: Option<TlsConfig>,
     /// Enable sending the cluster FQDN as the hostname in log entries.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub use_fqdn_hostname: Option<bool>
+    pub use_fqdn_hostname: Option<bool>,
 }
 
 /// Stackdriver logging configuration.
@@ -1085,7 +1053,7 @@ pub struct StackdriverLoggingConfig {
     pub enabled: bool,
     /// The log ID that will receive the log items (see https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry).
     pub log_id: String,
-    pub service_account_key: GoogleServiceAccountKey
+    pub service_account_key: GoogleServiceAccountKey,
 }
 
 #[derive(Default, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -1096,7 +1064,7 @@ pub struct StackdriverLoggingConfigRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub log_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub service_account_key: Option<GoogleServiceAccountKey>
+    pub service_account_key: Option<GoogleServiceAccountKey>,
 }
 
 #[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone)]
@@ -1106,7 +1074,7 @@ pub struct Subscription {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub experimental_features: Option<SubscriptionExperimentalFeatures>,
     #[serde(flatten)]
-    pub subscription_type: SubscriptionType
+    pub subscription_type: SubscriptionType,
 }
 
 /// A request to update subscription type.
@@ -1116,18 +1084,16 @@ pub struct SubscriptionChangeRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub contact: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub comment: Option<String>
+    pub comment: Option<String>,
 }
 
 #[derive(Debug, Eq, PartialEq, Default, Serialize, Deserialize, Clone)]
-pub struct SubscriptionExperimentalFeatures {
-
-}
+pub struct SubscriptionExperimentalFeatures {}
 
 /// Features in subscription
 pub use self::subscription_features::SubscriptionFeatures;
 pub mod subscription_features {
-    bitflags_set!{
+    bitflags_set! {
         pub struct SubscriptionFeatures: u64 {
             const TOKENIZATION = 0x0000000000000001;
             const HMG = 0x0000000000000002;
@@ -1153,39 +1119,27 @@ pub enum SubscriptionType {
         /// The account's `trial_expires_at` field can be used to determine
         /// the effective expiry date of a trial account.
         #[serde(skip_serializing_if = "Option::is_none")]
-        expires_at: Option<Time>
+        expires_at: Option<Time>,
     },
     /// A "standard" DSM SaaS subscription. This is a legacy subscription
     /// type, which is more or less superseded by Custom subscriptions.
-    Standard {
-
-    },
+    Standard {},
     /// A "enterprise" DSM SaaS subscription. This is a legacy subscription
     /// type, which is more or less superseded by Custom subscriptions.
-    Enterprise {
-
-    },
+    Enterprise {},
     /// A custom subscription on DSM SaaS.
-    Custom (
-        Box<CustomSubscriptionType>
-    ),
+    Custom(Box<CustomSubscriptionType>),
     /// A freemium subscription on DSM SaaS.
-    Freemium (
-        Box<FreemiumSubscriptionType>
-    ),
+    Freemium(Box<FreemiumSubscriptionType>),
     /// A specicial variant to account for on-prem deployments; most
     /// subscription-based restrictions are not enforced in the backend.
     ///
     /// Note: Sysadmin accounts on both SaaS and on-prem deployments utilize
     /// this variant.
-    OnPrem (
-        Box<OnPremSubscriptionType>
-    ),
+    OnPrem(Box<OnPremSubscriptionType>),
     /// A reseller subscription. This is only used by customers who have
     /// reseller arrangements with Fortanix.
-    Reseller (
-        Box<ResellerSubscriptionType>
-    )
+    Reseller(Box<ResellerSubscriptionType>),
 }
 
 impl Default for SubscriptionType {
@@ -1204,7 +1158,7 @@ pub enum SyslogFacility {
     Local4,
     Local5,
     Local6,
-    Local7
+    Local7,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -1219,7 +1173,7 @@ pub struct SyslogLoggingConfig {
     /// Defaults to `true` for newly created configs, but remains `false` when the
     /// field is omitted to preserve backward compatibility.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub use_fqdn_hostname: Option<bool>
+    pub use_fqdn_hostname: Option<bool>,
 }
 
 #[derive(Default, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -1236,7 +1190,7 @@ pub struct SyslogLoggingConfigRequest {
     pub facility: Option<SyslogFacility>,
     /// Enable sending the cluster FQDN as the hostname in log entries.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub use_fqdn_hostname: Option<bool>
+    pub use_fqdn_hostname: Option<bool>,
 }
 
 /// A request to update a certificate-based replication credential.
@@ -1252,7 +1206,7 @@ pub struct UpdateCertificateReplicationCredentialRequest {
     /// certificates are necessary when authenticating with the source
     /// cluster.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub certificate_chain: Option<Vec<ZeroizedBlob>>
+    pub certificate_chain: Option<Vec<ZeroizedBlob>>,
 }
 
 /// A request to update a replication credential (e.g., associating it with
@@ -1264,9 +1218,7 @@ pub struct UpdateCertificateReplicationCredentialRequest {
 #[serde(tag = "$type")]
 pub enum UpdateReplicationCredentialRequest {
     /// Request to update a certificate-based credential.
-    Certificate (
-        UpdateCertificateReplicationCredentialRequest
-    )
+    Certificate(UpdateCertificateReplicationCredentialRequest),
 }
 
 /// Authentication method for Google Workspace CSE, `User` (default choice) requires each CSE user
@@ -1280,7 +1232,7 @@ pub enum WorkspaceCseAuthMethod {
     /// Each CSE user must be registered as a DSM user
     User,
     /// Each CSE user is represented by a DSM app and only needs access to cse specific endpoints.
-    App
+    App,
 }
 
 /// These settings will allow the service to validate the Google-issued
@@ -1304,7 +1256,7 @@ pub struct WorkspaceCseAuthorizationProvider {
     pub valid_issuers: HashSet<String>,
     /// Acceptable values for the `aud` (audience) field used in Google's
     /// authorization tokens
-    pub valid_audiences: HashSet<String>
+    pub valid_audiences: HashSet<String>,
 }
 
 /// Workspace CSE API settings. Specifying these settings enables the CSE APIs
@@ -1322,7 +1274,7 @@ pub struct WorkspaceCseConfig {
     pub authorization_providers: Vec<WorkspaceCseAuthorizationProvider>,
     /// An accounts method of authenticating users via the CSE integration.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub auth_method: Option<WorkspaceCseAuthMethod>
+    pub auth_method: Option<WorkspaceCseAuthMethod>,
 }
 
 impl Described for WorkspaceCseConfig {
@@ -1343,7 +1295,7 @@ pub struct WorkspaceCseIdentityProvider {
     pub valid_issuers: HashSet<String>,
     /// Acceptable values for the `aud` (audience) field used in authentication
     /// tokens
-    pub valid_audiences: HashSet<String>
+    pub valid_audiences: HashSet<String>,
 }
 
 pub struct OperationAccountUsage;
@@ -1358,12 +1310,23 @@ impl Operation for OperationAccountUsage {
         Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/accounts/{acct_id}/usage?{q}", acct_id = p.0, q = q.encode())
+        format!(
+            "/sys/v1/accounts/{acct_id}/usage?{q}",
+            acct_id = p.0,
+            q = q.encode()
+        )
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
-    pub fn account_usage(&self, acct_id: &Uuid, query_params: Option<&CountParams>) -> Result<GetUsageResponse> {
+    pub fn account_usage(
+        &self,
+        acct_id: &Uuid,
+        query_params: Option<&CountParams>,
+    ) -> Result<GetUsageResponse> {
         self.execute::<OperationAccountUsage>(&(), (acct_id,), query_params)
     }
 }
@@ -1389,8 +1352,10 @@ impl SdkmsClient {
         self.execute::<OperationCreateAccount>(req, (), None)
     }
     pub fn request_approval_to_create_account(
-        &self, req: &AccountRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationCreateAccount>> {
+        &self,
+        req: &AccountRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationCreateAccount>> {
         self.request_approval::<OperationCreateAccount>(req, (), None, description)
     }
 }
@@ -1407,12 +1372,19 @@ impl Operation for OperationCreateReplicationCredential {
         Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/accounts/{acct_id}/replication/credentials", acct_id = p.0)
+        format!(
+            "/sys/v1/accounts/{acct_id}/replication/credentials",
+            acct_id = p.0
+        )
     }
 }
 
 impl SdkmsClient {
-    pub fn create_replication_credential(&self, acct_id: &Uuid, req: &CreateReplicationCredentialRequest) -> Result<ReplicationCredential> {
+    pub fn create_replication_credential(
+        &self,
+        acct_id: &Uuid,
+        req: &CreateReplicationCredentialRequest,
+    ) -> Result<ReplicationCredential> {
         self.execute::<OperationCreateReplicationCredential>(req, (acct_id,), None)
     }
 }
@@ -1431,7 +1403,10 @@ impl Operation for OperationDeleteAccount {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts/{acct_id}", acct_id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn delete_account(&self, acct_id: &Uuid) -> Result<()> {
@@ -1442,7 +1417,7 @@ impl SdkmsClient {
 pub struct OperationDeleteReplicationCredential;
 #[allow(unused)]
 impl Operation for OperationDeleteReplicationCredential {
-    type PathParams = (Uuid, Uuid,);
+    type PathParams = (Uuid, Uuid);
     type QueryParams = ();
     type Body = ();
     type Output = ();
@@ -1451,13 +1426,24 @@ impl Operation for OperationDeleteReplicationCredential {
         Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/accounts/{acct_id}/replication/credentials/{credential_id}", acct_id = p.0, credential_id = p.1)
+        format!(
+            "/sys/v1/accounts/{acct_id}/replication/credentials/{credential_id}",
+            acct_id = p.0,
+            credential_id = p.1
+        )
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
-    pub fn delete_replication_credential(&self, acct_id: &Uuid, credential_id: &Uuid) -> Result<()> {
-        self.execute::<OperationDeleteReplicationCredential>(&(), (acct_id, credential_id,), None)
+    pub fn delete_replication_credential(
+        &self,
+        acct_id: &Uuid,
+        credential_id: &Uuid,
+    ) -> Result<()> {
+        self.execute::<OperationDeleteReplicationCredential>(&(), (acct_id, credential_id), None)
     }
 }
 
@@ -1473,12 +1459,23 @@ impl Operation for OperationGetAccount {
         Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/accounts/{acct_id}?{q}", acct_id = p.0, q = q.encode())
+        format!(
+            "/sys/v1/accounts/{acct_id}?{q}",
+            acct_id = p.0,
+            q = q.encode()
+        )
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
-    pub fn get_account(&self, acct_id: &Uuid, query_params: Option<&GetAccountParams>) -> Result<Account> {
+    pub fn get_account(
+        &self,
+        acct_id: &Uuid,
+        query_params: Option<&GetAccountParams>,
+    ) -> Result<Account> {
         self.execute::<OperationGetAccount>(&(), (acct_id,), query_params)
     }
 }
@@ -1486,7 +1483,7 @@ impl SdkmsClient {
 pub struct OperationGetReplicationCredential;
 #[allow(unused)]
 impl Operation for OperationGetReplicationCredential {
-    type PathParams = (Uuid, Uuid,);
+    type PathParams = (Uuid, Uuid);
     type QueryParams = ();
     type Body = ();
     type Output = ReplicationCredential;
@@ -1495,13 +1492,24 @@ impl Operation for OperationGetReplicationCredential {
         Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/accounts/{acct_id}/replication/credentials/{credential_id}", acct_id = p.0, credential_id = p.1)
+        format!(
+            "/sys/v1/accounts/{acct_id}/replication/credentials/{credential_id}",
+            acct_id = p.0,
+            credential_id = p.1
+        )
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
-    pub fn get_replication_credential(&self, acct_id: &Uuid, credential_id: &Uuid) -> Result<ReplicationCredential> {
-        self.execute::<OperationGetReplicationCredential>(&(), (acct_id, credential_id,), None)
+    pub fn get_replication_credential(
+        &self,
+        acct_id: &Uuid,
+        credential_id: &Uuid,
+    ) -> Result<ReplicationCredential> {
+        self.execute::<OperationGetReplicationCredential>(&(), (acct_id, credential_id), None)
     }
 }
 
@@ -1519,7 +1527,10 @@ impl Operation for OperationListAccounts {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/accounts?{q}", q = q.encode())
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn list_accounts(&self, query_params: Option<&GetAccountParams>) -> Result<Vec<Account>> {
@@ -1539,12 +1550,21 @@ impl Operation for OperationListReplicationCredentials {
         Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/accounts/{acct_id}/replication/credentials", acct_id = p.0)
+        format!(
+            "/sys/v1/accounts/{acct_id}/replication/credentials",
+            acct_id = p.0
+        )
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
-    pub fn list_replication_credentials(&self, acct_id: &Uuid) -> Result<ListReplicationCredentialsResponse> {
+    pub fn list_replication_credentials(
+        &self,
+        acct_id: &Uuid,
+    ) -> Result<ListReplicationCredentialsResponse> {
         self.execute::<OperationListReplicationCredentials>(&(), (acct_id,), None)
     }
 }
@@ -1561,9 +1581,15 @@ impl Operation for OperationRecentReplicationScanSummary {
         Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/accounts/{acct_id}/replication/recent_scan_summary", acct_id = p.0)
+        format!(
+            "/sys/v1/accounts/{acct_id}/replication/recent_scan_summary",
+            acct_id = p.0
+        )
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn recent_replication_scan_summary(&self, acct_id: &Uuid) -> Result<RecentScanSummary> {
@@ -1574,7 +1600,7 @@ impl SdkmsClient {
 pub struct OperationReplicationCredentialSelfSignedCert;
 #[allow(unused)]
 impl Operation for OperationReplicationCredentialSelfSignedCert {
-    type PathParams = (Uuid, Uuid,);
+    type PathParams = (Uuid, Uuid);
     type QueryParams = ();
     type Body = ReplicationCredentialSelfSignedCertRequest;
     type Output = ReplicationCredentialSelfSignedCertResponse;
@@ -1583,13 +1609,26 @@ impl Operation for OperationReplicationCredentialSelfSignedCert {
         Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/accounts/{acct_id}/replication/credentials/{credential_id}/self_sign", acct_id = p.0, credential_id = p.1)
+        format!(
+            "/sys/v1/accounts/{acct_id}/replication/credentials/{credential_id}/self_sign",
+            acct_id = p.0,
+            credential_id = p.1
+        )
     }
 }
 
 impl SdkmsClient {
-    pub fn replication_credential_self_signed_cert(&self, acct_id: &Uuid, credential_id: &Uuid, req: &ReplicationCredentialSelfSignedCertRequest) -> Result<ReplicationCredentialSelfSignedCertResponse> {
-        self.execute::<OperationReplicationCredentialSelfSignedCert>(req, (acct_id, credential_id,), None)
+    pub fn replication_credential_self_signed_cert(
+        &self,
+        acct_id: &Uuid,
+        credential_id: &Uuid,
+        req: &ReplicationCredentialSelfSignedCertRequest,
+    ) -> Result<ReplicationCredentialSelfSignedCertResponse> {
+        self.execute::<OperationReplicationCredentialSelfSignedCert>(
+            req,
+            (acct_id, credential_id),
+            None,
+        )
     }
 }
 
@@ -1614,8 +1653,11 @@ impl SdkmsClient {
         self.execute::<OperationUpdateAccount>(req, (acct_id,), None)
     }
     pub fn request_approval_to_update_account(
-        &self, acct_id: &Uuid, req: &AccountRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationUpdateAccount>> {
+        &self,
+        acct_id: &Uuid,
+        req: &AccountRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationUpdateAccount>> {
         self.request_approval::<OperationUpdateAccount>(req, (acct_id,), None, description)
     }
 }
@@ -1623,7 +1665,7 @@ impl SdkmsClient {
 pub struct OperationUpdateReplicationCredential;
 #[allow(unused)]
 impl Operation for OperationUpdateReplicationCredential {
-    type PathParams = (Uuid, Uuid,);
+    type PathParams = (Uuid, Uuid);
     type QueryParams = ();
     type Body = UpdateReplicationCredentialRequest;
     type Output = ReplicationCredential;
@@ -1632,12 +1674,21 @@ impl Operation for OperationUpdateReplicationCredential {
         Method::PATCH
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/accounts/{acct_id}/replication/credentials/{credential_id}", acct_id = p.0, credential_id = p.1)
+        format!(
+            "/sys/v1/accounts/{acct_id}/replication/credentials/{credential_id}",
+            acct_id = p.0,
+            credential_id = p.1
+        )
     }
 }
 
 impl SdkmsClient {
-    pub fn update_replication_credential(&self, acct_id: &Uuid, credential_id: &Uuid, req: &UpdateReplicationCredentialRequest) -> Result<ReplicationCredential> {
-        self.execute::<OperationUpdateReplicationCredential>(req, (acct_id, credential_id,), None)
+    pub fn update_replication_credential(
+        &self,
+        acct_id: &Uuid,
+        credential_id: &Uuid,
+        req: &UpdateReplicationCredentialRequest,
+    ) -> Result<ReplicationCredential> {
+        self.execute::<OperationUpdateReplicationCredential>(req, (acct_id, credential_id), None)
     }
 }

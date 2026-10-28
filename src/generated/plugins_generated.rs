@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 /// Language of plugin code.
 #[derive(Debug, Eq, PartialEq, Copy, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum Language {
-    Lua
+    Lua,
 }
 
 /// Query parameters to get Plugins.
@@ -28,7 +28,7 @@ pub struct ListPluginsParams {
     pub offset: Option<usize>,
     /// Sort plugins in ascending or descending order by Plugin Id.
     #[serde(flatten)]
-    pub sort: PluginSort
+    pub sort: PluginSort,
 }
 
 impl UrlEncode for ListPluginsParams {
@@ -80,7 +80,7 @@ pub struct Plugin {
     /// Source of plugin. It contains language & source code of plugin. In case of marketplace plugin repo_url & version as well
     pub source: PluginSource,
     /// Set of all the groups that plugin is part of.
-    pub groups: HashSet<Uuid>
+    pub groups: HashSet<Uuid>,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
@@ -101,7 +101,7 @@ pub struct PluginRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub plugin_type: Option<PluginType>,
     /// A detached OpenPGP signature over the plugin source code.
-    /// 
+    ///
     /// The signature packet must be armored. If the account has a plugin code signing
     /// policy, the signature is required in the following cases:
     /// - when creating a new plugin
@@ -119,7 +119,7 @@ pub struct PluginRequest {
     pub del_groups: Option<HashSet<Uuid>>,
     /// Set of all the groups that plugin is part of.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub mod_groups: Option<HashSet<Uuid>>
+    pub mod_groups: Option<HashSet<Uuid>>,
 }
 
 /// Sorting order on listed Plugins.
@@ -131,14 +131,17 @@ pub enum PluginSort {
         order: Order,
         /// Starting offset(UUID of plugin).
         #[serde(skip_serializing_if = "Option::is_none")]
-        start: Option<Uuid>
-    }
+        start: Option<Uuid>,
+    },
 }
 
 impl UrlEncode for PluginSort {
     fn url_encode(&self, m: &mut HashMap<String, String>) {
         match *self {
-            PluginSort::ByPluginId{ ref order, ref start } => {
+            PluginSort::ByPluginId {
+                ref order,
+                ref start,
+            } => {
                 m.insert("sort".to_string(), format!("plugin_id:{}", order));
                 if let Some(v) = start {
                     m.insert("start".to_string(), v.to_string());
@@ -157,12 +160,12 @@ pub enum PluginSource {
         name: String,
         version: PluginVersion,
         language: Language,
-        code: String
+        code: String,
     },
     Inline {
         language: Language,
-        code: String
-    }
+        code: String,
+    },
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -171,12 +174,12 @@ pub enum PluginSourceRequest {
     FromRepo {
         repo_url: String,
         plugin_name: String,
-        version: PluginVersion
+        version: PluginVersion,
     },
     Inline {
         language: Language,
-        code: String
-    }
+        code: String,
+    },
 }
 
 /// Type of a plugin.
@@ -185,7 +188,7 @@ pub enum PluginSourceRequest {
 pub enum PluginType {
     Standard,
     Impersonating,
-    CustomAlgorithm
+    CustomAlgorithm,
 }
 
 pub struct OperationCreatePlugin;
@@ -209,8 +212,10 @@ impl SdkmsClient {
         self.execute::<OperationCreatePlugin>(req, (), None)
     }
     pub fn request_approval_to_create_plugin(
-        &self, req: &PluginRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationCreatePlugin>> {
+        &self,
+        req: &PluginRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationCreatePlugin>> {
         self.request_approval::<OperationCreatePlugin>(req, (), None, description)
     }
 }
@@ -229,7 +234,10 @@ impl Operation for OperationDeletePlugin {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/plugins/{plugin_id}", plugin_id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn delete_plugin(&self, plugin_id: &Uuid) -> Result<()> {
@@ -251,7 +259,10 @@ impl Operation for OperationGetPlugin {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/plugins/{plugin_id}", plugin_id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn get_plugin(&self, plugin_id: &Uuid) -> Result<Plugin> {
@@ -280,8 +291,11 @@ impl SdkmsClient {
         self.execute::<OperationInvokePlugin>(req, (plugin_id,), None)
     }
     pub fn request_approval_to_invoke_plugin(
-        &self, plugin_id: &Uuid, req: &serde_json::Value,
-        description: Option<String>) -> Result<PendingApproval<OperationInvokePlugin>> {
+        &self,
+        plugin_id: &Uuid,
+        req: &serde_json::Value,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationInvokePlugin>> {
         self.request_approval::<OperationInvokePlugin>(req, (plugin_id,), None, description)
     }
 }
@@ -300,7 +314,10 @@ impl Operation for OperationListPlugins {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/plugins?{q}", q = q.encode())
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn list_plugins(&self, query_params: Option<&ListPluginsParams>) -> Result<Vec<Plugin>> {
@@ -329,9 +346,11 @@ impl SdkmsClient {
         self.execute::<OperationUpdatePlugin>(req, (plugin_id,), None)
     }
     pub fn request_approval_to_update_plugin(
-        &self, plugin_id: &Uuid, req: &PluginRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationUpdatePlugin>> {
+        &self,
+        plugin_id: &Uuid,
+        req: &PluginRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationUpdatePlugin>> {
         self.request_approval::<OperationUpdatePlugin>(req, (plugin_id,), None, description)
     }
 }
-

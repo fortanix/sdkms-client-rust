@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Default)]
 pub struct VersionParams {
@@ -13,7 +13,7 @@ pub struct VersionParams {
     ///
     /// Only applicable to FIPS builds.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub detailed_fips_info: Option<bool>
+    pub detailed_fips_info: Option<bool>,
 }
 
 impl UrlEncode for VersionParams {
@@ -38,11 +38,13 @@ impl Operation for OperationVersion {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/version?{q}", q = q.encode())
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn version(&self, query_params: Option<&VersionParams>) -> Result<VersionResponse> {
         self.execute::<OperationVersion>(&(), (), query_params)
     }
 }
-

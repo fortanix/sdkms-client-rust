@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use std::collections::{BTreeSet, HashSet};
 
 /// This represents the authenticator's response to a client’s request
@@ -37,23 +37,23 @@ pub struct AuthenticatorAttestationResponse {
     /// <https://www.w3.org/TR/webauthn-2/#sctn-defined-attestation-formats>
     ///
     /// Currently, only U2F is supported, others will be rejected.
-    pub attestation_object: Base64<UrlSafe>
+    pub attestation_object: Base64<UrlSafe>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ChangeEmailRequest {
     pub current_password: ZeroizedString,
-    pub new_email: String
+    pub new_email: String,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ConfirmEmailRequest {
-    pub confirm_token: ZeroizedString
+    pub confirm_token: ZeroizedString,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ConfirmEmailResponse {
-    pub user_email: String
+    pub user_email: String,
 }
 
 /// This contains the request for adding a FIDO device
@@ -71,7 +71,7 @@ pub struct FidoAddDeviceRequest {
     pub name: String,
     /// Result of calling `navigator.credentials.create()` with the
     /// data obtained from `new_challenge` API.
-    pub attestation_result: PublicKeyCredential<AuthenticatorAttestationResponse>
+    pub attestation_result: PublicKeyCredential<AuthenticatorAttestationResponse>,
 }
 
 /// Initiate password reset sequence.
@@ -79,7 +79,7 @@ pub struct FidoAddDeviceRequest {
 pub struct ForgotPasswordRequest {
     pub user_email: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub recaptcha_response: Option<String>
+    pub recaptcha_response: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Default)]
@@ -89,7 +89,7 @@ pub struct GetUserParams {
     /// especially when the account contains a large number of groups and a large number
     /// of users with account-wide roles.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub with_groups: Option<WithGroups>
+    pub with_groups: Option<WithGroups>,
 }
 
 impl UrlEncode for GetUserParams {
@@ -108,7 +108,7 @@ pub struct GetUserPermissionsParams {
     /// set to `false`, B will only be returned if it was assigned to the user
     /// directly.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub with_implied: Option<bool>
+    pub with_implied: Option<bool>,
 }
 
 impl UrlEncode for GetUserPermissionsParams {
@@ -128,7 +128,7 @@ pub struct GetUserPermissionsResponse {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub all_groups: Option<GroupPermissions>,
     /// User's permissions in groups.
-    pub groups: HashMap<Uuid,GroupPermissions>
+    pub groups: HashMap<Uuid, GroupPermissions>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Default)]
@@ -148,7 +148,7 @@ pub struct ListUsersParams {
     /// especially when the account contains a large number of groups and a large number
     /// of users with account-wide roles.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub with_groups: Option<WithGroups>
+    pub with_groups: Option<WithGroups>,
 }
 
 impl UrlEncode for ListUsersParams {
@@ -176,7 +176,7 @@ impl UrlEncode for ListUsersParams {
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MfaDelDeviceRequest {
     /// Name of the FIDO device to delete.
-    pub name: String
+    pub name: String,
 }
 
 /// Request to rename a FIDO device.
@@ -185,21 +185,21 @@ pub struct MfaRenameDeviceRequest {
     /// Old name of FIDO device.
     pub old_name: String,
     /// New name of FIDO device.
-    pub new_name: String
+    pub new_name: String,
 }
 
 /// Request to change user's password.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PasswordChangeRequest {
     pub current_password: ZeroizedString,
-    pub new_password: ZeroizedString
+    pub new_password: ZeroizedString,
 }
 
 /// Request to perform a password reset.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PasswordResetRequest {
     pub reset_token: ZeroizedString,
-    pub new_password: ZeroizedString
+    pub new_password: ZeroizedString,
 }
 
 /// Accept/reject invitations to join account.
@@ -210,13 +210,13 @@ pub struct ProcessInviteRequest {
     pub accepts: Option<HashSet<Uuid>>,
     /// Optional list of account IDs to reject.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub rejects: Option<HashSet<Uuid>>
+    pub rejects: Option<HashSet<Uuid>>,
 }
 
 /// U2F recovery codes.
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct RecoveryCodes {
-    pub recovery_codes: Vec<String>
+    pub recovery_codes: Vec<String>,
 }
 
 /// Request to signup a new user.
@@ -229,7 +229,7 @@ pub struct SignupRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_name: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub last_name: Option<String>
+    pub last_name: Option<String>,
 }
 
 /// Description of a U2F device to add for two factor authentication.
@@ -239,7 +239,7 @@ pub struct U2fAddDeviceRequest {
     pub name: String,
     pub registration_data: Blob,
     pub client_data: Blob,
-    pub version: String
+    pub version: String,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -254,16 +254,16 @@ pub struct User {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub email_verified: Option<bool>,
     /// Explicit group assignments.
-    /// 
+    ///
     /// This is similar to `groups` field except that it does not include groups due to
     /// all-groups roles. Use this field to find out which group assignments can be
     /// changed using `mod_groups` and `del_groups` fields in user update API.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub explicit_groups: Option<HashMap<Uuid,UserGroupRole>>,
+    pub explicit_groups: Option<HashMap<Uuid, UserGroupRole>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_name: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub groups: Option<HashMap<Uuid,UserGroupRole>>,
+    pub groups: Option<HashMap<Uuid, UserGroupRole>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub has_account: Option<bool>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -280,7 +280,7 @@ pub struct User {
     pub self_provisioned: Option<bool>,
     pub u2f_devices: Vec<MfaDevice>,
     pub user_email: String,
-    pub user_id: Uuid
+    pub user_id: Uuid,
 }
 
 #[derive(Default, Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -288,14 +288,14 @@ pub struct UserRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub account_role: Option<UserAccountFlags>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub add_groups: Option<HashMap<Uuid,UserGroupRole>>,
+    pub add_groups: Option<HashMap<Uuid, UserGroupRole>>,
     /// FIDO devices to add. Only one device can be added at present.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub add_mfa_devices: Option<Vec<FidoAddDeviceRequest>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub add_u2f_devices: Option<Vec<U2fAddDeviceRequest>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub del_groups: Option<HashMap<Uuid,UserGroupRole>>,
+    pub del_groups: Option<HashMap<Uuid, UserGroupRole>>,
     /// Mfa devices to delete
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub del_mfa_devices: Option<Vec<MfaDelDeviceRequest>>,
@@ -311,7 +311,7 @@ pub struct UserRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_name: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub mod_groups: Option<HashMap<Uuid,UserGroupRole>>,
+    pub mod_groups: Option<HashMap<Uuid, UserGroupRole>>,
     /// Mfa devices to rename
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rename_mfa_devices: Option<Vec<MfaRenameDeviceRequest>>,
@@ -320,7 +320,7 @@ pub struct UserRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub user_email: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub user_password: Option<ZeroizedString>
+    pub user_password: Option<ZeroizedString>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -328,14 +328,17 @@ pub enum UserSort {
     ByUserId {
         order: Order,
         #[serde(skip_serializing_if = "Option::is_none")]
-        start: Option<Uuid>
-    }
+        start: Option<Uuid>,
+    },
 }
 
 impl UrlEncode for UserSort {
     fn url_encode(&self, m: &mut HashMap<String, String>) {
         match *self {
-            UserSort::ByUserId{ ref order, ref start } => {
+            UserSort::ByUserId {
+                ref order,
+                ref start,
+            } => {
                 m.insert("sort".to_string(), format!("user_id:{}", order));
                 if let Some(v) = start {
                     m.insert("start".to_string(), v.to_string());
@@ -347,12 +350,12 @@ impl UrlEncode for UserSort {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ValidateTokenRequest {
-    pub reset_token: ZeroizedString
+    pub reset_token: ZeroizedString,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ValidateTokenResponse {
-    pub user_email: String
+    pub user_email: String,
 }
 
 #[derive(Copy, Debug, Serialize, Deserialize, Clone)]
@@ -363,7 +366,7 @@ pub enum WithGroups {
     /// The `groups` field is omitted from the response.
     ExplicitOnly,
     /// Both the `groups` and the `explicit_groups` fields are omitted from the response.
-    None
+    None,
 }
 
 impl fmt::Display for WithGroups {
@@ -433,7 +436,11 @@ impl Operation for OperationConfirmEmail {
 }
 
 impl SdkmsClient {
-    pub fn confirm_email(&self, user_id: &Uuid, req: &ConfirmEmailRequest) -> Result<ConfirmEmailResponse> {
+    pub fn confirm_email(
+        &self,
+        user_id: &Uuid,
+        req: &ConfirmEmailRequest,
+    ) -> Result<ConfirmEmailResponse> {
         self.execute::<OperationConfirmEmail>(req, (user_id,), None)
     }
 }
@@ -452,7 +459,10 @@ impl Operation for OperationDeleteStale {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{user_id}", user_id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn delete_stale(&self, user_id: &Uuid) -> Result<()> {
@@ -474,7 +484,10 @@ impl Operation for OperationDeleteUser {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/users".to_string()
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn delete_user(&self) -> Result<()> {
@@ -496,7 +509,10 @@ impl Operation for OperationDeleteUserAccount {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{user_id}/accounts", user_id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn delete_user_account(&self, user_id: &Uuid) -> Result<()> {
@@ -540,7 +556,10 @@ impl Operation for OperationGenerateRecoveryCodes {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/users/generate_recovery_codes".to_string()
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn generate_recovery_codes(&self) -> Result<RecoveryCodes> {
@@ -562,7 +581,10 @@ impl Operation for OperationGetUser {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{user_id}?{q}", user_id = p.0, q = q.encode())
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn get_user(&self, user_id: &Uuid, query_params: Option<&GetUserParams>) -> Result<User> {
@@ -576,7 +598,7 @@ impl Operation for OperationGetUserAccounts {
     type PathParams = ();
     type QueryParams = ();
     type Body = ();
-    type Output = HashMap<Uuid,UserAccountFlags>;
+    type Output = HashMap<Uuid, UserAccountFlags>;
 
     fn method() -> Method {
         Method::GET
@@ -584,10 +606,13 @@ impl Operation for OperationGetUserAccounts {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/users/accounts".to_string()
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
-    pub fn get_user_accounts(&self) -> Result<HashMap<Uuid,UserAccountFlags>> {
+    pub fn get_user_accounts(&self) -> Result<HashMap<Uuid, UserAccountFlags>> {
         self.execute::<OperationGetUserAccounts>(&(), (), None)
     }
 }
@@ -606,10 +631,16 @@ impl Operation for OperationGetUserPermissions {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/permissions?{q}", q = q.encode())
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
-    pub fn get_user_permissions(&self, query_params: Option<&GetUserPermissionsParams>) -> Result<GetUserPermissionsResponse> {
+    pub fn get_user_permissions(
+        &self,
+        query_params: Option<&GetUserPermissionsParams>,
+    ) -> Result<GetUserPermissionsResponse> {
         self.execute::<OperationGetUserPermissions>(&(), (), query_params)
     }
 }
@@ -650,7 +681,10 @@ impl Operation for OperationListUsers {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users?{q}", q = q.encode())
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn list_users(&self, query_params: Option<&ListUsersParams>) -> Result<Vec<User>> {
@@ -694,7 +728,10 @@ impl Operation for OperationResendConfirmEmail {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/users/resend_confirm_email".to_string()
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn resend_confirm_email(&self) -> Result<()> {
@@ -716,7 +753,10 @@ impl Operation for OperationResendInvite {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/users/{user_id}/resend_invite", user_id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn resend_invite(&self, user_id: &Uuid) -> Result<()> {
@@ -807,8 +847,11 @@ impl Operation for OperationValidateToken {
 }
 
 impl SdkmsClient {
-    pub fn validate_token(&self, user_id: &Uuid, req: &ValidateTokenRequest) -> Result<ValidateTokenResponse> {
+    pub fn validate_token(
+        &self,
+        user_id: &Uuid,
+        req: &ValidateTokenRequest,
+    ) -> Result<ValidateTokenResponse> {
         self.execute::<OperationValidateToken>(req, (user_id,), None)
     }
 }
-

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ApprovalRequest {
@@ -30,7 +30,7 @@ pub struct ApprovalRequest {
     pub reviewers: Option<Vec<Reviewer>>,
     pub status: ApprovalStatus,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub subjects: Option<HashSet<ApprovalSubject>>
+    pub subjects: Option<HashSet<ApprovalSubject>>,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
@@ -42,7 +42,7 @@ pub struct ApprovalRequestRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub method: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub operation: Option<String>
+    pub operation: Option<String>,
 }
 
 /// Approval request status.
@@ -52,33 +52,21 @@ pub enum ApprovalStatus {
     Pending,
     Approved,
     Denied,
-    Failed
+    Failed,
 }
 
 /// Identifies an object acted upon by an approval request.
 #[derive(Copy, Eq, PartialEq, Hash, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum ApprovalSubject {
-    Group (
-        Uuid
-    ),
-    Sobject (
-        Uuid
-    ),
-    App (
-        Uuid
-    ),
-    Plugin (
-        Uuid
-    ),
-    Account (
-        Uuid
-    ),
+    Group(Uuid),
+    Sobject(Uuid),
+    App(Uuid),
+    Plugin(Uuid),
+    Account(Uuid),
     NewAccount,
-    Role (
-        Uuid
-    ),
-    ClusterConfig
+    Role(Uuid),
+    ClusterConfig,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
@@ -94,13 +82,13 @@ pub struct ApproveRequest {
     pub fido2_auth_request: Option<PublicKeyCredential<AuthenticatorAssertionResponse>>,
     /// Data associated with the approval
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub body: Option<serde_json::Value>
+    pub body: Option<serde_json::Value>,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct DenyRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub reason: Option<String>
+    pub reason: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Default)]
@@ -112,7 +100,7 @@ pub struct ListApprovalRequestsParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub subject: Option<Uuid>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub status: Option<ApprovalStatus>
+    pub status: Option<ApprovalStatus>,
 }
 
 impl UrlEncode for ListApprovalRequestsParams {
@@ -140,19 +128,15 @@ pub struct Reviewer {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub requires_password: Option<bool>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub requires_2fa: Option<bool>
+    pub requires_2fa: Option<bool>,
 }
 
 /// A Principal who can approve or deny an approval request.
 #[derive(Copy, PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum ReviewerPrincipal {
-    App (
-        Uuid
-    ),
-    User (
-        Uuid
-    )
+    App(Uuid),
+    User(Uuid),
 }
 
 pub struct OperationApproveRequest;
@@ -213,7 +197,10 @@ impl Operation for OperationDeleteApprovalRequest {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{req_id}", req_id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn delete_approval_request(&self, req_id: &Uuid) -> Result<()> {
@@ -257,7 +244,10 @@ impl Operation for OperationGetApprovalRequest {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{req_id}", req_id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn get_approval_request(&self, req_id: &Uuid) -> Result<ApprovalRequest> {
@@ -279,7 +269,10 @@ impl Operation for OperationGetApprovalRequestResult {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{req_id}/result", req_id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn get_approval_request_result(&self, req_id: &Uuid) -> Result<ApprovableResult> {
@@ -301,12 +294,16 @@ impl Operation for OperationListApprovalRequests {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests?{q}", q = q.encode())
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
-
-impl SdkmsClient {
-    pub fn list_approval_requests(&self, query_params: Option<&ListApprovalRequestsParams>) -> Result<Vec<ApprovalRequest>> {
-        self.execute::<OperationListApprovalRequests>(&(), (), query_params)
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
     }
 }
 
-
+impl SdkmsClient {
+    pub fn list_approval_requests(
+        &self,
+        query_params: Option<&ListApprovalRequestsParams>,
+    ) -> Result<Vec<ApprovalRequest>> {
+        self.execute::<OperationListApprovalRequests>(&(), (), query_params)
+    }
+}

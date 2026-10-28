@@ -7,8 +7,8 @@
 use b64_ct::{Config, FromBase64, ToBase64, URL_SAFE};
 use http_v1::Method;
 use serde::{
-    de, de::Error as DeserializeError, de::Visitor, de::Unexpected, Deserialize, Deserializer, Serialize,
-    Serializer,
+    de, de::Error as DeserializeError, de::Unexpected, de::Visitor, Deserialize, Deserializer,
+    Serialize, Serializer,
 };
 use serde::{ser, ser::Error as SerializeError, ser::SerializeSeq, ser::SerializeStruct};
 use simple_hyper_client::StatusCode;
@@ -1065,7 +1065,6 @@ impl<'de> Deserialize<'de> for HyperHttpMethod {
 #[derive(Debug, Clone, PartialEq)]
 pub struct CustomMetadata(pub HashMap<String, String>);
 
-
 impl crate::operations::UrlEncode for CustomMetadata {
     fn url_encode(&self, m: &mut HashMap<String, String>) {
         for (key, value) in self.0.clone().into_iter() {
@@ -1073,7 +1072,6 @@ impl crate::operations::UrlEncode for CustomMetadata {
         }
     }
 }
-
 
 mod custom_metadata_params_de {
     use super::CustomMetadata;

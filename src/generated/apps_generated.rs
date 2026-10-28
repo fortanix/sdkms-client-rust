@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use std::collections::{BTreeSet, HashSet};
 use std::net::IpAddr;
 
@@ -24,9 +24,9 @@ pub struct App {
     #[serde(default, flatten, skip_serializing_if = "Option::is_none")]
     pub auth_type: Option<AppAuthType>,
     /// Certificate expiration date for apps that use client certificate or trusted CA auth.
-    /// 
+    ///
     /// For a client certificate app, this field is the expiry date of the client certifiate. For a trusted CA app, this field is the maximum expiry date among all configured root CA certs in the app's config.
-    /// 
+    ///
     /// For all other apps, this field is omitted.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cert_not_after: Option<Time>,
@@ -67,30 +67,26 @@ pub struct App {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub oauth_config: Option<AppOauthConfig>,
     /// Application's role.
-    pub role: AppRole
+    pub role: AppRole,
 }
 
 #[derive(Debug, Eq, PartialEq, Default, Serialize, Deserialize, Clone)]
 pub struct AppAccountMembership {
-    pub roles: HashSet<AppAccountRoleDescriptor>
+    pub roles: HashSet<AppAccountRoleDescriptor>,
 }
 
 #[derive(Debug, Eq, PartialEq, Copy, Hash, Serialize, Deserialize, Clone)]
 pub enum AppAccountRole {
     AccountAdministrator,
     AccountMember,
-    AccountAuditor
+    AccountAuditor,
 }
 
 #[derive(Debug, Eq, PartialEq, Copy, Hash, Serialize, Deserialize, Clone)]
 #[serde(content = "value", tag = "$type")]
 pub enum AppAccountRoleDescriptor {
-    SystemDefined (
-        AppAccountRole
-    ),
-    Custom (
-        Uuid
-    )
+    SystemDefined(AppAccountRole),
+    Custom(Uuid),
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -100,7 +96,7 @@ pub struct AppAuthType {
     /// If `auth_type` is `all`, this field will include the list of individual auth
     /// types for the app
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub auth_type_all: Option<Vec<OneAppAuthType>>
+    pub auth_type_all: Option<Vec<OneAppAuthType>>,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -108,21 +104,15 @@ pub enum AppAuthTypeVariants {
     /// App credential is `all`, with a combination of auth methods specified
     All,
     #[serde(untagged)]
-    One (
-        OneAppAuthType
-    )
+    One(OneAppAuthType),
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum AppCredential {
-    All (
-        Vec<OneAppCredential>
-    ),
+    All(Vec<OneAppCredential>),
     #[serde(untagged)]
-    One (
-        OneAppCredential
-    )
+    One(OneAppCredential),
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -135,13 +125,9 @@ pub enum AppCredentialRequest {
     /// Apps authenticating with this variant must present both forms of credentials,
     /// i.e., they must present a client certificate during TLS handshake, and also
     /// present the other form of credential in the HTTP request.
-    All (
-        Vec<OneAppCredentialRequest>
-    ),
+    All(Vec<OneAppCredentialRequest>),
     #[serde(untagged)]
-    One (
-        OneAppCredentialRequest
-    )
+    One(OneAppCredentialRequest),
 }
 
 /// App credential response.
@@ -153,40 +139,34 @@ pub struct AppCredentialResponse {
     pub credential: AppCredential,
     /// Expired app-credentials that may be valid during transitional period.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub previous_credential: Option<PreviousCredential>
+    pub previous_credential: Option<PreviousCredential>,
 }
 
 #[derive(Default, Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub struct AppGroupMembership {
     pub group_id: Uuid,
-    pub roles: HashSet<AppGroupRoleDescriptor>
+    pub roles: HashSet<AppGroupRoleDescriptor>,
 }
 
 #[derive(Debug, Eq, PartialEq, Copy, Hash, PartialOrd, Ord, Serialize, Deserialize, Clone)]
 pub enum AppGroupRole {
     GroupAuditor,
-    GroupAdministrator
+    GroupAdministrator,
 }
 
 #[derive(Debug, Eq, PartialEq, Hash, PartialOrd, Ord, Serialize, Deserialize, Clone)]
 #[serde(content = "value", tag = "$type")]
 pub enum AppGroupRoleDescriptor {
-    SystemDefined (
-        AppGroupRole
-    ),
-    Custom (
-        Uuid
-    )
+    SystemDefined(AppGroupRole),
+    Custom(Uuid),
 }
 
 /// OAuth settings for an app. If enabled, an app can request to act on behalf of a user.
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case", tag = "state")]
 pub enum AppOauthConfig {
-    Enabled {
-        redirect_uris: Vec<String>
-    },
-    Disabled
+    Enabled { redirect_uris: Vec<String> },
+    Disabled,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
@@ -242,7 +222,7 @@ pub struct AppRequest {
     pub role: Option<AppRole>,
     /// Size in bytes of app's secret.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub secret_size: Option<u32>
+    pub secret_size: Option<u32>,
 }
 
 /// Request for resetting the app secret.
@@ -254,7 +234,7 @@ pub struct AppResetSecretRequest {
     /// Time until which previous credentials(or its sessions)
     /// will not be invalidated as the API key gets regenerated.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub credential_migration_period: Option<u32>
+    pub credential_migration_period: Option<u32>,
 }
 
 /// App's role.
@@ -264,7 +244,7 @@ pub enum AppRole {
     /// Can perform similar actions to an account admin user, but not crypto ops.
     Admin,
     /// Can perform crypto ops
-    Crypto
+    Crypto,
 }
 
 impl AppRole {
@@ -285,7 +265,7 @@ pub enum AppSort {
         order: Order,
         /// Starting from a particular app_id.
         #[serde(skip_serializing_if = "Option::is_none")]
-        start: Option<Uuid>
+        start: Option<Uuid>,
     },
     /// Sort apps on the basis of their app_name.
     ByAppName {
@@ -293,20 +273,26 @@ pub enum AppSort {
         order: Order,
         /// Starting from a particular app_name.
         #[serde(skip_serializing_if = "Option::is_none")]
-        start: Option<String>
-    }
+        start: Option<String>,
+    },
 }
 
 impl UrlEncode for AppSort {
     fn url_encode(&self, m: &mut HashMap<String, String>) {
         match *self {
-            AppSort::ByAppId{ ref order, ref start } => {
+            AppSort::ByAppId {
+                ref order,
+                ref start,
+            } => {
                 m.insert("sort".to_string(), format!("app_id:{}", order));
                 if let Some(v) = start {
                     m.insert("start".to_string(), v.to_string());
                 }
             }
-            AppSort::ByAppName{ ref order, ref start } => {
+            AppSort::ByAppName {
+                ref order,
+                ref start,
+            } => {
                 m.insert("sort".to_string(), format!("app_name:{}", order));
                 if let Some(v) = start {
                     m.insert("start".to_string(), v.to_string());
@@ -319,7 +305,7 @@ impl UrlEncode for AppSort {
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct AwsXksCredential {
     pub access_key_id: String,
-    pub secret_key: ZeroizedString
+    pub secret_key: ZeroizedString,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -327,7 +313,7 @@ pub struct AwsXksCredentialRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub access_key_id: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub secret_key: Option<ZeroizedString>
+    pub secret_key: Option<ZeroizedString>,
 }
 
 /// Request for assigning a group membership to an (AppRole::Admin) app.
@@ -336,12 +322,12 @@ pub struct CreateGroupMembership {
     /// The id of the target group
     pub group_id: Uuid,
     /// The roles being assigned for the group.
-    pub membership: AppGroupMembership
+    pub membership: AppGroupMembership,
 }
 
 pub use self::gcp_app_permissions::GcpAppPermissions;
 pub mod gcp_app_permissions {
-    bitflags_set!{
+    bitflags_set! {
         pub struct GcpAppPermissions: u64 {
             const CRYPTO_SPACE_GET_INFO = 0x0000000000000001;
             const CRYPTO_SPACE_GET_PUBLIC_KEY = 0x0000000000000002;
@@ -355,7 +341,7 @@ pub struct GetAppGroupMemberships {
     /// Additional information about the group(s)
     pub metadata: GroupMetaData,
     /// The collection of group memberships the entity is a member in
-    pub items: Vec<AppGroupMembership>
+    pub items: Vec<AppGroupMembership>,
 }
 
 /// Query params for individual App APIs
@@ -366,7 +352,7 @@ pub struct GetAppParams {
     pub group_permissions: Option<bool>,
     /// The App's role.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub role: Option<String>
+    pub role: Option<String>,
 }
 
 impl UrlEncode for GetAppParams {
@@ -387,7 +373,7 @@ pub struct GoogleServiceAccountCredential {
     pub access_reason_policy: Option<GoogleAccessReasonPolicy>,
     /// Mapping for all groups an application is part of and the Gcp specific permissions it has within each of those groups.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub groups: Option<HashMap<Uuid,GcpAppPermissions>>
+    pub groups: Option<HashMap<Uuid, GcpAppPermissions>>,
 }
 
 /// Type for updating a group membership
@@ -398,7 +384,7 @@ pub struct GroupMembershipRequest {
     pub add_group_roles: Option<BTreeSet<AppGroupRoleDescriptor>>,
     /// The set of roles to remove
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub del_group_roles: Option<BTreeSet<AppGroupRoleDescriptor>>
+    pub del_group_roles: Option<BTreeSet<AppGroupRoleDescriptor>>,
 }
 
 /// Additional information or context regarding the groups the entity
@@ -406,7 +392,7 @@ pub struct GroupMembershipRequest {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GroupMetaData {
     /// Whether the entity has been assigned an exclusive "all groups role"
-    pub all_groups: bool
+    pub all_groups: bool,
 }
 
 /// The IPs that are allowed for an application. ipv4 or ipv6 both are acceptable types.
@@ -414,9 +400,7 @@ pub struct GroupMetaData {
 #[serde(rename_all = "snake_case")]
 pub enum IpAddressPolicy {
     AllowAll,
-    Whitelist (
-        HashSet<String>
-    )
+    Whitelist(HashSet<String>),
 }
 
 #[derive(Copy, Debug, Default, Eq, PartialEq, Serialize, Deserialize, Clone)]
@@ -430,7 +414,7 @@ pub struct LastAppOperationTimestamp {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub accelerator: Option<u64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub secrets_management: Option<u64>
+    pub secrets_management: Option<u64>,
 }
 
 /// Query params for Get all apps API
@@ -481,7 +465,7 @@ pub struct ListAppsParams {
     ///   requests with `continuation_token`s.
     /// - If omitted, the backend returns just a collection of apps with no metadata.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub continuation_token: Option<String>
+    pub continuation_token: Option<String>,
 }
 
 impl UrlEncode for ListAppsParams {
@@ -520,12 +504,10 @@ pub enum ListAppsResponse {
         /// The list of apps satisfying the request
         items: Vec<App>,
         /// The metadata associated with the response
-        metadata: CollectionMetadata
+        metadata: CollectionMetadata,
     },
     /// A response that omits metadata
-    WithoutMetadata (
-        Vec<App>
-    )
+    WithoutMetadata(Vec<App>),
 }
 
 /// Authentication method of an app.
@@ -539,7 +521,7 @@ pub enum OneAppAuthType {
     AwsXks,
     GoogleWorkspaceCSE,
     Certificate,
-    TrustedCa
+    TrustedCa,
 }
 
 /// App authentication mechanisms.
@@ -547,80 +529,44 @@ pub enum OneAppAuthType {
 #[serde(rename_all = "lowercase")]
 pub enum OneAppCredential {
     /// Authenticating credentials of an App.
-    Secret (
-        ZeroizedString
-    ),
+    Secret(ZeroizedString),
     /// PKI Certificate based authentication.
-    Certificate (
-        ZeroizedBlob
-    ),
+    Certificate(ZeroizedBlob),
     /// PKI certificate with Trusted CA based authentication.
-    TrustedCa (
-        TrustedCaCredential
-    ),
+    TrustedCa(TrustedCaCredential),
     /// An App's service account for communicating with Google APIs and Cloud. Google OAuth 2.0
-    GoogleServiceAccount (
-        GoogleServiceAccountCredential
-    ),
+    GoogleServiceAccount(GoogleServiceAccountCredential),
     /// Authentication using a signed JWT directly as a bearer token.
-    SignedJwt (
-        SignedJwtCredential
-    ),
+    SignedJwt(SignedJwtCredential),
     /// LDAP credentials of an App used for authentication.
-    Ldap (
-        Uuid
-    ),
+    Ldap(Uuid),
     /// Sign-in credentials to authenticate with AWS for its services and resources.
-    AwsIam {
-
-    },
+    AwsIam {},
     /// SigV4 credentials used for AWS XKS APIs
-    AwsXks (
-        AwsXksCredential
-    ),
-    GoogleWorkspaceCse {
-
-    }
+    AwsXks(AwsXksCredential),
+    GoogleWorkspaceCse {},
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum OneAppCredentialRequest {
     /// Secret/API-key based authentication
-    Secret (
-        SecretCredentialRequest
-    ),
+    Secret(SecretCredentialRequest),
     /// PKI Certificate based authentication.
-    Certificate (
-        ZeroizedBlob
-    ),
+    Certificate(ZeroizedBlob),
     /// PKI certificate with Trusted CA based authentication.
-    TrustedCa (
-        TrustedCaCredential
-    ),
+    TrustedCa(TrustedCaCredential),
     /// An App's service account for communicating with Google APIs and Cloud. Google OAuth 2.0
-    GoogleServiceAccount (
-        GoogleServiceAccountCredential
-    ),
+    GoogleServiceAccount(GoogleServiceAccountCredential),
     /// Authentication using a signed JWT directly as a bearer token.
-    SignedJwt (
-        SignedJwtCredential
-    ),
+    SignedJwt(SignedJwtCredential),
     /// LDAP credentials of an App used for authentication.
-    Ldap (
-        Uuid
-    ),
+    Ldap(Uuid),
     /// Sign-in credentials to authenticate with AWS for its services and resources.
-    AwsIam {
-
-    },
+    AwsIam {},
     /// SigV4 credentials used for AWS XKS APIs
-    AwsXks (
-        AwsXksCredentialRequest
-    ),
-    GoogleWorkspaceCse {
-
-    }
+    AwsXks(AwsXksCredentialRequest),
+    GoogleWorkspaceCse {},
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -656,9 +602,7 @@ pub enum PolicyDefinition {
     /// - A **required** variable defined as `allow` of type boolean. This should be updated true or false based on any other processing done.
     /// - An **optional** field defined as `additional_logging` if the client wishes to include other information not captured in existing audit logs for JWT auth apps.
     ///     - Note: `additional_logging` is *limited to a max length of 128 UTF-8 bytes* and corresponds to the `client_provided_context` field on the `AuditLog` model.
-    Rego {
-        value: String
-    }
+    Rego { value: String },
 }
 
 /// Expired app-credentials that are still valid for a transitional period.
@@ -667,28 +611,26 @@ pub struct PreviousCredential {
     /// App authentication mechanisms.
     pub credential: AppCredential,
     /// Validity period of the App credentials.
-    pub valid_until: Time
+    pub valid_until: Time,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct PrivateClaimsPolicy {
     /// Specifies the policy language and "source".
-    pub definition: PolicyDefinition
+    pub definition: PolicyDefinition,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(untagged)]
 pub enum SecretCredentialRequest {
     /// Use the existing secret (note that this must match the existing secret configured on the app)
-    Value (
-        ZeroizedString
-    ),
+    Value(ZeroizedString),
     /// Generate a new secret
     Generate {
         /// Size of the secret to be generated in bytes
         #[serde(skip_serializing_if = "Option::is_none")]
-        size: Option<u32>
-    }
+        size: Option<u32>,
+    },
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -698,7 +640,7 @@ pub struct SignedJwtCredential {
     /// If configured, specifies the policy for what *additional* validations
     /// the backend should perform against (primarily) the "private claims" in a JWT.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub private_claims_policy: Option<PrivateClaimsPolicy>
+    pub private_claims_policy: Option<PrivateClaimsPolicy>,
 }
 
 /// A GeneralName that can be used as a [subject alternative name][SAN] in
@@ -716,17 +658,11 @@ pub enum SubjectGeneral {
     /// pairs, where type is an OID, and value is a DER-encoded ASN.1
     /// value. (This represents a sequence of relative distinguished
     /// names.)
-    DirectoryName (
-        Vec<[String; 2]>
-    ),
+    DirectoryName(Vec<[String; 2]>),
     /// A DNS name.
-    DnsName (
-        String
-    ),
+    DnsName(String),
     /// An IP address.
-    IpAddress (
-        IpAddr
-    )
+    IpAddress(IpAddr),
 }
 
 /// Trust anchors (i.e., root CA certificates) for a [`TrustedCaCredential`].
@@ -734,13 +670,9 @@ pub enum SubjectGeneral {
 #[serde(rename_all = "snake_case")]
 pub enum TrustAnchor {
     /// A single root CA certificate.
-    CaCertificate (
-        ZeroizedBlob
-    ),
+    CaCertificate(ZeroizedBlob),
     /// Multiple root CA certificates. DSM currently supports up to 16 certs.
-    CaCertificates (
-        Vec<ZeroizedBlob>
-    )
+    CaCertificates(Vec<ZeroizedBlob>),
 }
 
 /// Subjects or subject alternative names (SANs) for trusted CA auth.
@@ -758,22 +690,16 @@ pub enum TrustAnchorSubject {
     /// This legacy variant is retained for backcompat purposes, and is
     /// equivalent to specifying a directoryName via the SubjectGeneral
     /// variant.
-    Subject (
-        Vec<[String; 2]>
-    ),
+    Subject(Vec<[String; 2]>),
     /// A GeneralName, which should appear in the client cert's subject
     /// field and/or as one of its SANs.
-    SubjectGeneral (
-        SubjectGeneral
-    ),
+    SubjectGeneral(SubjectGeneral),
     /// List of allowed GeneralName subjects. At least one of the values
     /// in this list must appear in the client cert, under its subject
     /// field and/or as one of its SANs.
     ///
     /// Currently, DSM supports at most 16 subjects.
-    Subjects (
-        Vec<SubjectGeneral>
-    )
+    Subjects(Vec<SubjectGeneral>),
 }
 
 /// `TrustedCa` app auth configuration.
@@ -793,7 +719,7 @@ pub struct TrustedCaCredential {
     /// When `true`, revocation status of certificates is checked, and revoked
     /// certificates are rejected
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub check_revocation: Option<bool>
+    pub check_revocation: Option<bool>,
 }
 
 pub struct OperationAddGroupMembership;
@@ -813,7 +739,11 @@ impl Operation for OperationAddGroupMembership {
 }
 
 impl SdkmsClient {
-    pub fn add_group_membership(&self, app_id: &Uuid, req: &CreateGroupMembership) -> Result<AppGroupMembership> {
+    pub fn add_group_membership(
+        &self,
+        app_id: &Uuid,
+        req: &CreateGroupMembership,
+    ) -> Result<AppGroupMembership> {
         self.execute::<OperationAddGroupMembership>(req, (app_id,), None)
     }
 }
@@ -854,7 +784,10 @@ impl Operation for OperationDeleteApp {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{app_id}", app_id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn delete_app(&self, app_id: &Uuid) -> Result<()> {
@@ -865,7 +798,7 @@ impl SdkmsClient {
 pub struct OperationDeleteGroupMembership;
 #[allow(unused)]
 impl Operation for OperationDeleteGroupMembership {
-    type PathParams = (Uuid, Uuid,);
+    type PathParams = (Uuid, Uuid);
     type QueryParams = ();
     type Body = ();
     type Output = ();
@@ -874,13 +807,20 @@ impl Operation for OperationDeleteGroupMembership {
         Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/apps/{app_id}/groups/{group_id}", app_id = p.0, group_id = p.1)
+        format!(
+            "/sys/v1/apps/{app_id}/groups/{group_id}",
+            app_id = p.0,
+            group_id = p.1
+        )
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn delete_group_membership(&self, app_id: &Uuid, group_id: &Uuid) -> Result<()> {
-        self.execute::<OperationDeleteGroupMembership>(&(), (app_id, group_id,), None)
+        self.execute::<OperationDeleteGroupMembership>(&(), (app_id, group_id), None)
     }
 }
 
@@ -896,12 +836,23 @@ impl Operation for OperationGetAllGroupMemberships {
         Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/apps/{app_id}/groups?{q}", app_id = p.0, q = q.encode())
+        format!(
+            "/sys/v1/apps/{app_id}/groups?{q}",
+            app_id = p.0,
+            q = q.encode()
+        )
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
-    pub fn get_all_group_memberships(&self, app_id: &Uuid, query_params: Option<&GetGroupsParams>) -> Result<GetAppGroupMemberships> {
+    pub fn get_all_group_memberships(
+        &self,
+        app_id: &Uuid,
+        query_params: Option<&GetGroupsParams>,
+    ) -> Result<GetAppGroupMemberships> {
         self.execute::<OperationGetAllGroupMemberships>(&(), (app_id,), query_params)
     }
 }
@@ -920,7 +871,10 @@ impl Operation for OperationGetApp {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{app_id}?{q}", app_id = p.0, q = q.encode())
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn get_app(&self, app_id: &Uuid, query_params: Option<&GetAppParams>) -> Result<App> {
@@ -942,15 +896,20 @@ impl Operation for OperationGetAppCredential {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{app_id}/credential", app_id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn get_app_credential(&self, app_id: &Uuid) -> Result<AppCredentialResponse> {
         self.execute::<OperationGetAppCredential>(&(), (app_id,), None)
     }
     pub fn request_approval_to_get_app_credential(
-        &self, app_id: &Uuid,
-        description: Option<String>) -> Result<PendingApproval<OperationGetAppCredential>> {
+        &self,
+        app_id: &Uuid,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationGetAppCredential>> {
         self.request_approval::<OperationGetAppCredential>(&(), (app_id,), None, description)
     }
 }
@@ -969,7 +928,10 @@ impl Operation for OperationGetClientConfigs {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/apps/client_configs".to_string()
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn get_client_configs(&self) -> Result<ClientConfigurations> {
@@ -980,7 +942,7 @@ impl SdkmsClient {
 pub struct OperationGetGroupMembership;
 #[allow(unused)]
 impl Operation for OperationGetGroupMembership {
-    type PathParams = (Uuid, Uuid,);
+    type PathParams = (Uuid, Uuid);
     type QueryParams = ();
     type Body = ();
     type Output = AppGroupMembership;
@@ -989,13 +951,24 @@ impl Operation for OperationGetGroupMembership {
         Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/apps/{app_id}/groups/{group_id}", app_id = p.0, group_id = p.1)
+        format!(
+            "/sys/v1/apps/{app_id}/groups/{group_id}",
+            app_id = p.0,
+            group_id = p.1
+        )
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
-    pub fn get_group_membership(&self, app_id: &Uuid, group_id: &Uuid) -> Result<AppGroupMembership> {
-        self.execute::<OperationGetGroupMembership>(&(), (app_id, group_id,), None)
+    pub fn get_group_membership(
+        &self,
+        app_id: &Uuid,
+        group_id: &Uuid,
+    ) -> Result<AppGroupMembership> {
+        self.execute::<OperationGetGroupMembership>(&(), (app_id, group_id), None)
     }
 }
 
@@ -1013,7 +986,10 @@ impl Operation for OperationListApps {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps?{q}", q = q.encode())
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn list_apps(&self, query_params: Option<&ListAppsParams>) -> Result<ListAppsResponse> {
@@ -1033,17 +1009,30 @@ impl Operation for OperationResetAppSecret {
         Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/apps/{app_id}/reset_secret?{q}", app_id = p.0, q = q.encode())
+        format!(
+            "/sys/v1/apps/{app_id}/reset_secret?{q}",
+            app_id = p.0,
+            q = q.encode()
+        )
     }
 }
 
 impl SdkmsClient {
-    pub fn reset_app_secret(&self, app_id: &Uuid, query_params: Option<&GetAppParams>, req: &AppResetSecretRequest) -> Result<App> {
+    pub fn reset_app_secret(
+        &self,
+        app_id: &Uuid,
+        query_params: Option<&GetAppParams>,
+        req: &AppResetSecretRequest,
+    ) -> Result<App> {
         self.execute::<OperationResetAppSecret>(req, (app_id,), query_params)
     }
     pub fn request_approval_to_reset_app_secret(
-        &self, app_id: &Uuid, query_params: Option<&GetAppParams>, req: &AppResetSecretRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationResetAppSecret>> {
+        &self,
+        app_id: &Uuid,
+        query_params: Option<&GetAppParams>,
+        req: &AppResetSecretRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationResetAppSecret>> {
         self.request_approval::<OperationResetAppSecret>(req, (app_id,), query_params, description)
     }
 }
@@ -1065,12 +1054,21 @@ impl Operation for OperationUpdateApp {
 }
 
 impl SdkmsClient {
-    pub fn update_app(&self, app_id: &Uuid, query_params: Option<&GetAppParams>, req: &AppRequest) -> Result<App> {
+    pub fn update_app(
+        &self,
+        app_id: &Uuid,
+        query_params: Option<&GetAppParams>,
+        req: &AppRequest,
+    ) -> Result<App> {
         self.execute::<OperationUpdateApp>(req, (app_id,), query_params)
     }
     pub fn request_approval_to_update_app(
-        &self, app_id: &Uuid, query_params: Option<&GetAppParams>, req: &AppRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationUpdateApp>> {
+        &self,
+        app_id: &Uuid,
+        query_params: Option<&GetAppParams>,
+        req: &AppRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationUpdateApp>> {
         self.request_approval::<OperationUpdateApp>(req, (app_id,), query_params, description)
     }
 }
@@ -1078,7 +1076,7 @@ impl SdkmsClient {
 pub struct OperationUpdateGroupMembership;
 #[allow(unused)]
 impl Operation for OperationUpdateGroupMembership {
-    type PathParams = (Uuid, Uuid,);
+    type PathParams = (Uuid, Uuid);
     type QueryParams = ();
     type Body = GroupMembershipRequest;
     type Output = AppGroupMembership;
@@ -1087,13 +1085,21 @@ impl Operation for OperationUpdateGroupMembership {
         Method::PATCH
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/apps/{app_id}/groups/{group_id}", app_id = p.0, group_id = p.1)
+        format!(
+            "/sys/v1/apps/{app_id}/groups/{group_id}",
+            app_id = p.0,
+            group_id = p.1
+        )
     }
 }
 
 impl SdkmsClient {
-    pub fn update_group_membership(&self, app_id: &Uuid, group_id: &Uuid, req: &GroupMembershipRequest) -> Result<AppGroupMembership> {
-        self.execute::<OperationUpdateGroupMembership>(req, (app_id, group_id,), None)
+    pub fn update_group_membership(
+        &self,
+        app_id: &Uuid,
+        group_id: &Uuid,
+        req: &GroupMembershipRequest,
+    ) -> Result<AppGroupMembership> {
+        self.execute::<OperationUpdateGroupMembership>(req, (app_id, group_id), None)
     }
 }
-

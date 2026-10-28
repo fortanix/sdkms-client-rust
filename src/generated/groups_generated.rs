@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Copy, PartialEq, Eq, Debug, Hash, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
@@ -22,7 +22,7 @@ pub enum AwsKmsKeyMaterialMapping {
     ///
     /// Note that this also means that DSM does AWS-native rotation of key in the AWS group, *and* that
     /// AWS keys that do not support AWS-native rotation cannot be rotated.
-    AwsKeyMaterialMapsToSobject
+    AwsKeyMaterialMapsToSobject,
 }
 
 /// Specifies the AWS service. Only `kms` is supported for now.
@@ -30,19 +30,19 @@ pub enum AwsKmsKeyMaterialMapping {
 #[serde(rename_all = "kebab-case")]
 pub enum AwskmsService {
     Kms,
-    KmsFips
+    KmsFips,
 }
 
 #[derive(PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case", tag = "mode")]
 pub enum AzureAuthConfig {
     ClientSecret {
-        client_secret: ZeroizedString
+        client_secret: ZeroizedString,
     },
     TokenAuthConfig {
         client_cert: ZeroizedBlob,
-        client_key: ZeroizedBlob
-    }
+        client_key: ZeroizedBlob,
+    },
 }
 
 /// Types of Azure Key Vault based on the protection level.
@@ -54,7 +54,7 @@ pub enum AzureKeyVaultType {
     /// HSM-protected (with Premium SKU)
     Premium,
     /// Azure Managed HSM
-    Managed
+    Managed,
 }
 
 /// The set of endpoints to use when connecting with Azure cloud.
@@ -82,7 +82,7 @@ pub struct AzureServiceEndpoints {
     /// The API endpoint for Azure Key Vault Managed HSM.
     pub key_vault_managed_hsm: String,
     /// The API endpoint for Azure AD (and authentication).
-    pub iam: String
+    pub iam: String,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
@@ -91,7 +91,7 @@ pub struct CheckHmgRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<Uuid>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub config: Option<HmgConfig>
+    pub config: Option<HmgConfig>,
 }
 
 #[derive(PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone)]
@@ -114,14 +114,14 @@ pub struct GcpKeyRingConfig {
     /// obtained from the GCP cloud console. It is used to authenticate
     /// the requests made by DSM to the GCP cloud.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub private_key: Option<ZeroizedBlob>
+    pub private_key: Option<ZeroizedBlob>,
 }
 
 /// Information about a group's recent scans.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GetAllHmgScansResponse {
     /// List of all tracked scans, from newest to oldest.
-    pub items: Vec<Scan>
+    pub items: Vec<Scan>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -140,7 +140,7 @@ pub struct Group {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custodian_policy: Option<QuorumPolicy>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub custom_metadata: Option<HashMap<String,String>>,
+    pub custom_metadata: Option<HashMap<String, String>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     /// Export policy that applies to exportable sobjects (ones with `EXPORT` key op) in the group.
@@ -152,9 +152,9 @@ pub struct Group {
     pub google_access_reason_policy: Option<GoogleAccessReasonPolicy>,
     pub group_id: Uuid,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub hmg: Option<HashMap<Uuid,HmgConfig>>,
+    pub hmg: Option<HashMap<Uuid, HmgConfig>>,
     /// The `HmgRedundancyScheme` to set for the group. If unset, the backend will assign no particular meaning to the `hsm_order` fields of the group's `HmgConfig`s, and may error if it cannot connect to the external HSMs or DSM nodes specified in one of the `HmgConfig`s.
-    /// 
+    ///
     /// When creating the group, the value should either be an `HmgRedundancyScheme`, or omitted entirely. When updating the group, there are three choices:
     /// - A new value can be set by providing an `HmgRedundancyScheme`.
     /// - The string "remove" can be specified to unset the field.
@@ -166,15 +166,15 @@ pub struct Group {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hmg_sync: Option<bool>,
     /// Group-level key history policy (aka key undo policy).
-    /// 
+    ///
     /// Key history policies allow certain key management operations, normally irreversible,
     /// to be undoable within a configurable period of time. Such policies can be specified
     /// on DSM-local (i.e., not externally-backed) groups, as well as on FIPS replication
     /// groups.
-    /// 
+    ///
     /// To remove an existing policy when updating a group, specify the string "remove" in
     /// the PATCH request.
-    /// 
+    ///
     /// For more information about this feature, please see
     /// <https://support.fortanix.com/docs/users-guide-key-undo-policy>.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -184,7 +184,7 @@ pub struct Group {
     pub name: String,
     /// Name of an AES key from another group. The key will be used to encrypt the key material of all keys in this group
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub wrapping_key_name: Option<WrappingKeyName>
+    pub wrapping_key_name: Option<WrappingKeyName>,
 }
 
 /// Group approval policy.
@@ -201,7 +201,7 @@ pub struct GroupApprovalPolicy {
     pub protect_permissions: Option<QuorumGroupPermissions>,
     /// When this is true, cryptographic operations on security objects require approval.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub protect_crypto_operations: Option<bool>
+    pub protect_crypto_operations: Option<bool>,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
@@ -220,7 +220,7 @@ pub struct GroupRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custodian_policy: Option<QuorumPolicy>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub custom_metadata: Option<HashMap<String,String>>,
+    pub custom_metadata: Option<HashMap<String, String>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub del_hmg: Option<HashSet<Uuid>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -233,7 +233,7 @@ pub struct GroupRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub google_access_reason_policy: Option<Removable<GoogleAccessReasonPolicy>>,
     /// The `HmgRedundancyScheme` to set for the group. If unset, the backend will assign no particular meaning to the `hsm_order` fields of the group's `HmgConfig`s, and may error if it cannot connect to the external HSMs or DSM nodes specified in one of the `HmgConfig`s.
-    /// 
+    ///
     /// When creating the group, the value should either be an `HmgRedundancyScheme`, or omitted entirely. When updating the group, there are three choices:
     /// - A new value can be set by providing an `HmgRedundancyScheme`.
     /// - The string "remove" can be specified to unset the field.
@@ -245,15 +245,15 @@ pub struct GroupRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hmg_sync: Option<bool>,
     /// Group-level key history policy (aka key undo policy).
-    /// 
+    ///
     /// Key history policies allow certain key management operations, normally irreversible,
     /// to be undoable within a configurable period of time. Such policies can be specified
     /// on DSM-local (i.e., not externally-backed) groups, as well as on FIPS replication
     /// groups.
-    /// 
+    ///
     /// To remove an existing policy when updating a group, specify the string "remove" in
     /// the PATCH request.
-    /// 
+    ///
     /// For more information about this feature, please see
     /// <https://support.fortanix.com/docs/users-guide-key-undo-policy>.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -261,12 +261,12 @@ pub struct GroupRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub key_metadata_policy: Option<Removable<KeyMetadataPolicy>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub mod_hmg: Option<HashMap<Uuid,HmgConfig>>,
+    pub mod_hmg: Option<HashMap<Uuid, HmgConfig>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     /// Name of an AES key from another group. The key will be used to encrypt the key material of all keys in this group
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub wrapping_key_name: Option<WrappingKeyName>
+    pub wrapping_key_name: Option<WrappingKeyName>,
 }
 
 #[derive(PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone)]
@@ -283,7 +283,7 @@ pub enum HmgConfig {
         /// unused. (See the docs for `HmgRedundancyScheme` for more
         /// information about the interpretation of this field.)
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        hsm_order: Option<i32>
+        hsm_order: Option<i32>,
     },
     Safenet {
         url: String,
@@ -296,7 +296,7 @@ pub enum HmgConfig {
         /// unused. (See the docs for `HmgRedundancyScheme` for more
         /// information about the interpretation of this field.)
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        hsm_order: Option<i32>
+        hsm_order: Option<i32>,
     },
     AwsCloudHsm {
         url: String,
@@ -309,7 +309,7 @@ pub enum HmgConfig {
         /// unused. (See the docs for `HmgRedundancyScheme` for more
         /// information about the interpretation of this field.)
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        hsm_order: Option<i32>
+        hsm_order: Option<i32>,
     },
     AwsKms {
         url: String,
@@ -329,13 +329,13 @@ pub enum HmgConfig {
         /// Note that this can only be specified when creating the AWS-backed group,
         /// and cannot be updated after creation
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        key_material_mapping: Option<AwsKmsKeyMaterialMapping>
+        key_material_mapping: Option<AwsKmsKeyMaterialMapping>,
     },
     Fortanix {
         url: String,
         tls: TlsConfig,
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        pin: Option<ZeroizedString>
+        pin: Option<ZeroizedString>,
     },
     FortanixFipsCluster {
         url: String,
@@ -349,7 +349,7 @@ pub enum HmgConfig {
         /// unused. (See the docs for `HmgRedundancyScheme` for more
         /// information about the interpretation of this field.)
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        hsm_order: Option<i32>
+        hsm_order: Option<i32>,
     },
     AzureKeyVault {
         url: String,
@@ -373,7 +373,7 @@ pub enum HmgConfig {
         /// Which Azure endpoints to use. If not specified upon group creation or
         /// update, endpoints for (ordinary) Azure global cloud will be used.
         #[serde(skip_serializing_if = "Option::is_none")]
-        endpoints: Option<AzureServiceEndpoints>
+        endpoints: Option<AzureServiceEndpoints>,
     },
     OciVault {
         region: String,
@@ -382,11 +382,9 @@ pub enum HmgConfig {
         compartment_ocid: String,
         credential_id: CredentialId,
         #[serde(skip_serializing_if = "Option::is_none")]
-        vault_id: Option<String>
+        vault_id: Option<String>,
     },
-    GcpKeyRing (
-        GcpKeyRingConfig
-    )
+    GcpKeyRing(GcpKeyRingConfig),
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -394,18 +392,14 @@ pub enum HmgConfig {
 pub enum HmgListKeyCollectionsRequest {
     /// Credentials and parameters for fetching all OCI vaults available to the
     /// OCI user associated with the supplied RSA key.
-    OciVault (
-        ListOciVaultsRequest
-    )
+    OciVault(ListOciVaultsRequest),
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(tag = "$type")]
 pub enum HmgListKeyCollectionsResponse {
     /// A list of all the vaults accessible to the user configured
-    OciKeyVault {
-        items: Vec<OciKeyVault>
-    }
+    OciKeyVault { items: Vec<OciKeyVault> },
 }
 
 /// The scheme for determining how multiple `HmgConfig`s on a group
@@ -417,7 +411,7 @@ pub enum HmgRedundancyScheme {
     /// each one's `hsm_order` field. Smaller numbers indicate higher
     /// priority; e.g., "1" takes precedence over "3", and "-4" takes
     /// precedence over "-1".
-    PriorityFailover
+    PriorityFailover,
 }
 
 impl Described for HmgRedundancyScheme {
@@ -433,10 +427,10 @@ pub struct KeyVault {
     pub vault_type: AzureKeyVaultType,
     pub location: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tags: Option<HashMap<String,String>>,
+    pub tags: Option<HashMap<String, String>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub retention: Option<u32>,
-    pub uri: String
+    pub uri: String,
 }
 
 /// The response of the get all groups API
@@ -448,12 +442,10 @@ pub enum ListGroupsResponse {
         /// The list of groups satisfying the request
         items: Vec<Group>,
         /// The metadata associated with the response
-        metadata: CollectionMetadata
+        metadata: CollectionMetadata,
     },
     /// A response that omits metadata
-    WithoutMetadata (
-        Vec<Group>
-    )
+    WithoutMetadata(Vec<Group>),
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -462,14 +454,14 @@ pub struct ListOciVaultsRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub realm: Option<OciRealm>,
     pub compartment_ocid: String,
-    pub credential_id: CredentialId
+    pub credential_id: CredentialId,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct OciKeyVault {
     pub vault_name: String,
     pub vault_type: String,
-    pub vault_id: String
+    pub vault_id: String,
 }
 
 /// Oci Realms falls into three broad categories:
@@ -483,16 +475,13 @@ pub struct OciKeyVault {
 #[serde(rename_all = "snake_case", tag = "$type")]
 pub enum OciRealm {
     Commercial,
-    UserDefined {
-        realm_key: String,
-        domain: String
-    }
+    UserDefined { realm_key: String, domain: String },
 }
 
 /// Subset of GroupPermissions to represent GroupPermissions flags in use
 pub use self::quorum_group_permissions::QuorumGroupPermissions;
 pub mod quorum_group_permissions {
-    bitflags_set!{
+    bitflags_set! {
         pub struct QuorumGroupPermissions: u64 {
             const GET_SOBJECTS = 0x0000000000000001;
             const ROTATE_SOBJECTS = 0x0000000000000002;
@@ -530,13 +519,11 @@ pub struct Scan {
     pub scan_result: Option<ScanResult>,
     /// Any warnings thrown during the scan.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub warnings: Option<Vec<ScanWarning>>
+    pub warnings: Option<Vec<ScanWarning>>,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
-pub struct ScanHmgRequest {
-
-}
+pub struct ScanHmgRequest {}
 
 /// The result of a scan.
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -546,9 +533,7 @@ pub enum ScanResult {
     Success,
     /// Indicates that a scan has failed. The most recent error is included
     /// (taken from the last retry).
-    Failed {
-        message: String
-    }
+    Failed { message: String },
 }
 
 /// A warning "thrown" by a scan.
@@ -561,16 +546,14 @@ pub struct ScanWarning {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub virtual_key_id: Option<Uuid>,
     /// The warning message associated with the warning.
-    pub message: String
+    pub message: String,
 }
 
 #[derive(Debug, Eq, PartialEq, Ord, PartialOrd, Serialize, Deserialize, Clone)]
 #[serde(untagged)]
 pub enum WrappingKeyName {
     Null,
-    Value (
-        String
-    )
+    Value(String),
 }
 
 pub struct OperationAsyncScanHmg;
@@ -587,7 +570,10 @@ impl Operation for OperationAsyncScanHmg {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups/{group_id}/hmg/scans", group_id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn async_scan_hmg(&self, group_id: &Uuid) -> Result<Scan> {
@@ -660,8 +646,10 @@ impl SdkmsClient {
         self.execute::<OperationCreateGroup>(req, (), None)
     }
     pub fn request_approval_to_create_group(
-        &self, req: &GroupRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationCreateGroup>> {
+        &self,
+        req: &GroupRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationCreateGroup>> {
         self.request_approval::<OperationCreateGroup>(req, (), None, description)
     }
 }
@@ -680,7 +668,10 @@ impl Operation for OperationDeleteGroup {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups/{group_id}", group_id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn delete_group(&self, group_id: &Uuid) -> Result<()> {
@@ -702,7 +693,10 @@ impl Operation for OperationGetAllHmgScans {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups/{group_id}/hmg/scans", group_id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn get_all_hmg_scans(&self, group_id: &Uuid) -> Result<GetAllHmgScansResponse> {
@@ -746,7 +740,10 @@ impl Operation for OperationGetGroup {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups/{group_id}", group_id = p.0)
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn get_group(&self, group_id: &Uuid) -> Result<Group> {
@@ -757,7 +754,7 @@ impl SdkmsClient {
 pub struct OperationGetScan;
 #[allow(unused)]
 impl Operation for OperationGetScan {
-    type PathParams = (Uuid, Uuid,);
+    type PathParams = (Uuid, Uuid);
     type QueryParams = ();
     type Body = ();
     type Output = Scan;
@@ -766,13 +763,20 @@ impl Operation for OperationGetScan {
         Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/groups/{group_id}/hmg/scans/{scan_id}", group_id = p.0, scan_id = p.1)
+        format!(
+            "/sys/v1/groups/{group_id}/hmg/scans/{scan_id}",
+            group_id = p.0,
+            scan_id = p.1
+        )
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn get_scan(&self, group_id: &Uuid, scan_id: &Uuid) -> Result<Scan> {
-        self.execute::<OperationGetScan>(&(), (group_id, scan_id,), None)
+        self.execute::<OperationGetScan>(&(), (group_id, scan_id), None)
     }
 }
 
@@ -812,10 +816,16 @@ impl Operation for OperationListGroups {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/groups?{q}", q = q.encode())
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
-    pub fn list_groups(&self, query_params: Option<&GetGroupsParams>) -> Result<ListGroupsResponse> {
+    pub fn list_groups(
+        &self,
+        query_params: Option<&GetGroupsParams>,
+    ) -> Result<ListGroupsResponse> {
         self.execute::<OperationListGroups>(&(), (), query_params)
     }
 }
@@ -837,7 +847,10 @@ impl Operation for OperationListKeyCollections {
 }
 
 impl SdkmsClient {
-    pub fn list_key_collections(&self, req: &HmgListKeyCollectionsRequest) -> Result<HmgListKeyCollectionsResponse> {
+    pub fn list_key_collections(
+        &self,
+        req: &HmgListKeyCollectionsRequest,
+    ) -> Result<HmgListKeyCollectionsResponse> {
         self.execute::<OperationListKeyCollections>(req, (), None)
     }
 }
@@ -885,9 +898,11 @@ impl SdkmsClient {
         self.execute::<OperationUpdateGroup>(req, (group_id,), None)
     }
     pub fn request_approval_to_update_group(
-        &self, group_id: &Uuid, req: &GroupRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationUpdateGroup>> {
+        &self,
+        group_id: &Uuid,
+        req: &GroupRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationUpdateGroup>> {
         self.request_approval::<OperationUpdateGroup>(req, (group_id,), None, description)
     }
 }
-

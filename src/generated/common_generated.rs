@@ -5,14 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
-use serde::{Serialize, Deserialize};
 use openapiv3::OpenAPI;
+use serde::{Deserialize, Serialize};
 use strum::EnumIter;
-
 
 pub use self::account_permissions::AccountPermissions;
 pub mod account_permissions {
-    bitflags_set!{
+    bitflags_set! {
         #[derive(Default)]
         pub struct AccountPermissions: u64 {
             ///  Permission to manage logging integrations, and enable/disable error
@@ -190,7 +189,7 @@ pub struct AesOptions {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub random_iv: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub iv_length: Option<i32>
+    pub iv_length: Option<i32>,
 }
 
 #[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone)]
@@ -200,7 +199,7 @@ pub struct AesOptionsPolicy {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub random_iv: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub fpe: Option<FpeOptions>
+    pub fpe: Option<FpeOptions>,
 }
 
 /// A cryptographic algorithm.
@@ -229,7 +228,7 @@ pub enum Algorithm {
     Hmac,
     LedaBeta,
     Round5Beta,
-    Pbe
+    Pbe,
 }
 
 /// A helper enum with a single variant, All, which indicates that something should apply to an
@@ -237,7 +236,7 @@ pub enum Algorithm {
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum All {
-    All
+    All,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -245,13 +244,13 @@ pub struct ApiPath {
     pub api_path: String,
     pub method: HyperHttpMethod,
     pub context: TepKeyContext,
-    pub key_path: String
+    pub key_path: String,
 }
 
 /// Operations allowed to be performed by an app.
 pub use self::app_permissions::AppPermissions;
 pub mod app_permissions {
-    bitflags_set!{
+    bitflags_set! {
         pub struct AppPermissions: u64 {
             const SIGN = 0x0000000000000001;
             const VERIFY = 0x0000000000000002;
@@ -296,7 +295,7 @@ pub struct ApprovalAuthConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub require_password: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub require_2fa: Option<bool>
+    pub require_2fa: Option<bool>,
 }
 
 /// Configurations for waiting for quorum approval.
@@ -309,7 +308,7 @@ pub struct ApprovalWaitConfig {
     pub poll_interval_secs: Option<u64>,
     /// Maximum time in seconds for client lib to wait for quorum reply.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub max_wait_for_secs: Option<u64>
+    pub max_wait_for_secs: Option<u64>,
 }
 
 #[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone)]
@@ -323,7 +322,7 @@ pub struct AriaOptions {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub random_iv: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub iv_length: Option<u8>
+    pub iv_length: Option<u8>,
 }
 
 #[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone)]
@@ -331,7 +330,7 @@ pub struct AriaOptionsPolicy {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub key_sizes: Option<Vec<u32>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub random_iv: Option<bool>
+    pub random_iv: Option<bool>,
 }
 
 /// <https://www.w3.org/TR/webauthn-2/#enum-attestation-convey>
@@ -366,7 +365,7 @@ pub enum AttestationConveyancePreference {
     /// RP wants attestation statement which can uniquely identify
     /// the authenticator. Generally meant for enterpise use.
     /// See spec for more info.
-    Enterprise
+    Enterprise,
 }
 
 /// LDAP authentication settings.
@@ -407,7 +406,7 @@ pub struct AuthConfigLdap {
     /// Authorization settings to apply for users accessing the account
     /// with this LDAP integration.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub authorization: Option<LdapAuthorizationConfig>
+    pub authorization: Option<LdapAuthorizationConfig>,
 }
 
 /// Extensions for webauthn. For every extension input, an
@@ -431,8 +430,12 @@ pub struct AuthenticationExtensionsClientInputs {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub appid: Option<String>,
     /// Dummy extension used by conformance tests
-    #[serde(default, rename = "example.extension.bool", skip_serializing_if = "Option::is_none")]
-    pub example: Option<bool>
+    #[serde(
+        default,
+        rename = "example.extension.bool",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub example: Option<bool>,
 }
 
 /// This is the response of extension inputs. For every input,
@@ -449,7 +452,7 @@ pub struct AuthenticationExtensionsClientOutputs {
     /// Response of `appid` extension.
     /// See [AuthenticationExtensionsClientInputs::appid].
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub appid: Option<bool>
+    pub appid: Option<bool>,
 }
 
 /// <https://www.w3.org/TR/webauthn-2/#iface-authenticatorassertionresponse>
@@ -468,7 +471,7 @@ pub struct AuthenticatorAssertionResponse {
     /// Corresponds to [PublicKeyCredentialUserEntity::id] sent during
     /// credential creation.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub user_handle: Option<Base64<UrlSafe>>
+    pub user_handle: Option<Base64<UrlSafe>>,
 }
 
 /// <https://www.w3.org/TR/webauthn-2/#enumdef-authenticatorattachment>
@@ -481,7 +484,7 @@ pub enum AuthenticatorAttachment {
     Platform,
     /// Authenticator that can be removed and used on various
     /// devices via cross-platform transport protocols.
-    CrossPlatform
+    CrossPlatform,
 }
 
 /// Parameters for deciding which authenticators should be selected.
@@ -507,7 +510,7 @@ pub struct AuthenticatorSelectionCriteria {
     /// Authenticator should support user verification by
     /// ways like pin code, biometrics, etc.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub user_verification: Option<UserVerificationRequirement>
+    pub user_verification: Option<UserVerificationRequirement>,
 }
 
 /// Hints by relying party on how client should communicate
@@ -518,9 +521,7 @@ pub struct AuthenticatorSelectionCriteria {
 #[serde(untagged)]
 pub enum AuthenticatorTransport {
     /// Values known to the spec and DSM.
-    Known (
-        AuthenticatorTransportInner
-    ),
+    Known(AuthenticatorTransportInner),
     /// Unknown values are stored as spec asks to do so.
     /// As per the spec level 3 (which is draft):
     ///   "The values SHOULD be members of AuthenticatorTransport
@@ -531,9 +532,7 @@ pub enum AuthenticatorTransport {
     ///   "The values SHOULD be members of AuthenticatorTransport but
     ///   Relying Parties MUST ignore unknown values."
     /// See `[[transports]]` in https://www.w3.org/TR/webauthn-2/#iface-authenticatorattestationresponse
-    Unknown (
-        String
-    )
+    Unknown(String),
 }
 
 /// See [AuthenticatorTransport] type.
@@ -550,14 +549,14 @@ pub enum AuthenticatorTransportInner {
     /// a client device-specific transport, i.e., it is a platform
     /// authenticator. These authenticators are not removable from
     /// the client device.
-    Internal
+    Internal,
 }
 
 /// Settings for automatic scanning in DSM-backed groups or replication accounts.
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct AutoScanSettings {
     /// The number of hours between successive automatic scans. Must be greater than 0.
-    pub scan_interval_hours: u8
+    pub scan_interval_hours: u8,
 }
 
 impl Described for AutoScanSettings {
@@ -571,7 +570,7 @@ pub struct AwsKeyMaterialId {
     /// key material ID reported by AWS KMS
     pub key_material_id: String,
     /// The index of the key material in the AWS ListKeyRotations response
-    pub key_material_index: usize
+    pub key_material_index: usize,
 }
 
 /// Origin of the AWS KMS key.
@@ -583,7 +582,7 @@ pub enum AwsKeyOrigin {
     AwsKms,
     External,
     AwsCloudHsm,
-    ExternalKeyStore
+    ExternalKeyStore,
 }
 
 #[derive(Copy, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -592,8 +591,8 @@ pub enum AwsKeyRotationStatus {
     KeyRotationDisabled,
     KeyRotationEnabled {
         #[serde(skip_serializing_if = "Option::is_none")]
-        rotation_period_in_days: Option<u16>
-    }
+        rotation_period_in_days: Option<u16>,
+    },
 }
 
 /// Information and properties of an AWS KMS key.
@@ -614,7 +613,7 @@ pub struct AwsKmsInfo {
     /// `AwsKeyMaterialMapstoSobject` groups. Conversely, keys with origin AwsKms do not
     /// need/accept key material when being rotated in those groups.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub origin: Option<AwsKeyOrigin>
+    pub origin: Option<AwsKeyOrigin>,
 }
 
 /// This structure mentions various properties
@@ -630,7 +629,7 @@ pub struct AwsMultiRegionInfo {
     pub primary_key_arn: Option<String>,
     /// Specifies ARNs of a primary key's replicas.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub replica_key_arns: Option<Vec<String>>
+    pub replica_key_arns: Option<Vec<String>>,
 }
 
 /// Specifies the type of multi-Region keys.
@@ -639,7 +638,7 @@ pub struct AwsMultiRegionInfo {
 #[serde(rename_all = "UPPERCASE")]
 pub enum AwsMultiRegionKeyType {
     Primary,
-    Replica
+    Replica,
 }
 
 /// The BIP32 network
@@ -649,7 +648,7 @@ pub enum AwsMultiRegionKeyType {
 #[serde(rename_all = "snake_case")]
 pub enum Bip32Network {
     Mainnet,
-    Testnet
+    Testnet,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -659,55 +658,45 @@ pub struct Bip32Options {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub derivation_path: Option<Vec<u32>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub network: Option<Bip32Network>
+    pub network: Option<Bip32Network>,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
-pub struct Bip32OptionsPolicy {
-
-}
+pub struct Bip32OptionsPolicy {}
 
 #[derive(Copy, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct BlsOptions {
-    pub variant: BlsVariant
+    pub variant: BlsVariant,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
-pub struct BlsOptionsPolicy {
-
-}
+pub struct BlsOptionsPolicy {}
 
 /// Signature/public-key size trade-off for BLS.
 #[derive(Debug, Eq, PartialEq, Copy, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum BlsVariant {
     SmallSignatures,
-    SmallPublicKeys
+    SmallPublicKeys,
 }
 
 /// CA settings.
 #[derive(PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum CaConfig {
-    CaSet (
-        CaSet
-    ),
-    Pinned (
-        Vec<Blob>
-    )
+    CaSet(CaSet),
+    Pinned(Vec<Blob>),
 }
 
 /// Predefined CA sets.
 #[derive(PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum CaSet {
-    GlobalRoots
+    GlobalRoots,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
-pub struct CertificateOptionsPolicy {
-
-}
+pub struct CertificateOptionsPolicy {}
 
 /// Cipher mode used for symmetric key algorithms.
 #[derive(Debug, Eq, PartialEq, Copy, Serialize, Deserialize, Clone)]
@@ -723,7 +712,7 @@ pub enum CipherMode {
     Ccm,
     Kw,
     Kwp,
-    Ff1
+    Ff1,
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -736,7 +725,7 @@ pub struct ClientConfigurations {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub kmip: Option<KmipClientConfig>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tep: Option<TepClientConfig>
+    pub tep: Option<TepClientConfig>,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
@@ -748,16 +737,14 @@ pub struct ClientConfigurationsRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub kmip: Option<Removable<KmipClientConfig>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tep: Option<Removable<TepClientConfig>>
+    pub tep: Option<Removable<TepClientConfig>>,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case", tag = "mode")]
 pub enum ClientFileLogging {
-    Enabled (
-        ClientFileLoggingConfig
-    ),
-    Disabled
+    Enabled(ClientFileLoggingConfig),
+    Disabled,
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -767,7 +754,7 @@ pub struct ClientFileLoggingConfig {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub file_size_kb: Option<u64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub max_files: Option<u32>
+    pub max_files: Option<u32>,
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -777,7 +764,7 @@ pub struct ClientLogConfig {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub file: Option<ClientFileLogging>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub level: Option<String>
+    pub level: Option<String>,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
@@ -789,7 +776,7 @@ pub struct CollectionMetadata {
     pub continuation_token: Option<String>,
     /// Count info about the items in the collection matching the request
     #[serde(flatten, skip_serializing_if = "Option::is_none")]
-    pub count: Option<ObjectCount>
+    pub count: Option<ObjectCount>,
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -803,7 +790,7 @@ pub struct CommonClientConfig {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub h2_num_connections: Option<usize>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub quorum_approval: Option<QuorumApprovalConfig>
+    pub quorum_approval: Option<QuorumApprovalConfig>,
 }
 
 impl Described for CommonClientConfig {
@@ -819,9 +806,7 @@ pub enum CountAccuracy {
     /// An exact count of objects.
     Exact,
     /// An approximate count of objects.
-    Approximate {
-
-    }
+    Approximate {},
 }
 
 /// A wrapper type to provide better clarity that the id
@@ -833,13 +818,9 @@ pub type CredentialId = Uuid;
 #[serde(untagged)]
 pub enum CryptMode {
     /// Block cipher mode of operation
-    Symmetric (
-        CipherMode
-    ),
+    Symmetric(CipherMode),
     /// RSA padding scheme
-    Rsa (
-        RsaEncryptionPadding
-    )
+    Rsa(RsaEncryptionPadding),
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -889,7 +870,7 @@ pub struct CryptographicPolicy {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub secret: Option<SecretOptionsPolicy>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub certificate: Option<CertificateOptionsPolicy>
+    pub certificate: Option<CertificateOptionsPolicy>,
 }
 
 impl Described for CryptographicPolicy {
@@ -901,7 +882,7 @@ impl Described for CryptographicPolicy {
 #[derive(Debug, Eq, PartialEq, Copy, Serialize, Deserialize, Clone)]
 pub struct CustomAttributeSearchMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub suggest: Option<bool>
+    pub suggest: Option<bool>,
 }
 
 #[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone)]
@@ -913,7 +894,7 @@ pub struct Des3Options {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub random_iv: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub iv_length: Option<i32>
+    pub iv_length: Option<i32>,
 }
 
 /// Cryptographic policy for triple DES objects. Setting `key_sizes: [168]`
@@ -923,7 +904,7 @@ pub struct Des3OptionsPolicy {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub key_sizes: Option<Vec<u32>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub random_iv: Option<bool>
+    pub random_iv: Option<bool>,
 }
 
 #[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone)]
@@ -931,13 +912,13 @@ pub struct DesOptions {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cipher_mode: Option<CipherMode>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub random_iv: Option<bool>
+    pub random_iv: Option<bool>,
 }
 
 #[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone)]
 pub struct DesOptionsPolicy {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub random_iv: Option<bool>
+    pub random_iv: Option<bool>,
 }
 
 /// A hash algorithm.
@@ -960,41 +941,37 @@ pub enum DigestAlgorithm {
     Sha3_224,
     Sha3_256,
     Sha3_384,
-    Sha3_512
+    Sha3_512,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct DsaOptions {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub subgroup_size: Option<u32>
+    pub subgroup_size: Option<u32>,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
-pub struct DsaOptionsPolicy {
-
-}
+pub struct DsaOptionsPolicy {}
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct EcKcdsaOptions {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub hash_alg: Option<DigestAlgorithm>
+    pub hash_alg: Option<DigestAlgorithm>,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
-pub struct EcKcdsaOptionsPolicy {
-
-}
+pub struct EcKcdsaOptionsPolicy {}
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct EcOptionsPolicy {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub elliptic_curves: Option<Vec<EllipticCurve>>
+    pub elliptic_curves: Option<Vec<EllipticCurve>>,
 }
 
 /// Operations allowed to be performed on a given key by a given User or an app
 pub use self::effective_key_operations::EffectiveKeyOperations;
 pub mod effective_key_operations {
-    bitflags_set!{
+    bitflags_set! {
         pub struct EffectiveKeyOperations: u64 {
             ///  If this is set, the key can be used for signing.
             const SIGN = 0x0000000000000001;
@@ -1069,7 +1046,7 @@ pub struct EffectiveKeyPolicy {
     /// the wrapping key may not actually exist, it may not have the necessary permissions, the
     /// user/app may not have access to the wrapping key, etc.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub export_policy: Option<ExportPolicy>
+    pub export_policy: Option<ExportPolicy>,
 }
 
 /// Identifies a standardized elliptic curve.
@@ -1087,7 +1064,7 @@ pub enum EllipticCurve {
     NistP256,
     NistP384,
     NistP521,
-    Gost256A
+    Gost256A,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -1095,13 +1072,11 @@ pub enum EllipticCurve {
 pub enum ExportPolicy {
     /// The sobject can only be exported wrapped by a key as specified
     /// by the `WrappingKeys`.
-    Wrapped {
-        by: WrappingKeys
-    },
+    Wrapped { by: WrappingKeys },
     /// The sobject can be exported unwrapped. This is the default policy
     /// for groups and also sobjects that have the `EXPORT` permission but
     /// do not specify an explicit export policy.
-    Unrestricted
+    Unrestricted,
 }
 
 /// Identification information for an external key. There are multiple
@@ -1120,45 +1095,41 @@ pub enum ExternalKeyId {
         /// The PKCS #11 ID of the key.
         id: Blob,
         /// The PKCS #11 label of the key.
-        label: Blob
+        label: Blob,
     },
     /// An sobject in DSM.
     Fortanix {
         /// The UUID assigned to the sobject.
-        id: Uuid
+        id: Uuid,
     },
     /// A key in AWS KMS.
-    AwsKms (
-        ExternalKeyIdAwsKms
-    ),
+    AwsKms(ExternalKeyIdAwsKms),
     /// A key in Azure Key Vault.
     AzureKeyVault {
         /// The version of the key.
         version: Uuid,
         /// The name of the key.
-        label: String
+        label: String,
     },
     /// A key in a GCP key ring.
     GcpKeyRing {
         /// The version of the key.
         version: u32,
         /// The label for the key.
-        label: String
+        label: String,
     },
     /// A key in an OCI key vault.
     OciVault {
         /// The OCID of the OciKey
         oci_key_id: String,
         /// The OCID of the OciKeyVersion
-        oci_key_version: String
+        oci_key_version: String,
     },
     /// A key in a "FIPS replication" group. There are no
     /// user-visible identifiers, since the entire key is
     /// stored (in wrapped form) inside the FIPS replication
     /// group, and not on the backing FIPS DSM nodes.
-    Wrapped {
-
-    }
+    Wrapped {},
 }
 
 #[derive(PartialEq, Eq, Debug, Hash, Serialize, Deserialize, Clone)]
@@ -1170,7 +1141,7 @@ pub struct ExternalKeyIdAwsKms {
     /// key_material_id is applicable to AWS KMS groups with
     /// key_material_mapping: AwsKeyMaterialMapsToSobject
     #[serde(flatten, skip_serializing_if = "Option::is_none")]
-    pub key_material_id: Option<AwsKeyMaterialId>
+    pub key_material_id: Option<AwsKeyMaterialId>,
 }
 
 /// Information about a specific external KMS key object.
@@ -1179,16 +1150,12 @@ pub struct ExternalKeyIdAwsKms {
 pub enum ExternalKmsInfo {
     /// A limited subset of information that isn't tracked
     /// in the `custom_metadata` field.
-    AWS (
-        AwsKmsInfo
-    ),
+    AWS(AwsKmsInfo),
     /// Any metadata associated with the scanned OCI key.
     ///
     /// Note: DSM stores the scanned "free-form" tags from OCI and
     /// places them in `custom_metadata` for OCI virtual keys.
-    Oci (
-        OciVaultInfo
-    )
+    Oci(OciVaultInfo),
 }
 
 /// This describes an external object -- specifically, information about its
@@ -1209,7 +1176,7 @@ pub struct ExternalSobjectInfo {
     /// the goal is to utilize this field more reliably for all cloud providers
     /// DSM supports; however, today, it is only used for AWS and OCI.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub external_kms_info: Option<ExternalKmsInfo>
+    pub external_kms_info: Option<ExternalKmsInfo>,
 }
 
 /// Fido2 options when requesting assertion or attestation to a device
@@ -1217,13 +1184,9 @@ pub struct ExternalSobjectInfo {
 #[serde(untagged)]
 pub enum Fido2MfaChallengeResponse {
     /// Attestation options
-    Registration (
-        PublicKeyCredentialCreationOptions
-    ),
+    Registration(PublicKeyCredentialCreationOptions),
     /// Assertion options
-    Authentication (
-        PublicKeyCredentialRequestOptions
-    )
+    Authentication(PublicKeyCredentialRequestOptions),
 }
 
 /// The alphabet to use for an encrypted portion of a complex tokenization data type.
@@ -1245,7 +1208,7 @@ pub type FpeCharSet = Vec<[char; 2]>;
 #[derive(Copy, Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum FpeChecksum {
-    Luhn
+    Luhn,
 }
 
 /// A set of words, repeated an amount of times.
@@ -1255,7 +1218,7 @@ pub struct FpeCode {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub min_repetitions: Option<usize>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub max_repetitions: Option<usize>
+    pub max_repetitions: Option<usize>,
 }
 
 /// Structure of a compound portion of a complex tokenization data type, itself composed of
@@ -1289,7 +1252,7 @@ pub enum FpeCompoundPart {
         min_length: Option<u32>,
         /// The maximum allowed length for this part (in chars).
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        max_length: Option<u32>
+        max_length: Option<u32>,
     },
     /// Represents a concatenation of multiple structures (in a particular order).
     Concat {
@@ -1311,7 +1274,7 @@ pub enum FpeCompoundPart {
         min_length: Option<u32>,
         /// The maximum allowed length for this part (in chars).
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        max_length: Option<u32>
+        max_length: Option<u32>,
     },
     /// Indicates a part that is possibly repeated multiple times.
     ///
@@ -1347,8 +1310,8 @@ pub enum FpeCompoundPart {
         min_length: Option<u32>,
         /// The maximum allowed length for this part (in chars).
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        max_length: Option<u32>
-    }
+        max_length: Option<u32>,
+    },
 }
 
 /// Constraints on a portion of a complex tokenization data type.
@@ -1392,7 +1355,7 @@ pub struct FpeConstraints {
     /// The subparts to apply the constraints to. If not specified, the constraints will be
     /// applied to all subparts (recursively).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub applies_to: Option<FpeConstraintsApplicability>
+    pub applies_to: Option<FpeConstraintsApplicability>,
 }
 
 /// A structure indicating which subparts to which to apply a set of constraints.
@@ -1402,9 +1365,7 @@ pub enum FpeConstraintsApplicability {
     /// Indicates that the constraints apply to the entire part (i.e., all of its subparts),
     /// including any descendants. This is the default value for this enum and the only option
     /// available for FpeEncryptedPart, literal, and OR subparts.
-    Simple (
-        All
-    ),
+    Simple(All),
     /// An object representing the individual subparts that the constraints should apply to. This
     /// is a BTreeMap where for each key-value pair, the key represents the "index" of the subpart
     /// (with the first subpart having index 0), and the value is an FpeConstraintsApplicability
@@ -1415,9 +1376,7 @@ pub enum FpeConstraintsApplicability {
     ///
     /// This cannot be used with OR parts; instead, specify constraints individually on each
     /// relevant subpart.
-    BySubparts (
-        HashMap<String,FpeConstraintsApplicability>
-    )
+    BySubparts(HashMap<String, FpeConstraintsApplicability>),
 }
 
 /// Structure for specifying (part of) a complex tokenization data type.
@@ -1426,9 +1385,7 @@ pub enum FpeConstraintsApplicability {
 pub enum FpeDataPart {
     /// A portion of a data type consisting of characters that belong to a particular
     /// alphabet (e.g., letters, numbers, etc.).
-    Encrypted (
-        FpeEncryptedPart
-    ),
+    Encrypted(FpeEncryptedPart),
     /// A section of the data type that is not to be tokenized (e.g., a delimiter).
     ///
     /// Unlike preserved characters, literal characters are not used for FF1 tweaks.
@@ -1440,13 +1397,11 @@ pub enum FpeDataPart {
         /// Implementation note: the backend will pick the first choice that matches when
         /// when parsing the input. If this results in an invalid parse of the rest of the
         /// input, the backend ***will not backtrack*** and will simply return with an error.
-        literal: Vec<String>
+        literal: Vec<String>,
     },
     /// A portion of a data type that consists of several smaller portions (e.g., an
     /// `Encrypted` part followed by a `Literal`).
-    Compound (
-        FpeCompoundPart
-    )
+    Compound(FpeCompoundPart),
 }
 
 /// A structure for specifying a token part representing a date that occurs after a specified date
@@ -1463,7 +1418,7 @@ pub enum FpeDate {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         before: Option<FpeDayMonthYearDate>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        after: Option<FpeDayMonthYearDate>
+        after: Option<FpeDayMonthYearDate>,
     },
     /// Represents a date that consists of a Month subpart and a Day subpart. It is an error to
     /// preserve only the Month part or the Day part.
@@ -1472,7 +1427,7 @@ pub enum FpeDate {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         before: Option<FpeDayMonthDate>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        after: Option<FpeDayMonthDate>
+        after: Option<FpeDayMonthDate>,
     },
     /// Represents a date that consists of a Month subpart and a Year subpart. The Year part is
     /// allowed to be preserved; however, the Month part cannot be preserved by itself.
@@ -1481,8 +1436,8 @@ pub enum FpeDate {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         before: Option<FpeMonthYearDate>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        after: Option<FpeMonthYearDate>
-    }
+        after: Option<FpeMonthYearDate>,
+    },
 }
 
 /// Possible date-related constraint types for a portion of a complex tokenization data type.
@@ -1505,9 +1460,7 @@ pub enum FpeDateConstraint {
     /// exact rules depend on the FpeDate variant.
     ///
     /// It is an error to "share" Day, Month, or Year parts across multiple dates.
-    Date (
-        FpeDate
-    ),
+    Date(FpeDate),
     /// Used to indicate that a token part represents a month, day, or year (either as part of a
     /// date, or independently).
     ///
@@ -1518,9 +1471,7 @@ pub enum FpeDateConstraint {
     /// least one digit that remains unpreserved.)
     ///
     /// Additionally, the token part cannot be involved in any Luhn-check constraints.
-    DatePart (
-        FpeDatePart
-    )
+    DatePart(FpeDatePart),
 }
 
 /// Possible date-related constraint types that do not form a complete date (by themselves) for a
@@ -1541,7 +1492,7 @@ pub enum FpeDatePart {
     Day,
     /// Used to indicate that a token part represents a year, with any zero value being treated as
     /// a leap year. The part should be a two to five digit number.
-    Year
+    Year,
 }
 
 /// A structure for specifying a particular date consisting of a day and a month, for use in an
@@ -1552,7 +1503,7 @@ pub struct FpeDayMonthDate {
     pub month: u8,
     /// The day, which should be an integer from 1 to either 29, 30, or 31, depending on the month
     /// and year. Here, February is treated as having 29 days.
-    pub day: u8
+    pub day: u8,
 }
 
 /// A structure for specifying a particular date consisting of a day, month, and year, for use in
@@ -1565,7 +1516,7 @@ pub struct FpeDayMonthYearDate {
     pub month: u8,
     /// The day, which should be an integer from 1 to either 28, 29, 30, or 31, depending on the
     /// month and year.
-    pub day: u8
+    pub day: u8,
 }
 
 /// Structure of a tokenized portion of a complex tokenization data type.
@@ -1597,7 +1548,7 @@ pub struct FpeEncryptedPart {
     pub preserve: Option<FpePreserveMask>,
     /// The characters to be masked while performing masked decryption.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub mask: Option<FpePreserveMask>
+    pub mask: Option<FpePreserveMask>,
 }
 
 /// The second generation of Fortanix Tokenization scheme.
@@ -1612,7 +1563,7 @@ pub struct FpeFormatV2 {
     pub mode: Option<FpeTokenizeMode>,
     /// The input processing mode.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub input_processing: Option<FpeInputProcessing>
+    pub input_processing: Option<FpeInputProcessing>,
 }
 
 /// A concatenation of codes, that can be repeated an amount of times. An
@@ -1630,14 +1581,14 @@ pub struct FpeGroup {
     /// Preserved characters are the leading/trailing characters of the whole
     /// group, not individual repetitions.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub preserve: Option<(usize,usize,)>
+    pub preserve: Option<(usize, usize)>,
 }
 
 #[derive(Copy, Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum FpeInputDefaultProcessing {
     Strip,
-    Reject
+    Reject,
 }
 
 /// Options to apply some pre- and post-processing to the input.
@@ -1652,8 +1603,8 @@ pub enum FpeInputProcessing {
     PassthroughUnknown,
     PassthroughSpecific {
         passthrough: HashSet<char>,
-        other: FpeInputDefaultProcessing
-    }
+        other: FpeInputDefaultProcessing,
+    },
 }
 
 /// A structure for specifying a particular date consisting of a month and a year, for use in an
@@ -1663,7 +1614,7 @@ pub struct FpeMonthYearDate {
     /// The year, which should be an integer less than 100000. Zero is treated as a leap year.
     pub year: u32,
     /// The month, which should be an integer from 1 to 12.
-    pub month: u8
+    pub month: u8,
 }
 
 /// FPE-specific options (for specifying the format of the
@@ -1673,9 +1624,7 @@ pub struct FpeMonthYearDate {
 pub enum FpeOptions {
     /// Basic FPE options, suitable for simple datatypes. See the
     /// description of FpeOptionsBasic for more details.
-    Basic (
-        FpeOptionsBasic
-    ),
+    Basic(FpeOptionsBasic),
     /// Advanced FPE options. It is recommended to use this for
     /// specifying any FPE options, as it is more expressive than
     /// FpeOptionsBasic.
@@ -1684,13 +1633,13 @@ pub enum FpeOptions {
         format: FpeDataPart,
         /// The user-provided name for the data type.
         #[serde(skip_serializing_if = "Option::is_none")]
-        description: Option<String>
+        description: Option<String>,
     },
     V2 {
         format_v2: FpeFormatV2,
         #[serde(skip_serializing_if = "Option::is_none")]
-        description: Option<String>
-    }
+        description: Option<String>,
+    },
 }
 
 /// Basic FPE-specific options. This is suitable for simple datatypes
@@ -1730,7 +1679,7 @@ pub struct FpeOptionsBasic {
     pub luhn_check: Option<bool>,
     /// The user-provided name for the data type that represents the input data.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>
+    pub name: Option<String>,
 }
 
 /// A structure indicating which indices in an encrypted part to mask or preserve.
@@ -1738,16 +1687,12 @@ pub struct FpeOptionsBasic {
 #[serde(untagged)]
 pub enum FpePreserveMask {
     /// Indicates that the entire encrypted part is to be preserved or masked.
-    Entire (
-        All
-    ),
+    Entire(All),
     /// Indicates that only certain characters are to be preserved or masked. Indices are
     /// Python-like; i.e., negative indices index from the end of the token portion, with
     /// index -1 denoting the last character. (Indicating that nothing should be preserved
     /// or masked can be done via an empty list, which is the default value for this enum.)
-    ByChars (
-        Vec<isize>
-    )
+    ByChars(Vec<isize>),
 }
 
 /// A concatenation of groups, optionally including a checksum.
@@ -1755,7 +1700,7 @@ pub enum FpePreserveMask {
 pub struct FpeSection {
     pub groups: Vec<FpeGroup>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub checksum: Option<FpeChecksum>
+    pub checksum: Option<FpeChecksum>,
 }
 
 /// How to tokenize a given input. The most secure option is "PreserveFormat".
@@ -1768,13 +1713,13 @@ pub enum FpeTokenizeMode {
     /// Tokenizes within the same variant the input was accepted.
     PreserveVariant,
     /// The output token has the same length as the input.
-    PreserveLength
+    PreserveLength,
 }
 
 /// A concatenation of sections.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FpeVariant {
-    pub sections: Vec<FpeSection>
+    pub sections: Vec<FpeSection>,
 }
 
 /// A set of fixed-length strings.
@@ -1792,19 +1737,17 @@ pub enum FpeWords {
     ///           (accepts 1, 01, 00002, 49, 000050, etc)
     /// ```
     IntegerRanges {
-        ranges: Vec<(u64,u64,)>,
+        ranges: Vec<(u64, u64)>,
         /// If this field is true, this set accepts only numeric strings
         /// padded to the length given by the maximum integer in the range
         /// set.
-        padding_required: bool
+        padding_required: bool,
     },
-    Alphabet (
-        FpeCharSet
-    ),
+    Alphabet(FpeCharSet),
     Custom {
         /// Examples: {"john", "jane"}, {".", "-", "_", "@", " "}
-        list: Vec<String>
-    }
+        list: Vec<String>,
+    },
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
@@ -1838,7 +1781,7 @@ pub struct GetGroupsParams {
     ///   requests with `continuation_token`s.
     /// - If omitted, the backend returns just a collection of groups with no metadata.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub continuation_token: Option<String>
+    pub continuation_token: Option<String>,
 }
 
 impl UrlEncode for GetGroupsParams {
@@ -1908,7 +1851,7 @@ pub enum GoogleAccessReason {
     /// - To investigate and confirm that a suspected service outage doesn't affect the customer.
     /// - To ensure backup and recovery from outages and system failures.
     GoogleResponseToProductionAlert = 10,
-    CustomerAuthorizedWorkflowServicing = 11
+    CustomerAuthorizedWorkflowServicing = 11,
 }
 
 impl Described for GoogleAccessReasonPolicy {
@@ -1925,12 +1868,12 @@ pub struct GoogleAccessReasonPolicy {
     /// Set of allowed Google Access reasons.
     pub allow: HashSet<GoogleAccessReason>,
     /// Accept incoming requests which do not specify any access reasons.
-    pub allow_missing_reason: bool
+    pub allow_missing_reason: bool,
 }
 
 pub use self::group_permissions::GroupPermissions;
 pub mod group_permissions {
-    bitflags_set!{
+    bitflags_set! {
         #[derive(Default)]
         pub struct GroupPermissions: u128 {
             ///  Permission to create group-level approval policy. Note that
@@ -2149,7 +2092,7 @@ pub mod group_permissions {
             ///  Permission to assign credential objects to integration points (Implies GET_CREDENTIALS)
             const ASSIGN_CREDENTIALS = 0x80000000000000000;
             ///  Permission to manage credential objects (Currently implies `GET_CREDENTIALS`,
-            ///  `CREATE_CREDENTIALS`, `UPDATE_CREDENTIALS`, `DELETE_CREDENTIALS`, and 
+            ///  `CREATE_CREDENTIALS`, `UPDATE_CREDENTIALS`, `DELETE_CREDENTIALS`, and
             ///  `ASSIGN_CREDENTIALS`).
             const MANAGE_CREDENTIALS = 0x100000000000000000;
         }
@@ -2161,25 +2104,31 @@ pub enum GroupSort {
     ByGroupId {
         order: Order,
         #[serde(skip_serializing_if = "Option::is_none")]
-        previous_id: Option<Uuid>
+        previous_id: Option<Uuid>,
     },
     ByGroupName {
         order: Order,
         #[serde(skip_serializing_if = "Option::is_none")]
-        previous_sort_value: Option<String>
-    }
+        previous_sort_value: Option<String>,
+    },
 }
 
 impl UrlEncode for GroupSort {
     fn url_encode(&self, m: &mut HashMap<String, String>) {
         match *self {
-            GroupSort::ByGroupId{ ref order, ref previous_id } => {
+            GroupSort::ByGroupId {
+                ref order,
+                ref previous_id,
+            } => {
                 m.insert("sort".to_string(), format!("group_id:{}", order));
                 if let Some(v) = previous_id {
                     m.insert("previous_id".to_string(), v.to_string());
                 }
             }
-            GroupSort::ByGroupName{ ref order, ref previous_sort_value } => {
+            GroupSort::ByGroupName {
+                ref order,
+                ref previous_sort_value,
+            } => {
                 m.insert("sort".to_string(), format!("group_name:{}", order));
                 if let Some(v) = previous_sort_value {
                     m.insert("previous_sort_value".to_string(), v.to_string());
@@ -2209,7 +2158,7 @@ pub struct HistoryItem {
     pub created_at: Time,
     /// The time when this entry is no longer available for
     /// undo purposes.
-    pub expiry: Time
+    pub expiry: Time,
 }
 
 /// The key metadata of the security object for a
@@ -2240,13 +2189,13 @@ pub struct HistoryItemState {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub rotation_policy: Option<RotationPolicy>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub group_id: Option<Uuid>
+    pub group_id: Option<Uuid>,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct HmacOptionsPolicy {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub minimum_key_length: Option<u32>
+    pub minimum_key_length: Option<u32>,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -2254,13 +2203,11 @@ pub struct KcdsaOptions {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub subgroup_size: Option<u32>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub hash_alg: Option<DigestAlgorithm>
+    pub hash_alg: Option<DigestAlgorithm>,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
-pub struct KcdsaOptionsPolicy {
-
-}
+pub struct KcdsaOptionsPolicy {}
 
 /// Methods for calculating a Key Checksum Value.
 #[derive(Copy, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -2271,7 +2218,7 @@ pub enum KcvMethod {
     /// This is calculated by computing the CMAC (Cipher-based Message Authentication Code)
     /// on an all-zero block using the key, then taking the leftmost 40 bits
     /// of the output.
-    Cmac
+    Cmac,
 }
 
 /// Information about the method by which a key was created
@@ -2293,16 +2240,15 @@ pub enum KeyCreationMethod {
     /// The key was created using key encapsulation
     Encapsulate,
     /// The key was created using key decapsulation
-    Decapsulate
+    Decapsulate,
 }
 
 /// Configuration for a key history (aka key undo) policy.
 #[derive(Copy, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct KeyHistoryPolicy {
     /// The period of time a history item can be undone, in seconds.
-    pub undo_time_window: Secs
+    pub undo_time_window: Secs,
 }
-
 
 impl Described for KeyHistoryPolicy {
     fn type_name() -> &'static str {
@@ -2330,7 +2276,7 @@ pub struct KeyLinks {
     pub parent: Option<Uuid>,
     /// Wrapping key used to wrap this security object
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub wrapping_key: Option<Uuid>
+    pub wrapping_key: Option<Uuid>,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -2338,12 +2284,12 @@ pub struct KeyMetadataPolicy {
     /// Applies to all objects.
     pub base: MetadataPolicyItem,
     /// Each entry in this map fully overrides `base` for a particular object type.
-    pub for_obj_type: HashMap<ObjectType,MetadataPolicyItem>,
+    pub for_obj_type: HashMap<ObjectType, MetadataPolicyItem>,
     /// What to do with legacy objects that are not compliant with this policy.
     /// Note that objects are not allowed to be created/updated if the result is
     /// not compliant with the policy. Non-compliant legacy objects can only be
     /// updated to comply with the policy (e.g. by adding missing required metadata).
-    pub legacy_objects: LegacyKeyPolicy
+    pub legacy_objects: LegacyKeyPolicy,
 }
 
 impl Described for KeyMetadataPolicy {
@@ -2355,7 +2301,7 @@ impl Described for KeyMetadataPolicy {
 /// Operations allowed to be performed on a given key.
 pub use self::key_operations::KeyOperations;
 pub mod key_operations {
-    bitflags_set!{
+    bitflags_set! {
         pub struct KeyOperations: u64 {
             ///  If this is set, the key can be used to for signing.
             const SIGN = 0x0000000000000001;
@@ -2423,7 +2369,7 @@ pub struct KeyOpsOverride {
     /// **Note**: This is only enforced on (KMIP) creation requests since we assume
     /// updates removing key operations are intentional.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub add_key_ops: Option<KeyOperations>
+    pub add_key_ops: Option<KeyOperations>,
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -2434,7 +2380,7 @@ pub struct KmipClientConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ignore_unknown_key_ops_for: Option<ObjectTypeFilter>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub key_ops_override: Option<KeyOpsOverride>
+    pub key_ops_override: Option<KeyOpsOverride>,
 }
 
 impl Described for KmipClientConfig {
@@ -2447,12 +2393,8 @@ impl Described for KmipClientConfig {
 #[derive(Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize, Clone)]
 #[serde(untagged)]
 pub enum LdapAccountRole {
-    Legacy (
-        LegacyLdapAccountRole
-    ),
-    Custom (
-        Uuid
-    )
+    Legacy(LegacyLdapAccountRole),
+    Custom(Uuid),
 }
 
 /// LDAP authorization settings.
@@ -2464,14 +2406,14 @@ pub struct LdapAuthorizationConfig {
     /// If a DN is specified for an account role, entities with that role
     /// must be a member of the specified LDAP group.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub require_role: Option<HashMap<LdapAccountRole,String>>,
+    pub require_role: Option<HashMap<LdapAccountRole, String>>,
     /// User self-provisioning settings for the LDAP integration.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub user_self_provisioning: Option<LdapUserSelfProvisioningConfig>,
     /// How to resolve group role assignment conflicts for users authorized
     /// through LDAP.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub role_conflict_resolution: Option<LdapRoleConflictResolution>
+    pub role_conflict_resolution: Option<LdapRoleConflictResolution>,
 }
 
 /// Distinguished Name (DN) resolution method. Given a user's email address, a DN resolution method
@@ -2482,14 +2424,14 @@ pub enum LdapDnResolution {
     /// Transform the user email through a pattern to derive the DN.
     Construct {
         /// For example: "example.com" => "uid={},ou=users,dc=example,dc=com".
-        domain_format: HashMap<String,String>
+        domain_format: HashMap<String, String>,
     },
     /// Search the directory using the LDAP `mail` attribute matching user's email.
     SearchByMail,
     /// Use email in place of DN. This method works with Active Directory if the userPrincipalName
     /// attribute is set for the user. https://docs.microsoft.com/en-us/windows/desktop/ad/naming-properties
     #[serde(rename = "upn")]
-    UserPrincipalName
+    UserPrincipalName,
 }
 
 /// Controls how we resolve conflicting role assignments with LDAP authorization.
@@ -2538,7 +2480,7 @@ pub enum LdapRoleConflictResolution {
     ///
     /// A user that belongs to LDAP groups A, B and C will become a member of
     /// DSM group G1 with role R1 + R3.
-    DisregardExclusiveRoles
+    DisregardExclusiveRoles,
 }
 
 /// Details for an LDAP service account.
@@ -2571,14 +2513,12 @@ pub enum LdapRoleConflictResolution {
 #[serde(rename_all = "snake_case", tag = "$type")]
 pub enum LdapServiceAccount {
     /// Service account details, with sensitive values inlined into the config.
-    Inline (
-        LdapServiceAccountInline
-    ),
+    Inline(LdapServiceAccountInline),
     /// Service account details backed by an integration credential.
     CredentialRef {
         /// ID of the integration credential holding the service account details.
-        credential_id: CredentialId
-    }
+        credential_id: CredentialId,
+    },
 }
 
 /// LDAP service account details. The user password is inlined
@@ -2588,7 +2528,7 @@ pub struct LdapServiceAccountInline {
     /// Distinguished name of the service account.
     pub dn: String,
     /// The password for the service account.
-    pub password: ZeroizedString
+    pub password: ZeroizedString,
 }
 
 /// LDAP user self-provisioning settings. Currently, the only
@@ -2598,7 +2538,7 @@ pub struct LdapServiceAccountInline {
 pub struct LdapUserSelfProvisioningConfig {
     /// The mapping that determines which roles will be assigned
     /// to self-provisioned users.
-    pub role_assignment: LdapUserSelfProvisioningRole
+    pub role_assignment: LdapUserSelfProvisioningRole,
 }
 
 /// A structure indicating how self-provisioned LDAP users will
@@ -2611,9 +2551,7 @@ pub enum LdapUserSelfProvisioningRole {
     /// provisioned user starts with; an account admin can change any user's
     /// role at a later time.) A "state enabled" flag will be implicitly added,
     /// and any specified "pending invite" flag will be removed.
-    Fixed {
-        role: UserAccountFlags
-    }
+    Fixed { role: UserAccountFlags },
 }
 
 #[derive(Copy, Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
@@ -2628,7 +2566,7 @@ pub enum LegacyKeyPolicy {
     /// - VERIFY
     /// - MACVERIFY
     /// - UNWRAPKEY
-    UnprotectOnly
+    UnprotectOnly,
 }
 
 /// Role of a user or app in an account for the purpose of LDAP configurations.
@@ -2639,7 +2577,7 @@ pub enum LegacyLdapAccountRole {
     MemberUser,
     AuditorUser,
     AdminApp,
-    CryptoApp
+    CryptoApp,
 }
 
 /// Legacy user account role
@@ -2648,7 +2586,7 @@ pub enum LegacyLdapAccountRole {
 pub enum LegacyUserAccountRole {
     AccountAdministrator,
     AccountMember,
-    AccountAuditor
+    AccountAuditor,
 }
 
 /// Legacy user group role
@@ -2656,19 +2594,15 @@ pub enum LegacyUserAccountRole {
 #[serde(rename_all = "UPPERCASE")]
 pub enum LegacyUserGroupRole {
     GroupAuditor,
-    GroupAdministrator
+    GroupAdministrator,
 }
 
 /// Legacy user group role name or custom role id
 #[derive(Debug, Copy, Hash, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, Clone)]
 #[serde(untagged)]
 pub enum LegacyUserGroupRoleOrRoleId {
-    LegacyRole (
-        LegacyUserGroupRole
-    ),
-    RoleId (
-        Uuid
-    )
+    LegacyRole(LegacyUserGroupRole),
+    RoleId(Uuid),
 }
 
 /// LMS specific options
@@ -2691,28 +2625,24 @@ pub struct LmsOptions {
     pub node_size: Option<usize>,
     /// The width of the Winternitz coefficients. The default value is 8.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub winternitz_width: Option<usize>
+    pub winternitz_width: Option<usize>,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
-pub struct LmsOptionsPolicy {
-
-}
+pub struct LmsOptionsPolicy {}
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Metadata {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub total_count: Option<usize>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub filtered_count: Option<usize>
+    pub filtered_count: Option<usize>,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum MetadataDurationConstraint {
-    Forbidden {
-
-    },
+    Forbidden {},
     Required {
         /// If specified, the value (typically a date) is restricted to be in a
         /// range expressed in terms of duration with respect to some known point
@@ -2722,13 +2652,13 @@ pub enum MetadataDurationConstraint {
         /// can also choose to specify a default value for this RestrictedDuration
         /// within the min/max range, eg. default = 90 days
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        allowed_values: Option<RestrictedDuration>
-    }
+        allowed_values: Option<RestrictedDuration>,
+    },
 }
 
 #[derive(Debug, PartialEq, Eq, Default, Serialize, Deserialize, Clone)]
 pub struct MetadataPolicyItem {
-    pub custom_metadata: HashMap<String,MetadataStringConstraint>,
+    pub custom_metadata: HashMap<String, MetadataStringConstraint>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<MetadataStringConstraint>,
     /// If a restricted duration is specified, it is enforced w.r.t object creation time.
@@ -2739,15 +2669,13 @@ pub struct MetadataPolicyItem {
     /// idea since it would not be possible to create a key and start using it
     /// immediately in the affected group(s).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub activation_date: Option<MetadataDurationConstraint>
+    pub activation_date: Option<MetadataDurationConstraint>,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum MetadataStringConstraint {
-    Forbidden {
-
-    },
+    Forbidden {},
     Required {
         /// If set to `true`, the value must have a length > 0 after trimming
         /// leading and trailing whitespace characters.
@@ -2755,8 +2683,8 @@ pub enum MetadataStringConstraint {
         non_empty_after_trim: Option<bool>,
         /// If not specified or empty, it will not impose any restrictions on the value.
         #[serde(skip_serializing_if = "Option::is_none")]
-        allowed_values: Option<HashSet<String>>
-    }
+        allowed_values: Option<HashSet<String>>,
+    },
 }
 
 /// Params for Mfa challenge.
@@ -2764,7 +2692,7 @@ pub enum MetadataStringConstraint {
 pub struct MfaChallengeParams {
     /// Protocol for the Mfa request. U2f is default
     /// for backcompat.
-    pub protocol: MfaProtocol
+    pub protocol: MfaProtocol,
 }
 
 impl UrlEncode for MfaChallengeParams {
@@ -2776,12 +2704,8 @@ impl UrlEncode for MfaChallengeParams {
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(untagged)]
 pub enum MfaChallengeResponse {
-    LegacyU2f (
-        U2fMfaChallengeResponse
-    ),
-    Fido2 (
-        Fido2MfaChallengeResponse
-    )
+    LegacyU2f(U2fMfaChallengeResponse),
+    Fido2(Fido2MfaChallengeResponse),
 }
 
 /// A FIDO device that may be used for second factor authentication.
@@ -2793,14 +2717,14 @@ pub struct MfaDevice {
     pub r#type: MfaDeviceType,
     /// Origin of the FIDO device.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub origin: Option<String>
+    pub origin: Option<String>,
 }
 
 /// Type of MFA device
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub enum MfaDeviceType {
     U2f,
-    Fido2
+    Fido2,
 }
 
 /// Protocols for MFA.
@@ -2810,7 +2734,7 @@ pub enum MfaProtocol {
     /// U2f protocol. (deprecated)
     U2f,
     /// FIDO2 protocol.
-    Fido2
+    Fido2,
 }
 
 impl Default for MfaProtocol {
@@ -2834,9 +2758,7 @@ impl fmt::Display for MfaProtocol {
 #[serde(rename_all = "snake_case")]
 pub enum Mgf {
     /// MGF1 algorithm
-    Mgf1 {
-        hash: DigestAlgorithm
-    }
+    Mgf1 { hash: DigestAlgorithm },
 }
 
 /// MGF policy.
@@ -2845,47 +2767,43 @@ pub enum Mgf {
 pub enum MgfPolicy {
     Mgf1 {
         #[serde(skip_serializing_if = "Option::is_none")]
-        hash: Option<DigestAlgorithm>
-    }
+        hash: Option<DigestAlgorithm>,
+    },
 }
 
 /// ML-DSA specific options
 #[derive(Copy, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct MlDsaOptions {
-    pub param_set: MlDsaParamSet
+    pub param_set: MlDsaParamSet,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
-pub struct MlDsaOptionsPolicy {
-
-}
+pub struct MlDsaOptionsPolicy {}
 
 /// ML-DSA parameter sets
 #[derive(Copy, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub enum MlDsaParamSet {
     MlDsa44,
     MlDsa65,
-    MlDsa87
+    MlDsa87,
 }
 
 /// ML-KEM specific options
 #[derive(Copy, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct MlKemOptions {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub param_set: Option<MlKemParamSet>
+    pub param_set: Option<MlKemParamSet>,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
-pub struct MlKemOptionsPolicy {
-
-}
+pub struct MlKemOptionsPolicy {}
 
 /// ML-KEM parameter sets
 #[derive(Copy, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub enum MlKemParamSet {
     MlKem512,
     MlKem768,
-    MlKem1024
+    MlKem1024,
 }
 
 /// Corresponds to the `display` parameter in
@@ -2901,7 +2819,7 @@ pub enum OauthAuthParamDisplay {
     /// The Authorization Server SHOULD display the authentication and consent UI consistent with a device that leverages a touch interface.
     Touch,
     /// The Authorization Server SHOULD display the authentication and consent UI consistent with a "feature phone" type display.
-    Wap
+    Wap,
 }
 
 /// Corresponds to the `prompt` parameter in
@@ -2923,7 +2841,7 @@ pub enum OauthAuthParamPrompt {
     /// The Authorization Server SHOULD prompt the End-User to select a user account.
     /// This enables an End-User who has multiple accounts at the Authorization Server to select amongst the multiple accounts that they might have current sessions for.
     /// If it cannot obtain an account selection choice made by the End-User, it MUST return an error, typically account_selection_required.
-    SelectAccount
+    SelectAccount,
 }
 
 /// Parameters for the OpenID Connect Authentication Request
@@ -2939,7 +2857,7 @@ pub struct OauthAuthenticationParameters {
     /// Specifies the allowable elapsed time in seconds since the last time the End-User was actively authenticated by the OP.
     /// If the elapsed time is greater than this value, the OP MUST attempt to actively re-authenticate the End-User
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub max_age: Option<u64>
+    pub max_age: Option<u64>,
 }
 
 /// OAuth scope.
@@ -2949,7 +2867,7 @@ pub enum OauthScope {
     App,
     OpenID,
     Email,
-    Profile
+    Profile,
 }
 
 #[derive(Copy, Debug, Serialize, Deserialize, Clone)]
@@ -2957,7 +2875,7 @@ pub struct ObjectCount {
     /// Count of the items in the collection matching the request
     pub count: u64,
     /// accuracy of the count returned
-    pub count_accuracy: CountAccuracy
+    pub count_accuracy: CountAccuracy,
 }
 
 /// The origin of a security object - where it was created / generated.
@@ -2965,7 +2883,7 @@ pub struct ObjectCount {
 pub enum ObjectOrigin {
     FortanixHSM,
     Transient,
-    External
+    External,
 }
 
 /// Type of security object.
@@ -2999,9 +2917,8 @@ pub enum ObjectType {
     /// This object type is deprecated. Use `MlKem` instead.
     MlKemBeta,
     Certificate,
-    Pbe
+    Pbe,
 }
-
 
 impl fmt::Display for ObjectType {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
@@ -3040,9 +2957,7 @@ impl fmt::Display for ObjectType {
 #[serde(tag = "$type")]
 pub enum ObjectTypeFilter {
     All,
-    Selection {
-        selection: Vec<ObjectType>
-    }
+    Selection { selection: Vec<ObjectType> },
 }
 
 /// Any key specific metadata that isn't already described
@@ -3057,13 +2972,11 @@ pub struct OciVaultInfo {
     pub deletion_date: Option<Time>,
     /// The name in the OCI Vault (and may differ from
     /// what the DSM virtual key shows).
-    pub display_name: String
+    pub display_name: String,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
-pub struct OpaqueOptionsPolicy {
-
-}
+pub struct OpaqueOptionsPolicy {}
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct Pkcs11ClientConfig {
@@ -3078,7 +2991,7 @@ pub struct Pkcs11ClientConfig {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub opaque_objects_are_not_certificates: Option<bool>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub max_concurrent_requests_per_slot: Option<usize>
+    pub max_concurrent_requests_per_slot: Option<usize>,
 }
 
 impl Described for Pkcs11ClientConfig {
@@ -3095,7 +3008,7 @@ impl Described for Pkcs11ClientConfig {
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct PluginCodeSigningPolicy {
     /// The public key(s) used to verify plugin code signatures.
-    pub signing_keys: SigningKeys
+    pub signing_keys: SigningKeys,
 }
 
 impl Described for PluginCodeSigningPolicy {
@@ -3108,25 +3021,19 @@ impl Described for PluginCodeSigningPolicy {
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum Principal {
-    App (
-        Uuid
-    ),
-    User (
-        Uuid
-    ),
-    Plugin (
-        Uuid
-    ),
+    App(Uuid),
+    User(Uuid),
+    Plugin(Uuid),
     /// UserViaApp signifies a user authorizing some app to act on its behalf through OAuth.
     UserViaApp {
         user_id: Uuid,
-        scopes: HashSet<OauthScope>
+        scopes: HashSet<OauthScope>,
     },
     /// System signifies DSM itself performing certain actions, like automatic key scans.
     /// This cannot be used for things like approval requests or session creation.
     System,
     /// An unregistered user.
-    UnregisteredUser
+    UnregisteredUser,
 }
 
 /// <https://www.w3.org/TR/webauthn-2/#dictionary-makecredentialoptions>
@@ -3172,7 +3079,7 @@ pub struct PublicKeyCredentialCreationOptions {
     /// are ignored, response of extensions must be empty and
     /// if not ignored, then, response must not be empty.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub extensions: Option<AuthenticationExtensionsClientInputs>
+    pub extensions: Option<AuthenticationExtensionsClientInputs>,
 }
 
 /// Used to in registration response (telling about existing creds) to prevent
@@ -3188,7 +3095,7 @@ pub struct PublicKeyCredentialDescriptor {
     /// Hints by relying party on what transport client should
     /// use to communicate with authenticator.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub transports: Option<Vec<AuthenticatorTransport>>
+    pub transports: Option<Vec<AuthenticatorTransport>>,
 }
 
 /// https://www.w3.org/TR/webauthn-2/#dictionary-credential-params
@@ -3199,7 +3106,7 @@ pub struct PublicKeyCredentialParameters {
     pub r#type: PublicKeyCredentialType,
     /// An algorithm from IANA COSE Algorithms registry supported
     /// by DSM as well.Upgrade to use this branch
-    pub alg: COSEAlgorithmIdentifier
+    pub alg: COSEAlgorithmIdentifier,
 }
 
 /// <https://www.w3.org/TR/webauthn-2/#dictionary-assertion-options>
@@ -3238,7 +3145,7 @@ pub struct PublicKeyCredentialRequestOptions {
     /// are ignored, response of extensions must be empty and
     /// if not ignored, then, response must not be empty.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub extensions: Option<AuthenticationExtensionsClientInputs>
+    pub extensions: Option<AuthenticationExtensionsClientInputs>,
 }
 
 /// <https://www.w3.org/TR/webauthn-2/#dictionary-rp-credential-params>
@@ -3249,7 +3156,7 @@ pub struct PublicKeyCredentialRpEntity {
     ///
     /// <https://www.w3.org/TR/webauthn-2/#CreateCred-DetermineRpId>
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub id: Option<String>
+    pub id: Option<String>,
 }
 
 /// https://www.w3.org/TR/webauthn-2/#enum-credentialType
@@ -3259,7 +3166,7 @@ pub struct PublicKeyCredentialRpEntity {
 #[serde(rename_all = "kebab-case")]
 pub enum PublicKeyCredentialType {
     /// Public key credential.
-    PublicKey
+    PublicKey,
 }
 
 /// <https://www.w3.org/TR/webauthn-2/#dictionary-user-credential-params>
@@ -3271,7 +3178,7 @@ pub struct PublicKeyCredentialUserEntity {
     /// spec.
     pub id: Base64<UrlSafe>,
     /// Human friendly name intended only for display.
-    pub display_name: String
+    pub display_name: String,
 }
 
 /// If enabled, the public key will be available publicly (without authentication) through the GetPublicKey API.
@@ -3280,9 +3187,9 @@ pub struct PublicKeyCredentialUserEntity {
 pub enum PublishPublicKeyConfig {
     Enabled {
         /// Additionally list the previous version of the key if not compromised.
-        list_previous_version: bool
+        list_previous_version: bool,
     },
-    Disabled
+    Disabled,
 }
 
 /// Quorum approval policy.
@@ -3291,14 +3198,14 @@ pub struct Quorum {
     pub n: usize,
     pub members: Vec<QuorumPolicy>,
     #[serde(flatten)]
-    pub config: ApprovalAuthConfig
+    pub config: ApprovalAuthConfig,
 }
 
 /// Quorum Policy Configurations in clients
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct QuorumApprovalConfig {
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub wait_for_quorum_approval: Option<ApprovalWaitConfig>
+    pub wait_for_quorum_approval: Option<ApprovalWaitConfig>,
 }
 
 /// Approval policy.
@@ -3309,7 +3216,7 @@ pub struct QuorumPolicy {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub user: Option<Uuid>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub app: Option<Uuid>
+    pub app: Option<Uuid>,
 }
 
 /// <https://www.w3.org/TR/webauthn-2/#enum-residentKeyRequirement>
@@ -3338,7 +3245,7 @@ pub enum ResidentKeyRequirement {
     Preferred,
     /// Indicates that relying party requires resident
     /// keys.
-    Required
+    Required,
 }
 
 #[derive(Debug, PartialEq, Eq, Default, Serialize, Deserialize, Clone)]
@@ -3354,7 +3261,7 @@ pub struct RestrictedDuration {
     /// cannot be less than or greater than the 'min' or 'max'
     /// range duration respectively.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub default: Option<TimeSpan>
+    pub default: Option<TimeSpan>,
 }
 
 /// Reason for revoking a key.
@@ -3366,7 +3273,7 @@ pub struct RevocationReason {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub message: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub compromise_occurance_date: Option<Time>
+    pub compromise_occurance_date: Option<Time>,
 }
 
 /// Reasons to revoke a security object.
@@ -3378,27 +3285,21 @@ pub enum RevocationReasonCode {
     AffiliationChanged,
     Superseded,
     CessationOfOperation,
-    PrivilegeWithdrawn
+    PrivilegeWithdrawn,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum RotateCopiedKeys {
     AllExternal,
-    Select (
-        Vec<Uuid>
-    )
+    Select(Vec<Uuid>),
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum RotationInterval {
-    IntervalDays (
-        u32
-    ),
-    IntervalMonths (
-        u32
-    )
+    IntervalDays(u32),
+    IntervalMonths(u32),
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -3410,7 +3311,7 @@ pub struct RotationPolicy {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub deactivate_rotated_key: Option<bool>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub rotate_copied_keys: Option<RotateCopiedKeys>
+    pub rotate_copied_keys: Option<RotateCopiedKeys>,
 }
 
 /// Type of padding to use for RSA encryption. The use of PKCS#1 v1.5 padding is strongly
@@ -3421,17 +3322,11 @@ pub struct RotationPolicy {
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum RsaEncryptionPadding {
     /// Optimal Asymmetric Encryption Padding (PKCS#1 v2.1).
-    Oaep {
-        mgf: Mgf
-    },
+    Oaep { mgf: Mgf },
     /// PKCS#1 v1.5 padding. This is disallowed in FIPS builds.
-    Pkcs1V15 {
-
-    },
+    Pkcs1V15 {},
     /// RSA decryption without padding. (Raw RSA encryption is not supported)
-    RawDecrypt {
-
-    }
+    RawDecrypt {},
 }
 
 /// RSA encryption padding policy.
@@ -3442,24 +3337,20 @@ pub enum RsaEncryptionPaddingPolicy {
     /// in RFC 8017 (PKCS #1 version 2.2)
     Oaep {
         #[serde(skip_serializing_if = "Option::is_none")]
-        mgf: Option<MgfPolicy>
+        mgf: Option<MgfPolicy>,
     },
     /// PKCS #1 version 1.5 encryption padding. This is disallowed in
     /// FIPS builds
-    Pkcs1V15 {
-
-    },
+    Pkcs1V15 {},
     /// Raw RSA decryption
-    RawDecrypt {
-
-    }
+    RawDecrypt {},
 }
 
 /// Constraints on RSA encryption parameters. In general, if a constraint is not specified, anything is allowed.
 #[derive(Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct RsaEncryptionPolicy {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub padding: Option<RsaEncryptionPaddingPolicy>
+    pub padding: Option<RsaEncryptionPaddingPolicy>,
 }
 
 /// RSA-specific options.
@@ -3491,7 +3382,7 @@ pub struct RsaOptions {
     /// The minimum allowed key length. This is only relevant for group or account cryptographic
     /// policies (and hence has no effect in an RSA policy on a specific key).
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub minimum_key_length: Option<u32>
+    pub minimum_key_length: Option<u32>,
 }
 
 #[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone)]
@@ -3509,7 +3400,7 @@ pub struct RsaOptionsPolicy {
     /// The minimum allowed key length. This is only relevant for group or account cryptographic
     /// policies (and hence has no effect in an RSA policy on a specific key).
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub minimum_key_length: Option<u32>
+    pub minimum_key_length: Option<u32>,
 }
 
 /// RSA signature padding policy.
@@ -3518,24 +3409,20 @@ pub struct RsaOptionsPolicy {
 pub enum RsaSignaturePaddingPolicy {
     Pss {
         #[serde(skip_serializing_if = "Option::is_none")]
-        mgf: Option<MgfPolicy>
+        mgf: Option<MgfPolicy>,
     },
-    Pkcs1V15 {
-
-    }
+    Pkcs1V15 {},
 }
 
 /// Constraints on RSA signature parameters. In general, if a constraint is not specified, anything is allowed.
 #[derive(Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct RsaSignaturePolicy {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub padding: Option<RsaSignaturePaddingPolicy>
+    pub padding: Option<RsaSignaturePaddingPolicy>,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
-pub struct SecretOptionsPolicy {
-
-}
+pub struct SecretOptionsPolicy {}
 
 pub type Secs = u64;
 
@@ -3544,20 +3431,20 @@ pub struct SeedOptions {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cipher_mode: Option<CipherMode>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub random_iv: Option<bool>
+    pub random_iv: Option<bool>,
 }
 
 #[derive(PartialEq, Eq, Debug, Default, Serialize, Deserialize, Clone)]
 pub struct SeedOptionsPolicy {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub random_iv: Option<bool>
+    pub random_iv: Option<bool>,
 }
 
 /// Server execution mode.
 #[derive(Copy, PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub enum ServerMode {
     Software,
-    Sgx
+    Sgx,
 }
 
 /// Signing keys used to validate JSON Web Signature objects including signed
@@ -3567,13 +3454,13 @@ pub enum ServerMode {
 pub enum SigningKeys {
     Stored {
         /// Mapping key ids to DER-encoded public key.
-        keys: HashMap<String,ZeroizedBlob>
+        keys: HashMap<String, ZeroizedBlob>,
     },
     Fetched {
         url: String,
         /// Number of seconds that the service is allowed to cache the fetched keys.
-        cache_duration: u64
-    }
+        cache_duration: u64,
+    },
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -3581,13 +3468,11 @@ pub struct Slip10Options {
     /// The Slip10 path, starting from master. Master key is [].
     ///
     /// Ex: m/42/42'/0 -> [42, 2**31 + 42, 0]
-    pub derivation_path: Vec<u32>
+    pub derivation_path: Vec<u32>,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
-pub struct Slip10OptionsPolicy {
-
-}
+pub struct Slip10OptionsPolicy {}
 
 #[derive(Eq, PartialEq, Debug, Serialize, Deserialize, Clone)]
 pub struct Sobject {
@@ -3626,7 +3511,7 @@ pub struct Sobject {
     pub creator: Principal,
     /// User managed field for adding custom metadata to the security object.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub custom_metadata: Option<HashMap<String,String>>,
+    pub custom_metadata: Option<HashMap<String, String>>,
     /// Deactivation date of security object in seconds since EPOCH.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub deactivation_date: Option<Time>,
@@ -3725,7 +3610,7 @@ pub struct Sobject {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub original_key_ops: Option<KeyOperations>,
     /// Public key material of the security object, if it exists.
-    /// 
+    ///
     /// For virtual keys, this field may not be available if the key is not backed by DSM.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pub_key: Option<ZeroizedBlob>,
@@ -3775,38 +3660,28 @@ pub struct Sobject {
     pub xmss: Option<XmssOptions>,
     /// UUID of the group which the security object belongs to.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub group_id: Option<Uuid>
+    pub group_id: Option<Uuid>,
 }
 
 /// Uniquely identifies a persisted or transient sobject.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum SobjectDescriptor {
-    Kid (
-        Uuid
-    ),
-    Name (
-        String
-    ),
-    TransientKey (
-        Blob
-    ),
+    Kid(Uuid),
+    Name(String),
+    TransientKey(Blob),
     Inline {
         value: ZeroizedBlob,
-        obj_type: ObjectType
-    }
+        obj_type: ObjectType,
+    },
 }
 
 /// Uniquely identifies a persisted sobject.
 #[derive(Debug, Eq, PartialEq, Hash, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum SobjectDescriptorPersisted {
-    Kid (
-        Uuid
-    ),
-    Name (
-        String
-    )
+    Kid(Uuid),
+    Name(String),
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -3824,7 +3699,7 @@ pub struct SobjectExportPolicy {
     ///    becomes effectively unexportable.
     ///
     /// Note: these rules may change in the future.
-    pub allow_weakening: bool
+    pub allow_weakening: bool,
 }
 
 /// Security object operational state.
@@ -3847,13 +3722,13 @@ pub enum SobjectState {
     Destroyed,
     /// The security object does not exist in DSM. However, its compromised status
     /// is retained for audit and security purposes.
-    Deleted
+    Deleted,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct TepClientConfig {
     pub schema: TepSchema,
-    pub key_map: TepKeyMapList
+    pub key_map: TepKeyMapList,
 }
 
 impl Described for TepClientConfig {
@@ -3866,14 +3741,14 @@ impl Described for TepClientConfig {
 #[serde(rename_all = "lowercase")]
 pub enum TepKeyContext {
     Request,
-    Response
+    Response,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct TepKeyMap {
     pub path: ApiPath,
     pub kid: Uuid,
-    pub mode: CipherMode
+    pub mode: CipherMode,
 }
 
 pub type TepKeyMapList = Vec<TepKeyMap>;
@@ -3881,9 +3756,7 @@ pub type TepKeyMapList = Vec<TepKeyMap>;
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(tag = "$type")]
 pub enum TepSchema {
-    OpenAPI (
-        Box<OpenAPI>
-    )
+    OpenAPI(Box<OpenAPI>),
 }
 
 impl std::cmp::Eq for TepSchema {}
@@ -3891,18 +3764,10 @@ impl std::cmp::Eq for TepSchema {}
 #[derive(Debug, Copy, PartialEq, Eq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum TimeSpan {
-    Seconds (
-        u32
-    ),
-    Minutes (
-        u32
-    ),
-    Hours (
-        u32
-    ),
-    Days (
-        u32
-    )
+    Seconds(u32),
+    Minutes(u32),
+    Hours(u32),
+    Days(u32),
 }
 
 /// TLS client settings.
@@ -3917,8 +3782,8 @@ pub enum TlsConfig {
         #[serde(skip_serializing_if = "Option::is_none")]
         client_key: Option<ZeroizedBlob>,
         #[serde(skip_serializing_if = "Option::is_none")]
-        client_cert: Option<Blob>
-    }
+        client_cert: Option<Blob>,
+    },
 }
 
 /// Use of U2F is deprecated, use FIDO2 for second factor authentication.
@@ -3927,14 +3792,14 @@ pub enum TlsConfig {
 pub struct U2fAuthRequest {
     pub key_handle: Blob,
     pub signature_data: Blob,
-    pub client_data: Blob
+    pub client_data: Blob,
 }
 
 /// A challenge used for multi-factor authentication.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub struct U2fMfaChallengeResponse {
     pub u2f_challenge: String,
-    pub u2f_keys: Vec<U2fRegisteredKey>
+    pub u2f_keys: Vec<U2fRegisteredKey>,
 }
 
 /// Description of a registered U2F device.
@@ -3942,7 +3807,7 @@ pub struct U2fMfaChallengeResponse {
 #[serde(rename_all = "camelCase")]
 pub struct U2fRegisteredKey {
     pub key_handle: String,
-    pub version: String
+    pub version: String,
 }
 
 /// User account flag
@@ -3950,22 +3815,16 @@ pub struct U2fRegisteredKey {
 #[serde(rename_all = "UPPERCASE")]
 pub enum UserAccountFlag {
     StateEnabled,
-    PendingInvite
+    PendingInvite,
 }
 
 /// User account flag or legacy user account role name or custom role id
 #[derive(Debug, Copy, Hash, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, Clone)]
 #[serde(untagged)]
 pub enum UserAccountFlagOrRole {
-    Flag (
-        UserAccountFlag
-    ),
-    LegacyRole (
-        LegacyUserAccountRole
-    ),
-    RoleId (
-        Uuid
-    )
+    Flag(UserAccountFlag),
+    LegacyRole(LegacyUserAccountRole),
+    RoleId(Uuid),
 }
 
 /// User's role(s) and state in an account.
@@ -3986,7 +3845,7 @@ pub enum UserVerificationRequirement {
     /// if it isn't satisfied.
     Preferred,
     /// UV isn't "preferred" by RP.
-    Discouraged
+    Discouraged,
 }
 
 /// Information about the service version.
@@ -4005,7 +3864,7 @@ pub struct VersionResponse {
     ///
     /// Only present when the server is running in FIPS mode.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub plugins_digest: Option<Blob>
+    pub plugins_digest: Option<Blob>,
 }
 
 /// Information specific to a virtual key. Currently, this is only relevant
@@ -4013,7 +3872,7 @@ pub struct VersionResponse {
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 pub struct VirtualSobjectInfo {
     /// Whether or not the source key material is cached within the key.
-    pub cached_key_material: bool
+    pub cached_key_material: bool,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
@@ -4021,10 +3880,10 @@ pub struct VirtualSobjectInfo {
 pub enum WrappingKeys {
     /// Only keys in this list can be used to wrap the sobject
     Only {
-        keys: HashSet<SobjectDescriptorPersisted>
+        keys: HashSet<SobjectDescriptorPersisted>,
     },
     /// Any key can be used to wrap the sobject
-    Any
+    Any,
 }
 
 /// XMSS specific options
@@ -4038,11 +3897,8 @@ pub struct XmssOptions {
     pub digest: Option<DigestAlgorithm>,
     /// Amount of bytes associated to each node (24 or 32)
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub node_size: Option<usize>
+    pub node_size: Option<usize>,
 }
 
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
-pub struct XmssOptionsPolicy {
-
-}
-
+pub struct XmssOptionsPolicy {}

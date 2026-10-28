@@ -259,7 +259,6 @@ impl Drop for SdkmsClient {
 }
 
 impl SdkmsClient {
-
     // pub fn terminate(&mut self) -> Result<()> {
     //     if let Some(Auth::Bearer(_)) = self.auth {
     //         let _: () =

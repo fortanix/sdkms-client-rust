@@ -1,5 +1,6 @@
 [package]
 name = "sdkms"
+#TODO saurav bump version
 version = "0.6.0"
 authors = ["Fortanix, Inc."]
 license = "MPL-2.0"
@@ -24,7 +25,7 @@ bitflags = "1.0"
 cfg-if = "1.0.5"
 headers = "0.4"
 log = "0.4"
-serde = { version = "1.0", features = ["derive"] }
+serde = { version = "1.0.7", features = ["derive"] }
 serde_json = "1.0"
 simple-hyper-client = "0.4.0"
 simple-hyper-client-native-tls = { version = "0.2.1", optional = true }
@@ -34,6 +35,12 @@ tokio-native-tls = { version = "0.3", optional = true }
 tokio-rustls = { version = "0.26", optional = true }
 uuid = { version = "1.0", features = ["serde", "v4"] }
 webpki-roots = { version = "1.0.11", optional = true }
+url = { version = "2.3" , features = ["serde"]}
+b64-ct = "0.1"
+serde-value = { version="0.7" }
+openapiv3 = "1.0.1"
+strum = {version="0.26", features = ["derive"]}
+http_v1 = { version = "1.3.1", package = "http" }
 
 [dev-dependencies]
 env_logger = "0.6"

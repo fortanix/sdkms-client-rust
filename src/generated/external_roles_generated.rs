@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
+use serde::{Serialize, Deserialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ExternalRole {
@@ -71,7 +72,7 @@ impl Operation for OperationCreateExternalRole {
     type Output = ExternalRole;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/external_roles".to_string()
@@ -93,7 +94,7 @@ impl Operation for OperationDeleteExternalRole {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/external_roles/{external_role_id}", external_role_id = p.0)
@@ -115,7 +116,7 @@ impl Operation for OperationGetExternalRole {
     type Output = ExternalRole;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/external_roles/{external_role_id}", external_role_id = p.0)
@@ -137,7 +138,7 @@ impl Operation for OperationListExternalRoles {
     type Output = Vec<ExternalRole>;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/external_roles?{q}", q = q.encode())
@@ -159,7 +160,7 @@ impl Operation for OperationSyncExternalRole {
     type Output = ExternalRole;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/external_roles/{external_role_id}/sync", external_role_id = p.0)
@@ -181,7 +182,7 @@ impl Operation for OperationUpdateExternalRole {
     type Output = ExternalRole;
 
     fn method() -> Method {
-        Method::Patch
+        Method::PATCH
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/external_roles/{external_role_id}", external_role_id = p.0)

@@ -32,7 +32,7 @@ impl Operation for OperationGetMarketplace {
     type Output = Vec<MarketplacePlugin>;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/marketplace?{q}", q = q.encode())

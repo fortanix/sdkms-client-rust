@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
+use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, Clone, Default)]
 pub struct AuthDiscoverParams {
@@ -238,7 +239,7 @@ impl Operation for OperationAuthDiscover {
     type Output = Vec<AuthMethod>;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/auth/discover?{q}", q = q.encode())
@@ -260,7 +261,7 @@ impl Operation for OperationAuthenticate {
     type Output = AuthResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/session/auth".to_string()
@@ -282,7 +283,7 @@ impl Operation for OperationConfig2faAuth {
     type Output = Config2faAuthResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/session/config_2fa/auth".to_string()
@@ -304,7 +305,7 @@ impl Operation for OperationConfig2faTerminate {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/session/config_2fa/terminate".to_string()
@@ -326,7 +327,7 @@ impl Operation for OperationReauthenticate {
     type Output = AuthResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/session/reauth".to_string()
@@ -348,7 +349,7 @@ impl Operation for OperationRecoveryCodeAuth {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/session/auth/2fa/recovery_code".to_string()
@@ -370,7 +371,7 @@ impl Operation for OperationRefresh {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/session/refresh".to_string()
@@ -392,7 +393,7 @@ impl Operation for OperationSelectAccount {
     type Output = SelectAccountResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/session/select_account".to_string()
@@ -414,7 +415,7 @@ impl Operation for OperationSetAwsTemporaryCredentials {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/session/aws_temporary_credentials".to_string()
@@ -436,7 +437,7 @@ impl Operation for OperationTerminate {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/session/terminate".to_string()
@@ -458,7 +459,7 @@ impl Operation for OperationU2fAuth {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/session/auth/2fa/u2f".to_string()

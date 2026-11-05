@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
+use serde::{Serialize, Deserialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ApprovalRequest {
@@ -163,7 +164,7 @@ impl Operation for OperationApproveRequest {
     type Output = ApprovalRequest;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{req_id}/approve", req_id = p.0)
@@ -185,7 +186,7 @@ impl Operation for OperationCreateApprovalRequest {
     type Output = ApprovalRequest;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/approval_requests".to_string()
@@ -207,7 +208,7 @@ impl Operation for OperationDeleteApprovalRequest {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{req_id}", req_id = p.0)
@@ -229,7 +230,7 @@ impl Operation for OperationDenyRequest {
     type Output = ApprovalRequest;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{req_id}/deny", req_id = p.0)
@@ -251,7 +252,7 @@ impl Operation for OperationGetApprovalRequest {
     type Output = ApprovalRequest;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{req_id}", req_id = p.0)
@@ -273,7 +274,7 @@ impl Operation for OperationGetApprovalRequestResult {
     type Output = ApprovableResult;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests/{req_id}/result", req_id = p.0)
@@ -295,7 +296,7 @@ impl Operation for OperationListApprovalRequests {
     type Output = Vec<ApprovalRequest>;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/approval_requests?{q}", q = q.encode())
@@ -308,25 +309,4 @@ impl SdkmsClient {
     }
 }
 
-pub struct OperationMfaChallenge;
-#[allow(unused)]
-impl Operation for OperationMfaChallenge {
-    type PathParams = (Uuid,);
-    type QueryParams = MfaChallengeParams;
-    type Body = ();
-    type Output = MfaChallengeResponse;
-
-    fn method() -> Method {
-        Method::Post
-    }
-    fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
-        format!("/sys/v1/approval_requests/{req_id}/challenge?{q}", req_id = p.0, q = q.encode())
-    }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
-
-impl SdkmsClient {
-    pub fn mfa_challenge(&self, req_id: &Uuid, query_params: Option<&MfaChallengeParams>) -> Result<MfaChallengeResponse> {
-        self.execute::<OperationMfaChallenge>(&(), (req_id,), query_params)
-    }
-}
 

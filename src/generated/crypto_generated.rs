@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
+use serde::{Serialize, Deserialize};
 
 /// Options to use for key agreement mechanism.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
@@ -1030,7 +1031,7 @@ impl Operation for OperationAgree {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/agree".to_string()
@@ -1057,7 +1058,7 @@ impl Operation for OperationBatchDecrypt {
     type Output = Vec<BatchResponseItem<DecryptResponse>>;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/keys/batch/decrypt".to_string()
@@ -1079,7 +1080,7 @@ impl Operation for OperationBatchEncrypt {
     type Output = Vec<BatchResponseItem<EncryptResponse>>;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/keys/batch/encrypt".to_string()
@@ -1101,7 +1102,7 @@ impl Operation for OperationBatchSign {
     type Output = Vec<BatchResponseItem<SignResponse>>;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/keys/batch/sign".to_string()
@@ -1128,7 +1129,7 @@ impl Operation for OperationBatchVerify {
     type Output = Vec<BatchResponseItem<VerifyResponse>>;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/keys/batch/verify".to_string()
@@ -1150,7 +1151,7 @@ impl Operation for OperationCreateDigest {
     type Output = DigestResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/digest".to_string()
@@ -1172,7 +1173,7 @@ impl Operation for OperationDecapsulate {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/decapsulate".to_string()
@@ -1199,7 +1200,7 @@ impl Operation for OperationDecrypt {
     type Output = DecryptResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/decrypt".to_string()
@@ -1226,7 +1227,7 @@ impl Operation for OperationDecryptFinal {
     type Output = DecryptFinalResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/decrypt/final".to_string()
@@ -1248,7 +1249,7 @@ impl Operation for OperationDecryptInit {
     type Output = DecryptInitResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/decrypt/init".to_string()
@@ -1270,7 +1271,7 @@ impl Operation for OperationDecryptUpdate {
     type Output = DecryptUpdateResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/decrypt/update".to_string()
@@ -1292,7 +1293,7 @@ impl Operation for OperationDerive {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/derive".to_string()
@@ -1319,7 +1320,7 @@ impl Operation for OperationEncapsulate {
     type Output = EncapsulateKeyResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/encapsulate".to_string()
@@ -1346,7 +1347,7 @@ impl Operation for OperationEncrypt {
     type Output = EncryptResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/encrypt".to_string()
@@ -1373,7 +1374,7 @@ impl Operation for OperationEncryptFinal {
     type Output = EncryptFinalResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/encrypt/final".to_string()
@@ -1395,7 +1396,7 @@ impl Operation for OperationEncryptInit {
     type Output = EncryptInitResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/encrypt/init".to_string()
@@ -1417,7 +1418,7 @@ impl Operation for OperationEncryptUpdate {
     type Output = EncryptUpdateResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/encrypt/update".to_string()
@@ -1439,7 +1440,7 @@ impl Operation for OperationMac {
     type Output = MacResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/mac".to_string()
@@ -1466,7 +1467,7 @@ impl Operation for OperationMacVerify {
     type Output = VerifyResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/macverify".to_string()
@@ -1488,7 +1489,7 @@ impl Operation for OperationSign {
     type Output = SignResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/sign".to_string()
@@ -1515,7 +1516,7 @@ impl Operation for OperationTransform {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/transform".to_string()
@@ -1542,7 +1543,7 @@ impl Operation for OperationUnwrap {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/unwrapkey".to_string()
@@ -1569,7 +1570,7 @@ impl Operation for OperationVerify {
     type Output = VerifyResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/verify".to_string()
@@ -1591,7 +1592,7 @@ impl Operation for OperationWrap {
     type Output = WrapKeyResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/wrapkey".to_string()

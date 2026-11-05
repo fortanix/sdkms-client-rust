@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
+use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, Clone, Default)]
 pub struct VersionParams {
@@ -32,7 +33,7 @@ impl Operation for OperationVersion {
     type Output = VersionResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/version?{q}", q = q.encode())

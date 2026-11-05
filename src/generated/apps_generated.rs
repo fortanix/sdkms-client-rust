@@ -5,6 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
+use serde::{Serialize, Deserialize};
+use std::collections::{BTreeSet, HashSet};
+use std::net::IpAddr;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct App {
@@ -264,6 +267,15 @@ pub enum AppRole {
     Crypto
 }
 
+impl AppRole {
+    pub fn as_str(&self) -> &str {
+        match *self {
+            AppRole::Admin => "admin",
+            AppRole::Crypto => "app",
+        }
+    }
+}
+
 /// Sort apps as per given ordering.
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub enum AppSort {
@@ -488,7 +500,7 @@ impl UrlEncode for ListAppsParams {
             m.insert("group_permissions".to_string(), v.to_string());
         }
         if let Some(ref v) = self.role {
-            m.insert("role".to_string(), v.to_string());
+            m.insert("role".to_string(), v.as_str().to_string());
         }
         if let Some(ref v) = self.filter {
             m.insert("filter".to_string(), v.to_string());
@@ -793,7 +805,7 @@ impl Operation for OperationAddGroupMembership {
     type Output = AppGroupMembership;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{app_id}/groups", app_id = p.0)
@@ -815,7 +827,7 @@ impl Operation for OperationCreateApp {
     type Output = App;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps?{q}", q = q.encode())
@@ -837,7 +849,7 @@ impl Operation for OperationDeleteApp {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{app_id}", app_id = p.0)
@@ -859,7 +871,7 @@ impl Operation for OperationDeleteGroupMembership {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{app_id}/groups/{group_id}", app_id = p.0, group_id = p.1)
@@ -881,7 +893,7 @@ impl Operation for OperationGetAllGroupMemberships {
     type Output = GetAppGroupMemberships;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{app_id}/groups?{q}", app_id = p.0, q = q.encode())
@@ -903,7 +915,7 @@ impl Operation for OperationGetApp {
     type Output = App;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{app_id}?{q}", app_id = p.0, q = q.encode())
@@ -925,7 +937,7 @@ impl Operation for OperationGetAppCredential {
     type Output = AppCredentialResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{app_id}/credential", app_id = p.0)
@@ -952,7 +964,7 @@ impl Operation for OperationGetClientConfigs {
     type Output = ClientConfigurations;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/apps/client_configs".to_string()
@@ -974,7 +986,7 @@ impl Operation for OperationGetGroupMembership {
     type Output = AppGroupMembership;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{app_id}/groups/{group_id}", app_id = p.0, group_id = p.1)
@@ -996,7 +1008,7 @@ impl Operation for OperationListApps {
     type Output = ListAppsResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps?{q}", q = q.encode())
@@ -1018,7 +1030,7 @@ impl Operation for OperationResetAppSecret {
     type Output = App;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{app_id}/reset_secret?{q}", app_id = p.0, q = q.encode())
@@ -1045,7 +1057,7 @@ impl Operation for OperationUpdateApp {
     type Output = App;
 
     fn method() -> Method {
-        Method::Patch
+        Method::PATCH
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{app_id}?{q}", app_id = p.0, q = q.encode())
@@ -1072,7 +1084,7 @@ impl Operation for OperationUpdateGroupMembership {
     type Output = AppGroupMembership;
 
     fn method() -> Method {
-        Method::Patch
+        Method::PATCH
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/apps/{app_id}/groups/{group_id}", app_id = p.0, group_id = p.1)

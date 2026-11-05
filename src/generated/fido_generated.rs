@@ -15,7 +15,7 @@ impl Operation for OperationCompleteFido2Auth {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/session/auth/2fa/fido2".to_string()
@@ -37,7 +37,7 @@ impl Operation for OperationMfaNewChallenge {
     type Output = MfaChallengeResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/session/config_2fa/new_challenge?{q}", q = q.encode())

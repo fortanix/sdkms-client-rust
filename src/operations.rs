@@ -25,7 +25,7 @@ pub trait Operation {
 }
 
 pub trait UrlEncode {
-    fn url_encode(&self, m: &mut HashMap<&'static str, String>);
+    fn url_encode(&self, m: &mut HashMap<String, String>);
 
     fn encode(&self) -> String {
         let mut m = HashMap::new();
@@ -42,11 +42,11 @@ pub trait UrlEncode {
 }
 
 impl UrlEncode for () {
-    fn url_encode(&self, _m: &mut HashMap<&'static str, String>) {}
+    fn url_encode(&self, _m: &mut HashMap<String, String>) {}
 }
 
 impl<T: UrlEncode> UrlEncode for Option<T> {
-    fn url_encode(&self, m: &mut HashMap<&'static str, String>) {
+    fn url_encode(&self, m: &mut HashMap<String, String>) {
         if let Some(val) = self {
             val.url_encode(m);
         }
@@ -54,7 +54,7 @@ impl<T: UrlEncode> UrlEncode for Option<T> {
 }
 
 impl<T: UrlEncode> UrlEncode for &T {
-    fn url_encode(&self, m: &mut HashMap<&'static str, String>) {
+    fn url_encode(&self, m: &mut HashMap<String, String>) {
         T::url_encode(self, m);
     }
 }

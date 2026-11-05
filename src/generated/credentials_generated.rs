@@ -240,7 +240,7 @@ impl Operation for OperationCreateCredential {
     type Output = IntegrationCredential;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/credentials".to_string()
@@ -262,7 +262,7 @@ impl Operation for OperationDeleteCredential {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/credentials/{cred_id}", cred_id = p.0)
@@ -284,7 +284,7 @@ impl Operation for OperationGetAllCredentials {
     type Output = ListCredentialsResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/credentials?{q}", q = q.encode())
@@ -306,7 +306,7 @@ impl Operation for OperationGetCredential {
     type Output = IntegrationCredential;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/credentials/{cred_id}", cred_id = p.0)
@@ -328,7 +328,7 @@ impl Operation for OperationRotateCredential {
     type Output = IntegrationCredential;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/credentials/{cred_id}/rotate", cred_id = p.0)
@@ -350,7 +350,7 @@ impl Operation for OperationUpdateCredential {
     type Output = IntegrationCredential;
 
     fn method() -> Method {
-        Method::Patch
+        Method::PATCH
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/sys/v1/credentials/{cred_id}", cred_id = p.0)

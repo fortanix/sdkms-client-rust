@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
+use serde::{Serialize, Deserialize};
 
 /// Request to copy a security object.
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -681,7 +682,7 @@ impl Operation for OperationActivateSobject {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{key_id}/activate", key_id = p.0)
@@ -708,7 +709,7 @@ impl Operation for OperationCopySobject {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/keys/copy".to_string()
@@ -735,7 +736,7 @@ impl Operation for OperationCreateSobject {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/keys".to_string()
@@ -757,7 +758,7 @@ impl Operation for OperationDeleteSobject {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{key_id}", key_id = p.0)
@@ -784,7 +785,7 @@ impl Operation for OperationDestroySobject {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{key_id}/destroy", key_id = p.0)
@@ -811,7 +812,7 @@ impl Operation for OperationDigestSobject {
     type Output = ObjectDigestResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/keys/digest".to_string()
@@ -833,7 +834,7 @@ impl Operation for OperationExportSobject {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/keys/export".to_string()
@@ -860,7 +861,7 @@ impl Operation for OperationExportSobjectComponents {
     type Output = ExportComponentsResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/keys/components/export".to_string()
@@ -887,7 +888,7 @@ impl Operation for OperationGetKcv {
     type Output = KeyCheckValueResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/keys/kcv".to_string()
@@ -909,7 +910,7 @@ impl Operation for OperationGetKeyAttestation {
     type Output = KeyAttestationResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/keys/key_attestation".to_string()
@@ -931,7 +932,7 @@ impl Operation for OperationGetPubkey {
     type Output = HashMap<String,ZeroizedBlob>;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/pubkey/{acct_id}/{name}", acct_id = p.0, name = p.1)
@@ -953,7 +954,7 @@ impl Operation for OperationGetSobject {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/info?{q}", q = q.encode())
@@ -975,7 +976,7 @@ impl Operation for OperationImportSobject {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Put
+        Method::PUT
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/keys".to_string()
@@ -997,7 +998,7 @@ impl Operation for OperationImportSobjectByComponents {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/keys/components/import".to_string()
@@ -1024,7 +1025,7 @@ impl Operation for OperationListSobjects {
     type Output = ListSobjectsResponse;
 
     fn method() -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys?{q}", q = q.encode())
@@ -1046,7 +1047,7 @@ impl Operation for OperationPersistTransientKey {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/keys/persist".to_string()
@@ -1068,7 +1069,7 @@ impl Operation for OperationRemovePrivate {
     type Output = ();
 
     fn method() -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{key_id}/private", key_id = p.0)
@@ -1095,7 +1096,7 @@ impl Operation for OperationReplaceSobject {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/keys/replace".to_string()
@@ -1122,7 +1123,7 @@ impl Operation for OperationRevertPrevKeyOp {
     type Output = ();
 
     fn method() -> Method {
-        Method::Put
+        Method::PUT
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{key_id}/revert", key_id = p.0)
@@ -1149,7 +1150,7 @@ impl Operation for OperationRevokeSobject {
     type Output = ();
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{key_id}/revoke", key_id = p.0)
@@ -1176,7 +1177,7 @@ impl Operation for OperationRotateSobject {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/keys/rekey".to_string()
@@ -1203,7 +1204,7 @@ impl Operation for OperationUpdateSobject {
     type Output = Sobject;
 
     fn method() -> Method {
-        Method::Patch
+        Method::PATCH
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         format!("/crypto/v1/keys/{key_id}", key_id = p.0)
@@ -1230,7 +1231,7 @@ impl Operation for OperationVerifyKcv {
     type Output = VerifyKcvResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/crypto/v1/keys/kcv/verify".to_string()

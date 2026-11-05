@@ -73,7 +73,7 @@ impl Operation for OperationBatch {
     type Output = BatchResponse;
 
     fn method() -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/batch/v1".to_string()

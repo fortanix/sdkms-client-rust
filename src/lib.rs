@@ -54,8 +54,8 @@
 //!
 //! [`SdkmsClient`]: ./struct.SdkmsClient.html
 //! [`api_model`]: ./api_model/index.html
-//! [REST APIs]: https://www.fortanix.com/api/sdkms/
-//! [Fortanix SDKMS]: https://fortanix.com/products/sdkms/
+//! [REST APIs]: <https://www.fortanix.com/api/sdkms/>
+//! [Fortanix SDKMS]: <https://fortanix.com/products/sdkms/>
 
 #[macro_use]
 extern crate bitflags;
@@ -66,6 +66,8 @@ extern crate log;
 mod macros;
 pub mod api_model;
 mod client;
+
+#[allow(non_camel_case_types)]
 mod generated;
 pub mod operations;
 

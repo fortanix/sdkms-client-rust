@@ -5,14 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 /// Options to use for key agreement mechanism.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum AgreeKeyMechanism {
     /// Diffie-Hellman key exchange mechanism
-    DiffieHellman
+    DiffieHellman,
 }
 
 /// Request body to perform key agreement.
@@ -51,7 +51,7 @@ pub struct AgreeKeyRequest {
     pub description: Option<String>,
     /// User-defined metadata for this key stored as key-value pairs.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub custom_metadata: Option<HashMap<String,String>>,
+    pub custom_metadata: Option<HashMap<String, String>>,
     /// Optional array of key operations to be enabled for this security object. If not
     /// provided the service will provide a default set of key operations. Note that if you
     /// provide an empty array, all key operations will be disabled.
@@ -65,7 +65,7 @@ pub struct AgreeKeyRequest {
     pub transient: Option<bool>,
     /// The export policy to be applied to the agreed key
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub export_policy: Option<SobjectExportPolicy>
+    pub export_policy: Option<SobjectExportPolicy>,
 }
 
 /// Request body of each item in batch decryption
@@ -76,7 +76,7 @@ pub struct BatchDecryptRequestItem {
     /// UUID of the sobject
     pub kid: Uuid,
     /// Request body for Decryption
-    pub request: DecryptRequest
+    pub request: DecryptRequest,
 }
 
 /// Request body of each item in batch encryption
@@ -87,7 +87,7 @@ pub struct BatchEncryptRequestItem {
     /// UUID of the sobject
     pub kid: Uuid,
     /// Request body for encryption
-    pub request: EncryptRequest
+    pub request: EncryptRequest,
 }
 
 /// Request body to perform key decapsulation.
@@ -116,7 +116,7 @@ pub struct DecapsulateKeyRequest {
     pub key_ops: Option<KeyOperations>,
     /// If set to true, the decapsulated key will be transient.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub transient: Option<bool>
+    pub transient: Option<bool>,
 }
 
 /// Request body to finalize a multi-part decryption.
@@ -129,14 +129,14 @@ pub struct DecryptFinalRequest {
     pub state: Blob,
     /// Tag value of the encrypted cipher. Only applicable when using GCM mode.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tag: Option<Blob>
+    pub tag: Option<Blob>,
 }
 
 /// Final response body of a multi-part decryption.
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
 pub struct DecryptFinalResponse {
     /// Decrypted bytes
-    pub plain: ZeroizedBlob
+    pub plain: ZeroizedBlob,
 }
 
 /// Request body to initialize multi-part decryption.
@@ -156,7 +156,7 @@ pub struct DecryptInitRequest {
     pub iv: Option<Blob>,
     /// Authenticated data. Only applicable when using GCM mode.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub ad: Option<Blob>
+    pub ad: Option<Blob>,
 }
 
 /// Response body for initializing multi-part decryption.
@@ -166,7 +166,7 @@ pub struct DecryptInitResponse {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub kid: Option<Uuid>,
     /// Opaque data, not to be interpreted or modified by the client and must be provided with next request.
-    pub state: Blob
+    pub state: Blob,
 }
 
 /// Request to decrypt data.
@@ -231,7 +231,7 @@ pub struct DecryptRequest {
     /// rsa_oaep_label when the decryption algorithm is RSA and the mode is
     /// Oaep. For other modes, providing this field causes a bad request error.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub label: Option<Blob>
+    pub label: Option<Blob>,
 }
 
 /// Response of a decryption request.
@@ -244,7 +244,7 @@ pub struct DecryptResponse {
     ///
     /// Note that when performing format-preserving decryption (i.e.,
     /// detokenization), the plaintext is encoded as UTF-8 bytes.
-    pub plain: ZeroizedBlob
+    pub plain: ZeroizedBlob,
 }
 
 /// Request body for multi-part decryption.
@@ -256,7 +256,7 @@ pub struct DecryptUpdateRequest {
     /// Encrypted bytes
     pub cipher: Blob,
     /// Current state of the encrypted cipher
-    pub state: Blob
+    pub state: Blob,
 }
 
 /// Response body of multi-part decryption.
@@ -266,35 +266,31 @@ pub struct DecryptUpdateResponse {
     pub plain: ZeroizedBlob,
     /// Current state of the multi part decrypted object.
     /// Opaque data, not to be interpreted or modified by the client and must be provided with next request.
-    pub state: Blob
+    pub state: Blob,
 }
 
 /// Mechanism to be used when deriving a new key from an existing key.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum DeriveKeyMechanism {
-    EncryptData (
-        EncryptRequest
-    ),
+    EncryptData(EncryptRequest),
     Bip32MasterKey {
-        network: Bip32Network
+        network: Bip32Network,
     },
     Bip32HardenedChild {
-        index: u32
+        index: u32,
     },
-    Slip10MasterKey {
-
-    },
+    Slip10MasterKey {},
     Slip10HardenedChild {
-        index: u32
+        index: u32,
     },
     Hkdf {
         hash_alg: DigestAlgorithm,
         #[serde(skip_serializing_if = "Option::is_none")]
         info: Option<Blob>,
         #[serde(skip_serializing_if = "Option::is_none")]
-        salt: Option<Blob>
-    }
+        salt: Option<Blob>,
+    },
 }
 
 /// Request body to derive a key.
@@ -332,7 +328,7 @@ pub struct DeriveKeyRequest {
     pub description: Option<String>,
     /// User-defined metadata for this key stored as key-value pairs.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub custom_metadata: Option<HashMap<String,String>>,
+    pub custom_metadata: Option<HashMap<String, String>>,
     /// Optional array of key operations to be enabled for this security object. If not
     /// provided the service will provide a default set of key operations. Note that if you
     /// provide an empty array, all key operations will be disabled.
@@ -349,7 +345,7 @@ pub struct DeriveKeyRequest {
     pub export_policy: Option<SobjectExportPolicy>,
     /// elliptic_curve the derived key, if applicable
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub elliptic_curve: Option<EllipticCurve>
+    pub elliptic_curve: Option<EllipticCurve>,
 }
 
 /// Request to compute the hash of arbitrary data.
@@ -358,14 +354,14 @@ pub struct DigestRequest {
     /// Hash Algorithm to compute digest
     pub alg: DigestAlgorithm,
     /// Raw binary data
-    pub data: Blob
+    pub data: Blob,
 }
 
 /// Response body of a hash operation.
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
 pub struct DigestResponse {
     /// Hashed binary output
-    pub digest: Blob
+    pub digest: Blob,
 }
 
 /// Request body to perform key encapsulation.
@@ -392,7 +388,7 @@ pub struct EncapsulateKeyRequest {
     pub key_ops: Option<KeyOperations>,
     /// If set to true, the resulting key will be transient.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub transient: Option<bool>
+    pub transient: Option<bool>,
 }
 
 /// Result of an encapsulation request.
@@ -401,7 +397,7 @@ pub struct EncapsulateKeyResponse {
     /// Resulting (newly created) symmetric key
     pub key: Sobject,
     /// The encapsulated key
-    pub ciphertext: Blob
+    pub ciphertext: Blob,
 }
 
 /// Request body to finalize a multi-part encryption.
@@ -415,7 +411,7 @@ pub struct EncryptFinalRequest {
     /// Size of authentication tag.
     /// Tag length is only applicable when using GCM mode.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tag_len: Option<usize>
+    pub tag_len: Option<usize>,
 }
 
 /// Final response body of a multi-part encryption.
@@ -425,7 +421,7 @@ pub struct EncryptFinalResponse {
     pub cipher: Blob,
     /// Tag is only returned for symmetric encryption with GCM mode.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tag: Option<Blob>
+    pub tag: Option<Blob>,
 }
 
 /// Request body to initialize multi-part encryption.
@@ -444,7 +440,7 @@ pub struct EncryptInitRequest {
     pub iv: Option<Blob>,
     /// Authenticated data, required for AEAD algorithms
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub ad: Option<Blob>
+    pub ad: Option<Blob>,
 }
 
 /// Response body of initializing multi-part encryption.
@@ -458,7 +454,7 @@ pub struct EncryptInitResponse {
     pub iv: Option<Blob>,
     /// Current state of the encrypted cipher.
     /// Opaque data, not to be interpreted or modified by the client and must be provided with next request.
-    pub state: Blob
+    pub state: Blob,
 }
 
 /// Request to encrypt data.
@@ -514,7 +510,7 @@ pub struct EncryptRequest {
     /// rsa_oaep_label when the encryption algorithm is RSA and the mode is
     /// Oaep. For other modes, providing this field causes a bad request error.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub label: Option<Blob>
+    pub label: Option<Blob>,
 }
 
 /// Response of an encryption request.
@@ -535,7 +531,7 @@ pub struct EncryptResponse {
     /// When using the GCM or CCM modes, the tag is returned from
     /// authenticated encryption.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tag: Option<Blob>
+    pub tag: Option<Blob>,
 }
 
 /// Request body for continuing multi part encryption
@@ -547,7 +543,7 @@ pub struct EncryptUpdateRequest {
     /// Data bytes to be encrypted
     pub plain: ZeroizedBlob,
     /// Last state of the encrypted cipher
-    pub state: Blob
+    pub state: Blob,
 }
 
 /// Response body of multi-part encryption.
@@ -557,14 +553,14 @@ pub struct EncryptUpdateResponse {
     pub cipher: Blob,
     /// Current state of the encrypted cipher
     /// Opaque data, not to be interpreted or modified by the client and must be provided with next request.
-    pub state: Blob
+    pub state: Blob,
 }
 
 /// Key Format
 #[derive(Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub enum KeyFormat {
     Default,
-    Pkcs8
+    Pkcs8,
 }
 
 /// Request to compute a MAC.
@@ -579,7 +575,7 @@ pub struct MacRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alg: Option<DigestAlgorithm>,
     /// The data for which to generate a MAC
-    pub data: Blob
+    pub data: Blob,
 }
 
 /// Response of a MAC computation request.
@@ -590,7 +586,7 @@ pub struct MacResponse {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub kid: Option<Uuid>,
     /// MAC generated for the input data
-    pub mac: Blob
+    pub mac: Blob,
 }
 
 #[derive(Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Clone)]
@@ -602,7 +598,7 @@ pub enum MlDsaMode {
     PreHash,
     /// The message representative `mu` is already computed outside and passed
     /// through the `hash` field
-    ExternalMu
+    ExternalMu,
 }
 
 /// Type of padding to use for RSA signatures. The padding specified must adhere to the key's
@@ -611,13 +607,9 @@ pub enum MlDsaMode {
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum RsaSignaturePadding {
     /// Probabilistic Signature Scheme (PKCS#1 v2.1).
-    Pss {
-        mgf: Mgf
-    },
+    Pss { mgf: Mgf },
     /// PKCS#1 v1.5 padding.
-    Pkcs1V15 {
-
-    }
+    Pkcs1V15 {},
 }
 
 /// Request to sign data (or hashed data) using an asymmetric key.
@@ -677,7 +669,7 @@ pub struct SignRequest {
     /// Currently only ML-DSA keys accept a context parameter;
     /// this parameter must not be specified for any other key types.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub context: Option<Blob>
+    pub context: Option<Blob>,
 }
 
 /// Response of a signing request.
@@ -687,7 +679,7 @@ pub struct SignResponse {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub kid: Option<Uuid>,
     /// Signed data
-    pub signature: ZeroizedBlob
+    pub signature: ZeroizedBlob,
 }
 
 /// Signature mechanism
@@ -695,13 +687,9 @@ pub struct SignResponse {
 #[serde(untagged)]
 pub enum SignatureMode {
     /// RSA Signature mechanism with padding
-    Rsa (
-        RsaSignaturePadding
-    ),
+    Rsa(RsaSignaturePadding),
     /// ML-DSA signature mode
-    MlDsa (
-        MlDsaMode
-    )
+    MlDsa(MlDsaMode),
 }
 
 /// Options for mechanism to be used when transforming a key
@@ -710,12 +698,12 @@ pub enum SignatureMode {
 pub enum TransformKeyMechanism {
     Bip32WeakChild {
         /// The index of a weak child is an integer between 0 and 2**31 - 1.
-        index: u32
+        index: u32,
     },
     Slip10WeakChild {
         /// The index of a weak child is an integer between 0 and 2**31 - 1.
-        index: u32
-    }
+        index: u32,
+    },
 }
 
 /// Request body to transform a key.
@@ -750,7 +738,7 @@ pub struct TransformKeyRequest {
     pub description: Option<String>,
     /// User-defined metadata for this key stored as key-value pairs.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub custom_metadata: Option<HashMap<String,String>>,
+    pub custom_metadata: Option<HashMap<String, String>>,
     /// Optional array of key operations to be enabled for this security object. If not
     /// provided the service will provide a default set of key operations. Note that if you
     /// provide an empty array, all key operations will be disabled.
@@ -764,7 +752,7 @@ pub struct TransformKeyRequest {
     pub transient: Option<bool>,
     /// The export policy to be applied to the newly created sobject
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub export_policy: Option<SobjectExportPolicy>
+    pub export_policy: Option<SobjectExportPolicy>,
 }
 
 /// Request to unwrap an sobject with another sobject.
@@ -837,7 +825,7 @@ pub struct UnwrapKeyRequest {
     pub description: Option<String>,
     /// User-defined metadata for the resulting key, stored as key-value pairs.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub custom_metadata: Option<HashMap<String,String>>,
+    pub custom_metadata: Option<HashMap<String, String>>,
     /// Optional array of key operations to be enabled for the resulting security
     /// object. If not provided, DSM will provide a default set of key operations.
     /// Note that an empty array will result in all key operations being disabled.
@@ -854,7 +842,7 @@ pub struct UnwrapKeyRequest {
     pub kcv_method: Option<KcvMethod>,
     /// The export policy to be applied to the unwrapped key
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub export_policy: Option<SobjectExportPolicy>
+    pub export_policy: Option<SobjectExportPolicy>,
 }
 
 /// Request to verify a MAC.
@@ -874,7 +862,7 @@ pub struct VerifyMacRequest {
     /// field `digest` is deprecated; this field should be used
     /// instead.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub mac: Option<Blob>
+    pub mac: Option<Blob>,
 }
 
 /// Request to verify a signature using an asymmetric key.
@@ -933,7 +921,7 @@ pub struct VerifyRequest {
     /// Currently only ML-DSA keys accept a context parameter;
     /// this parameter must not be specified for any other key types.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub context: Option<Blob>
+    pub context: Option<Blob>,
 }
 
 /// Result of verifying a signature or MAC.
@@ -943,7 +931,7 @@ pub struct VerifyResponse {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub kid: Option<Uuid>,
     /// True if the signature verified and false if it did not.
-    pub result: bool
+    pub result: bool,
 }
 
 /// Request to wrap an sobject with another sobject.
@@ -1003,7 +991,7 @@ pub struct WrapKeyRequest {
     pub tag_len: Option<usize>,
     /// Format of the wrapped key
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub key_format: Option<KeyFormat>
+    pub key_format: Option<KeyFormat>,
 }
 
 /// Result of a key wrapping request.
@@ -1019,7 +1007,7 @@ pub struct WrapKeyResponse {
     /// (i.e., using GCM or CCM mode). For other modes, this field is
     /// not applicable.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tag: Option<Blob>
+    pub tag: Option<Blob>,
 }
 
 pub struct OperationAgree;
@@ -1043,8 +1031,10 @@ impl SdkmsClient {
         self.execute::<OperationAgree>(req, (), None)
     }
     pub fn request_approval_to_agree(
-        &self, req: &AgreeKeyRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationAgree>> {
+        &self,
+        req: &AgreeKeyRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationAgree>> {
         self.request_approval::<OperationAgree>(req, (), None, description)
     }
 }
@@ -1066,7 +1056,10 @@ impl Operation for OperationBatchDecrypt {
 }
 
 impl SdkmsClient {
-    pub fn batch_decrypt(&self, req: &Vec<BatchDecryptRequestItem>) -> Result<Vec<BatchResponseItem<DecryptResponse>>> {
+    pub fn batch_decrypt(
+        &self,
+        req: &Vec<BatchDecryptRequestItem>,
+    ) -> Result<Vec<BatchResponseItem<DecryptResponse>>> {
         self.execute::<OperationBatchDecrypt>(req, (), None)
     }
 }
@@ -1088,7 +1081,10 @@ impl Operation for OperationBatchEncrypt {
 }
 
 impl SdkmsClient {
-    pub fn batch_encrypt(&self, req: &Vec<BatchEncryptRequestItem>) -> Result<Vec<BatchResponseItem<EncryptResponse>>> {
+    pub fn batch_encrypt(
+        &self,
+        req: &Vec<BatchEncryptRequestItem>,
+    ) -> Result<Vec<BatchResponseItem<EncryptResponse>>> {
         self.execute::<OperationBatchEncrypt>(req, (), None)
     }
 }
@@ -1110,12 +1106,17 @@ impl Operation for OperationBatchSign {
 }
 
 impl SdkmsClient {
-    pub fn batch_sign(&self, req: &Vec<SignRequest>) -> Result<Vec<BatchResponseItem<SignResponse>>> {
+    pub fn batch_sign(
+        &self,
+        req: &Vec<SignRequest>,
+    ) -> Result<Vec<BatchResponseItem<SignResponse>>> {
         self.execute::<OperationBatchSign>(req, (), None)
     }
     pub fn request_approval_to_batch_sign(
-        &self, req: &Vec<SignRequest>,
-        description: Option<String>) -> Result<PendingApproval<OperationBatchSign>> {
+        &self,
+        req: &Vec<SignRequest>,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationBatchSign>> {
         self.request_approval::<OperationBatchSign>(req, (), None, description)
     }
 }
@@ -1137,7 +1138,10 @@ impl Operation for OperationBatchVerify {
 }
 
 impl SdkmsClient {
-    pub fn batch_verify(&self, req: &Vec<VerifyRequest>) -> Result<Vec<BatchResponseItem<VerifyResponse>>> {
+    pub fn batch_verify(
+        &self,
+        req: &Vec<VerifyRequest>,
+    ) -> Result<Vec<BatchResponseItem<VerifyResponse>>> {
         self.execute::<OperationBatchVerify>(req, (), None)
     }
 }
@@ -1185,8 +1189,10 @@ impl SdkmsClient {
         self.execute::<OperationDecapsulate>(req, (), None)
     }
     pub fn request_approval_to_decapsulate(
-        &self, req: &DecapsulateKeyRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationDecapsulate>> {
+        &self,
+        req: &DecapsulateKeyRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationDecapsulate>> {
         self.request_approval::<OperationDecapsulate>(req, (), None, description)
     }
 }
@@ -1212,8 +1218,10 @@ impl SdkmsClient {
         self.execute::<OperationDecrypt>(req, (), None)
     }
     pub fn request_approval_to_decrypt(
-        &self, req: &DecryptRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationDecrypt>> {
+        &self,
+        req: &DecryptRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationDecrypt>> {
         self.request_approval::<OperationDecrypt>(req, (), None, description)
     }
 }
@@ -1305,8 +1313,10 @@ impl SdkmsClient {
         self.execute::<OperationDerive>(req, (), None)
     }
     pub fn request_approval_to_derive(
-        &self, req: &DeriveKeyRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationDerive>> {
+        &self,
+        req: &DeriveKeyRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationDerive>> {
         self.request_approval::<OperationDerive>(req, (), None, description)
     }
 }
@@ -1332,8 +1342,10 @@ impl SdkmsClient {
         self.execute::<OperationEncapsulate>(req, (), None)
     }
     pub fn request_approval_to_encapsulate(
-        &self, req: &EncapsulateKeyRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationEncapsulate>> {
+        &self,
+        req: &EncapsulateKeyRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationEncapsulate>> {
         self.request_approval::<OperationEncapsulate>(req, (), None, description)
     }
 }
@@ -1359,8 +1371,10 @@ impl SdkmsClient {
         self.execute::<OperationEncrypt>(req, (), None)
     }
     pub fn request_approval_to_encrypt(
-        &self, req: &EncryptRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationEncrypt>> {
+        &self,
+        req: &EncryptRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationEncrypt>> {
         self.request_approval::<OperationEncrypt>(req, (), None, description)
     }
 }
@@ -1452,8 +1466,10 @@ impl SdkmsClient {
         self.execute::<OperationMac>(req, (), None)
     }
     pub fn request_approval_to_mac(
-        &self, req: &MacRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationMac>> {
+        &self,
+        req: &MacRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationMac>> {
         self.request_approval::<OperationMac>(req, (), None, description)
     }
 }
@@ -1501,8 +1517,10 @@ impl SdkmsClient {
         self.execute::<OperationSign>(req, (), None)
     }
     pub fn request_approval_to_sign(
-        &self, req: &SignRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationSign>> {
+        &self,
+        req: &SignRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationSign>> {
         self.request_approval::<OperationSign>(req, (), None, description)
     }
 }
@@ -1528,8 +1546,10 @@ impl SdkmsClient {
         self.execute::<OperationTransform>(req, (), None)
     }
     pub fn request_approval_to_transform(
-        &self, req: &TransformKeyRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationTransform>> {
+        &self,
+        req: &TransformKeyRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationTransform>> {
         self.request_approval::<OperationTransform>(req, (), None, description)
     }
 }
@@ -1555,8 +1575,10 @@ impl SdkmsClient {
         self.execute::<OperationUnwrap>(req, (), None)
     }
     pub fn request_approval_to_unwrap(
-        &self, req: &UnwrapKeyRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationUnwrap>> {
+        &self,
+        req: &UnwrapKeyRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationUnwrap>> {
         self.request_approval::<OperationUnwrap>(req, (), None, description)
     }
 }
@@ -1604,9 +1626,10 @@ impl SdkmsClient {
         self.execute::<OperationWrap>(req, (), None)
     }
     pub fn request_approval_to_wrap(
-        &self, req: &WrapKeyRequest,
-        description: Option<String>) -> Result<PendingApproval<OperationWrap>> {
+        &self,
+        req: &WrapKeyRequest,
+        description: Option<String>,
+    ) -> Result<PendingApproval<OperationWrap>> {
         self.request_approval::<OperationWrap>(req, (), None, description)
     }
 }
-

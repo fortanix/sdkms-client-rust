@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use super::*;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Default)]
 pub struct AuthDiscoverParams {
@@ -13,7 +13,7 @@ pub struct AuthDiscoverParams {
     /// Note that if specified, the user_email field in an AuthDiscoverRequest will
     /// be ignored.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub acct_id: Option<Uuid>
+    pub acct_id: Option<Uuid>,
 }
 
 impl UrlEncode for AuthDiscoverParams {
@@ -30,7 +30,7 @@ pub struct AuthDiscoverRequest {
     /// request also includes an acct_id query parameter, this field
     /// will be effectively ignored.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub user_email: Option<String>
+    pub user_email: Option<String>,
 }
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
@@ -43,7 +43,7 @@ pub enum AuthMethod {
         id: String,
         binding_url: String,
         authn_request: String,
-        idp_id: Blob
+        idp_id: Blob,
     },
     OauthAuthCodeGrant {
         name: String,
@@ -53,18 +53,18 @@ pub enum AuthMethod {
         redirect_uri: String,
         state: String,
         idp_id: Blob,
-        auth_params: OauthAuthenticationParameters
+        auth_params: OauthAuthenticationParameters,
     },
     LdapPassword {
         name: String,
         icon_url: String,
-        idp_id: Blob
+        idp_id: Blob,
     },
     Vcd {
         name: String,
         authorization_url: String,
-        idp_id: Blob
-    }
+        idp_id: Blob,
+    },
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -74,7 +74,7 @@ pub struct AuthRequest {
     #[serde(flatten, skip_serializing_if = "Option::is_none")]
     pub method: Option<AuthRequestMethod>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bind_to: Option<BindToPrincipal>
+    pub bind_to: Option<BindToPrincipal>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -83,11 +83,9 @@ pub enum AuthRequestMethod {
     SamlResponse {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         id: Option<String>,
-        response: String
+        response: String,
     },
-    OauthAuthCode (
-        OauthCodeData
-    ),
+    OauthAuthCode(OauthCodeData),
     LdapBasicAuth {
         idp_id: Blob,
         email: String,
@@ -98,17 +96,17 @@ pub enum AuthRequestMethod {
         /// existing users; they may need to be manually invited
         /// into the account.)
         #[serde(skip_serializing_if = "Option::is_none")]
-        acct_id: Option<Uuid>
+        acct_id: Option<Uuid>,
     },
     AuthByAppName {
         acct_id: Uuid,
         name: String,
-        password: ZeroizedString
+        password: ZeroizedString,
     },
     AwsIam {
         acct_id: Uuid,
         region: String,
-        headers: HashMap<String,String>
+        headers: HashMap<String, String>,
     },
     /// Login using a DSM user password and, optionally, a captcha. This is useful
     /// for situations where a user is locked out of their DSM account, and wants to
@@ -120,8 +118,8 @@ pub enum AuthRequestMethod {
         password: ZeroizedString,
         /// The response token after solving a reCAPTCHA successfully.
         #[serde(skip_serializing_if = "Option::is_none")]
-        recaptcha_response: Option<String>
-    }
+        recaptcha_response: Option<String>,
+    },
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -140,7 +138,7 @@ pub struct AuthResponse {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fido2_assertion_options: Option<PublicKeyCredentialRequestOptions>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub allowed_mfa_methods: Option<Vec<MfaAuthMethod>>
+    pub allowed_mfa_methods: Option<Vec<MfaAuthMethod>>,
 }
 
 /// Temporary credentials to be used for AWS KMS.
@@ -148,7 +146,7 @@ pub struct AuthResponse {
 pub struct AwsTemporaryCredentials {
     pub access_key: String,
     pub secret_key: ZeroizedString,
-    pub session_token: ZeroizedString
+    pub session_token: ZeroizedString,
 }
 
 /// A security principal that a session can be bound to.
@@ -170,55 +168,51 @@ pub struct AwsTemporaryCredentials {
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum BindToPrincipal {
-    App (
-        Uuid
-    )
+    App(Uuid),
 }
 
 /// Request to start configuring U2F.
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct Config2faAuthRequest {
-    pub password: ZeroizedString
+    pub password: ZeroizedString,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
-pub struct Config2faAuthResponse {
-
-}
+pub struct Config2faAuthResponse {}
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub enum MfaAuthMethod {
     Fido2 {
         challenge: PublicKeyCredentialRequestOptions,
         challenge_token: Blob,
-        mfa_devices: Vec<MfaDevice>
-    }
+        mfa_devices: Vec<MfaDevice>,
+    },
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct OauthCodeData {
     pub idp_id: Blob,
     pub code: String,
-    pub email: String
+    pub email: String,
 }
 
 /// Request to authenticate using U2F recovery code.
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RecoveryCodeAuthRequest {
-    pub recovery_code: ZeroizedString
+    pub recovery_code: ZeroizedString,
 }
 
 /// Request to select an account.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct SelectAccountRequest {
-    pub acct_id: Uuid
+    pub acct_id: Uuid,
 }
 
 /// Response to select account request.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct SelectAccountResponse {
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub cookie: Option<String>
+    pub cookie: Option<String>,
 }
 
 /// The type of a session token.
@@ -227,7 +221,7 @@ pub struct SelectAccountResponse {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum TokenType {
     Bearer,
-    Cookie
+    Cookie,
 }
 
 pub struct OperationAuthDiscover;
@@ -247,7 +241,11 @@ impl Operation for OperationAuthDiscover {
 }
 
 impl SdkmsClient {
-    pub fn auth_discover(&self, query_params: Option<&AuthDiscoverParams>, req: &AuthDiscoverRequest) -> Result<Vec<AuthMethod>> {
+    pub fn auth_discover(
+        &self,
+        query_params: Option<&AuthDiscoverParams>,
+        req: &AuthDiscoverRequest,
+    ) -> Result<Vec<AuthMethod>> {
         self.execute::<OperationAuthDiscover>(req, (), query_params)
     }
 }
@@ -310,7 +308,10 @@ impl Operation for OperationConfig2faTerminate {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/session/config_2fa/terminate".to_string()
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn config_2fa_terminate(&self) -> Result<()> {
@@ -332,7 +333,10 @@ impl Operation for OperationReauthenticate {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/session/reauth".to_string()
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn reauthenticate(&self) -> Result<AuthResponse> {
@@ -376,7 +380,10 @@ impl Operation for OperationRefresh {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/session/refresh".to_string()
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn refresh(&self) -> Result<()> {
@@ -442,7 +449,10 @@ impl Operation for OperationTerminate {
     fn path(p: <Self::PathParams as TupleRef>::Ref, q: Option<&Self::QueryParams>) -> String {
         "/sys/v1/session/terminate".to_string()
     }
-    fn to_body(body: &Self::Body) -> Option<serde_json::Value> { None }}
+    fn to_body(body: &Self::Body) -> Option<serde_json::Value> {
+        None
+    }
+}
 
 impl SdkmsClient {
     pub fn terminate(&self) -> Result<()> {
@@ -471,4 +481,3 @@ impl SdkmsClient {
         self.execute::<OperationU2fAuth>(req, (), None)
     }
 }
-

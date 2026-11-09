@@ -21,7 +21,7 @@ rustls = ["dep:simple-hyper-client-rustls", "dep:tokio-rustls", "dep:webpki-root
 [dependencies]
 base64 = "0.13"
 bitflags = "1.0"
-cfg-if = "1.0.5"
+cfg-if = "1"
 headers = "0.4"
 log = "0.4"
 serde = { version = "1.0", features = ["derive"] }

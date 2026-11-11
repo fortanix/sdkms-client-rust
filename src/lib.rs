@@ -24,13 +24,14 @@
 //!         .build()?;
 //!
 //!     let encrypt_resp = client.encrypt(&EncryptRequest {
-//!         plain: "hello, world!".into(),
+//!         plain: b"hello, world!".to_vec().into(),
 //!         alg: Algorithm::Aes,
 //!         key: Some(SobjectDescriptor::Name("my AES key".to_owned())),
 //!         mode: Some(CryptMode::Symmetric(CipherMode::Cbc)),
 //!         iv: None,
 //!         ad: None,
 //!         tag_len: None,
+//!         label: None,
 //!     })?;
 //!
 //!     let decrypt_resp = client.decrypt(&DecryptRequest {
@@ -41,6 +42,8 @@
 //!         alg: None,
 //!         ad: None,
 //!         tag: None,
+//!         label: None,
+//!         masked: None,
 //!     })?;
 //!
 //!     let plain = String::from_utf8(decrypt_resp.plain.into()).expect("valid utf8");
@@ -51,8 +54,8 @@
 //!
 //! [`SdkmsClient`]: ./struct.SdkmsClient.html
 //! [`api_model`]: ./api_model/index.html
-//! [REST APIs]: https://www.fortanix.com/api/sdkms/
-//! [Fortanix SDKMS]: https://fortanix.com/products/sdkms/
+//! [REST APIs]: <https://www.fortanix.com/api/sdkms/>
+//! [Fortanix SDKMS]: <https://fortanix.com/products/sdkms/>
 
 #[macro_use]
 extern crate bitflags;
@@ -63,6 +66,8 @@ extern crate log;
 mod macros;
 pub mod api_model;
 mod client;
+
+#[allow(non_camel_case_types)]
 mod generated;
 pub mod operations;
 

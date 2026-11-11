@@ -20,6 +20,7 @@ fn main() -> Result<(), SdkmsError> {
         iv: None,
         ad: None,
         tag_len: None,
+        label: None,
     };
     let encrypt_resp = client.encrypt(&encrypt_req)?;
 
@@ -31,6 +32,8 @@ fn main() -> Result<(), SdkmsError> {
         alg: None,
         ad: None,
         tag: None,
+        label: None,
+        masked: None,
     };
     let decrypt_resp = client.decrypt(&decrypt_req)?;
     let plain = String::from_utf8(decrypt_resp.plain.into()).expect("valid utf8");

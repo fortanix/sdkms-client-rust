@@ -25,13 +25,13 @@ fn main() -> Result<(), SdkmsError> {
     println!("Created sobject: {}", sobject_to_string(&sobject));
 
     let query_params = ListSobjectsParams {
-        sort: SobjectSort::ByName {
+        sort: Some(SobjectSort::ByName {
             order: Order::Ascending,
             start: None,
-        },
+        }),
         ..Default::default()
     };
-    let keys = client.list_sobjects(Some(&query_params))?;
+    let keys = client.list_sobjects(Some(&query_params))?.items;
     println!("\n\nListing all sobjects ({}):", keys.len());
     for key in keys {
         println!("{}", sobject_to_string(&key));

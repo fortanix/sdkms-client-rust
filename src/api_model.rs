@@ -558,16 +558,9 @@ impl From<Blob> for ZeroizedBlob {
     }
 }
 
-fn serialize_blob<S: Serializer>(
-    serializer: S,
-    bytes: &[u8],
-) -> ::std::result::Result<S::Ok, S::Error> {
-    serializer.serialize_bytes(bytes)
-}
-
 impl Serialize for ZeroizedBlob {
     fn serialize<S: Serializer>(&self, serializer: S) -> ::std::result::Result<S::Ok, S::Error> {
-        serialize_blob(serializer, &self.0)
+        serializer.serialize_str(&base64::encode(&self.0))
     }
 }
 
@@ -978,8 +971,8 @@ pub struct CustomMetadata(pub HashMap<String, String>);
 
 impl crate::operations::UrlEncode for CustomMetadata {
     fn url_encode(&self, m: &mut HashMap<String, String>) {
-        for (key, value) in self.0.clone().into_iter() {
-            m.insert(key, value);
+        for (k, v) in self.0.iter() {
+            m.insert(format!("custom_metadata.{}", k).into(), v.clone());
         }
     }
 }

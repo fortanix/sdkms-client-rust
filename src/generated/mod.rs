@@ -69,8 +69,9 @@ impl Default for RsaOptions {
         RsaOptions {
             key_size: None,
             public_exponent: None,
-            encryption_policy: Vec::new(),
-            signature_policy: Vec::new(),
+            encryption_policy: None,
+            signature_policy: None,
+            minimum_key_length: None,
         }
     }
 }

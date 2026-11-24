@@ -15,11 +15,12 @@ fn main() -> Result<(), SdkmsError> {
 
     let sign_req = SignRequest {
         data: Some("hello, world!".as_bytes().to_owned().into()),
-        hash_alg: DigestAlgorithm::Sha256,
+        hash_alg: Some(DigestAlgorithm::Sha256),
         key: Some(SobjectDescriptor::Name(KEY_NAME.to_owned())),
         mode: Some(SignatureMode::Rsa(RsaSignaturePadding::Pkcs1V15 {})),
         hash: None,
         deterministic_signature: None,
+        context: None,
     };
     let sign_resp = sign(&client, &sign_req)?;
     println!("Signature: {}", base64::encode(sign_resp.signature));

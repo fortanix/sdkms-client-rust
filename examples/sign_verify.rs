@@ -14,21 +14,23 @@ fn main() -> Result<(), SdkmsError> {
 
     let sign_req = SignRequest {
         data: Some("hello, world!".as_bytes().to_owned().into()),
-        hash_alg: DigestAlgorithm::Sha256,
+        hash_alg: Some(DigestAlgorithm::Sha256),
         key: Some(SobjectDescriptor::Name(KEY_NAME.to_owned())),
         mode: Some(SignatureMode::rsa_pss(DigestAlgorithm::Sha1)),
         hash: None,
         deterministic_signature: None,
+        context: None,
     };
     let sign_resp = client.sign(&sign_req)?;
 
     let verify_req = VerifyRequest {
         signature: sign_resp.signature,
         key: Some(SobjectDescriptor::Name(KEY_NAME.to_owned())),
-        hash_alg: DigestAlgorithm::Sha256,
+        hash_alg: Some(DigestAlgorithm::Sha256),
         data: Some("hello, world!".as_bytes().to_owned().into()),
         mode: Some(SignatureMode::rsa_pss(DigestAlgorithm::Sha1)),
         hash: None,
+        context: None,
     };
     let verify_resp = client.verify(&verify_req)?;
     println!("Verify result: {}", verify_resp.result);

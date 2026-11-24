@@ -1275,7 +1275,7 @@ dependencies = [
 
 [[package]]
 name = "sdkms"
-version = "0.6.0"
+version = "0.7.0"
 dependencies = [
  "b64-ct",
  "base64 0.13.1",
